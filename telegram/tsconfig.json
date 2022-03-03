@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist",
+
+    "allowJs": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "sourceMap": true,
+
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "removeComments": true,
+
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+
+    // "declaration": true,
+    // "declarationDir": "./types",
+
+    "paths": {
+      // "*": ["node_modules/*"],
+      // "@types": ["@types/"],
+      // "@controllers": ["controllers/"],
+      // "@handlers": ["handlers/"],
+      // "@utils": ["utils/"],
+      // "@middlewares": ["middlewares/"],
+      // "@services": ["services/"]
+    }
+  },
+  "include": ["src", "src/types"],
+  "exclude": ["node_modules"]
+}
