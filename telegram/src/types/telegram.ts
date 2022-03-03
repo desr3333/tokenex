@@ -1,7 +1,15 @@
-import { Context } from "telegraf/typings/context";
+import { Context, Scenes } from "telegraf";
 
 export interface TelegramContext extends Context {
+  session: TelegramSession;
+  scene: Scenes.SceneContextScene<TelegramContext, TelegramSceneSession>;
+
   test?: string;
-  // session: CustomSession;
-  // scene: Scenes.SceneContextScene<CustomContext, CustomSceneSession>;
 }
+
+export interface TelegramSession
+  extends Scenes.SceneSession<TelegramSceneSession>,
+    TelegramSessionState {}
+
+export interface TelegramSessionState {}
+export interface TelegramSceneSession extends Scenes.SceneSessionData {}

@@ -3,6 +3,8 @@
     "baseUrl": "./src",
     "outDir": "./dist",
 
+    "target": "es6",
+
     "allowJs": true,
     "module": "commonjs",
     "noImplicitAny": true,
@@ -19,8 +21,8 @@
     // "declarationDir": "./types",
 
     "paths": {
-      // "*": ["node_modules/*"],
-      // "@types": ["@types/"],
+      "@types": ["types/"],
+      "@core": ["@core/"]
       // "@controllers": ["controllers/"],
       // "@handlers": ["handlers/"],
       // "@utils": ["utils/"],
