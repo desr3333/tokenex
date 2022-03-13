@@ -1,8 +1,10 @@
 import i18next, { i18n } from "i18next";
 import { TelegramContext } from "types";
+import fs from "fs";
+import path from "path";
 
-import en from "./../locales/en.json";
-import ru from "./../locales/ru.json";
+import en from "../../locales/en.json";
+import ru from "../../locales/ru.json";
 
 type LanguageCode = "en" | "ru";
 
@@ -15,12 +17,19 @@ export class I18n {
     try {
       const isLocale = locales[lng];
 
-      const localeToJSON = (lng: LanguageCode) =>
-        `{ "${lng}": ${JSON.stringify(locales[lng])}}`;
+      const importLocale = (lng: LanguageCode) =>
+        JSON.parse(`{ "${lng}": ${JSON.stringify(locales[lng])}}`);
 
-      const resources = isLocale
-        ? JSON.parse(localeToJSON(lng))
-        : localeToJSON("en");
+      const loadLocale = (lng: LanguageCode) => {
+        try {
+          const localPath = path.resolve(__dirname, `./../locales/${lng}.json`);
+          const locale = fs.readFileSync(localPath, { encoding: "utf8" });
+
+          return JSON.parse(locale);
+        } catch (e) {}
+      };
+
+      const resources = isLocale ? importLocale(lng) : importLocale("en");
 
       await i18next.init({
         lng,
@@ -44,5 +53,9 @@ export class I18n {
 
       return next();
     };
+  }
+
+  static t(key: string) {
+    return i18next.t(key);
   }
 }

@@ -1,6 +1,7 @@
-import { Routes, Scene } from "@core";
+import { Scene } from "@core";
+import { routes } from "@helpers";
 
-export const scene = new Scene(Routes.DEPOSIT_TOKEN);
+export const scene = new Scene(routes.DEPOSIT_TOKEN);
 
 scene.enter(async (ctx) => {
   const { token } = ctx.session;
@@ -12,7 +13,7 @@ scene.enter(async (ctx) => {
   await ctx.reply("```1JMoFCsPCeaCgxLhvSqJBj9btCKdedSMKF```", {
     parse_mode: "Markdown",
     reply_markup: {
-      inline_keyboard: [[{ text: "↩️ Back", callback_data: Routes.WALLET }]],
+      inline_keyboard: [[{ text: "↩️ Back", callback_data: routes.WALLET }]],
     },
   });
 });

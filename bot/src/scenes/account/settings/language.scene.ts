@@ -1,18 +1,11 @@
-import { Scene, Routes } from "@core";
+import { Scene } from "@core";
+import { inlineKeyboards, routes } from "@helpers";
 
-export const scene = new Scene(Routes.ACCOUNT_SETTINGS_LANGUAGE);
+export const scene = new Scene(routes.ACCOUNT_SETTINGS_LANGUAGE);
 
 scene.enter((ctx) => {
-  ctx.editMessageText(`⚙️ Settings\n\nChoose Language:`, {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "🇬🇧", callback_data: "start" },
-          { text: "🇷🇺", callback_data: "start" },
-          { text: "🇩🇪", callback_data: "start" },
-        ],
-        [{ text: "↩️ Back", callback_data: Routes.ACCOUNT_SETTINGS }],
-      ],
-    },
-  });
+  ctx.editMessageText(
+    ctx.i18n.t("scene:account.settings.language.edit"),
+    inlineKeyboards.account_settings_language()
+  );
 });

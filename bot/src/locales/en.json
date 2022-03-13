@@ -1,6 +1,79 @@
 {
-  "translation": {
-    "hello": "Hello, {{who}}!",
-    "test": "TESTED!"
+  "scene": {
+    "test": "TESTED!",
+    "main": "Use the @{{bot_username}} bot as your regular cryptocurrency wallet. The wallet is linked to your Telegram account.\n\nBuy, send, receive, and exchange cryptocurrencies",
+
+    "account": {
+      "settings": {
+        "main": "⚙️ Settings\n\nLanguage: {{language}}",
+        "language": {
+          "edit": "⚙️ Settings\n\nChoose Language:"
+        }
+      }
+    },
+
+    "wallet": {
+      "main": "💰️ My Wallet\n\nBTC: 0\nETH: 0\nUSDT: 0",
+
+      "deposit": {
+        "token": {
+          "choose": "⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?",
+          "hint": "⬇️ Deposit\n\nUse the address below to send ETH to the bot wallet. Funds will be credited within 30-60 minutes",
+          "address": "```{{wallet}}```"
+        }
+      },
+
+      "withdraw": {
+        "token": {
+          "choose": "⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?",
+          "hint": "⬇️ Deposit\n\nUse the address below to send ETH to the bot wallet. Funds will be credited within 30-60 minutes",
+          "address": "```{{wallet}}```"
+        }
+      }
+    }
+  },
+
+  "button": {
+    "account": {
+      "settings": {
+        "settings": "⚙️ Settings",
+        "language": {
+          "edit": "Change Language"
+        }
+      }
+    },
+    "wallet": {
+      "wallet": "💰️ My Wallet",
+
+      "deposit": {
+        "deposit": "⬇️ Deposit"
+      },
+      "withdraw": {
+        "withdraw": "⬆️ Withdraw"
+      },
+      "exchange": {
+        "exchange": "♻️ Exchange"
+      }
+    },
+    "support": {
+      "support": "💬 Support"
+    },
+    "language": {
+      "english": "🇬🇧",
+      "russian": "🇷🇺",
+      "german": "🇩🇪"
+    },
+
+    "back": "↩️ Back"
+  },
+
+  "error": {
+    "unexpected_error": "❌ Error!",
+    "account": {
+      "banned": "❌ Error!\n\nYou've been banned!"
+    },
+    "wallet": {
+      "insufficient_balance": "❌ Error!\n\nYour balance is insufficient. Please, deposit crypto into your wallet!"
+    }
   }
 }

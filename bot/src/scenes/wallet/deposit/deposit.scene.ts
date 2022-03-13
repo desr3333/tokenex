@@ -1,6 +1,7 @@
-import { Routes, Scene } from "@core";
+import { Scene } from "@core";
+import { routes } from "@helpers";
 
-export const scene = new Scene(Routes.DEPOSIT);
+export const scene = new Scene(routes.DEPOSIT);
 
 scene.enter((ctx) => {
   const text = `⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?`;
@@ -12,7 +13,7 @@ scene.enter((ctx) => {
           { text: "ETH", callback_data: "deposit_token__eth" },
           { text: "USDT", callback_data: "deposit_token__usdt" },
         ],
-        [{ text: "↩️ Back", callback_data: Routes.WALLET }],
+        [{ text: "↩️ Back", callback_data: routes.WALLET }],
       ],
     },
   };

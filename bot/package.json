@@ -26,6 +26,7 @@
   },
   "_moduleAliases": {
     "@core": "dist/@core/",
-    "@lib": "dist/lib/"
+    "@lib": "dist/lib/",
+    "@helpers": "dist/helpers/"
   }
 }

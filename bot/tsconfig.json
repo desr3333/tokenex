@@ -24,7 +24,8 @@
     "paths": {
       "@types": ["types/"],
       "@core": ["@core/"],
-      "@lib": ["lib/"]
+      "@lib": ["lib/"],
+      "@helpers": ["helpers/"]
     }
   },
   "include": ["src", "src/locales"],
