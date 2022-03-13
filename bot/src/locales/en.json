@@ -1,0 +1,6 @@
+{
+  "translation": {
+    "hello": "Hello, {{who}}!",
+    "test": "TESTED!"
+  }
+}
