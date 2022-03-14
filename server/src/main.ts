@@ -8,6 +8,8 @@ const main = async () => {
 
     const app = await NestFactory.create(AppModule);
 
+    app.setGlobalPrefix('api/v1');
+
     app.listen(PORT).then(() => {
       console.log(`Server: Running (${PORT})`);
     });

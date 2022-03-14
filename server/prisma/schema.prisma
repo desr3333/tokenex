@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Account {
+  id                Int              @id @default(autoincrement())
+  //  uuid              String           @default(uuid()) // @db.Uuid
+  role              String?          @default("user")
+  banned            Boolean?         @default(false)
+  wallet            Wallet?          @relation(fields: [walletId], references: [id])
+  walletId          Int?             @unique
+  telegramAccount   TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
+  telegramAccountId Int?             @unique
+}
+
+model TelegramAccount {
+  id        Int      @id @default(autoincrement())
+  chatId    Int
+  username  String
+  firstName String
+  account   Account?
+}
+
+model Wallet {
+  id            Int            @id @default(autoincrement())
+  //  uuid          String         @unique
+  account       Account?
+  cryptoWallets CryptoWallet[]
+}
+
+model CryptoWallet {
+  id           Int           @id @default(autoincrement())
+  address      String
+  wallet       Wallet?       @relation(fields: [walletId], references: [id])
+  walletId     Int?
+  token        Token?        @relation(fields: [tokenId], references: [id])
+  tokenId      Int?
+  transactions Transaction[]
+}
+
+model Token {
+  id           Int            @id @default(autoincrement())
+  address      String
+  cryptoWallet CryptoWallet[]
+}
+
+model Transaction {
+  id             Int           @id @default(autoincrement())
+  hash           String
+  from           String
+  to             String
+  cryptoWallet   CryptoWallet? @relation(fields: [cryptoWalletId], references: [id])
+  cryptoWalletId Int?
+}
