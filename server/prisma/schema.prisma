@@ -10,20 +10,26 @@ datasource db {
 model Account {
   id                Int              @id @default(autoincrement())
   //  uuid              String           @default(uuid()) // @db.Uuid
+  email             String?
+  password          String?
   role              String?          @default("user")
   banned            Boolean?         @default(false)
   wallet            Wallet?          @relation(fields: [walletId], references: [id])
   walletId          Int?             @unique
   telegramAccount   TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
   telegramAccountId Int?             @unique
+  createdAt         DateTime?
+  updatedAt         DateTime?
 }
 
 model TelegramAccount {
-  id        Int      @id @default(autoincrement())
-  chatId    Int
-  username  String
-  firstName String
+  id        Int       @id @default(autoincrement())
+  chatId    Int       @unique
+  username  String?
+  firstName String?
   account   Account?
+  createdAt DateTime?
+  updatedAt DateTime?
 }
 
 model Wallet {
@@ -31,6 +37,8 @@ model Wallet {
   //  uuid          String         @unique
   account       Account?
   cryptoWallets CryptoWallet[]
+  createdAt     DateTime?
+  updatedAt     DateTime?
 }
 
 model CryptoWallet {
@@ -41,12 +49,16 @@ model CryptoWallet {
   token        Token?        @relation(fields: [tokenId], references: [id])
   tokenId      Int?
   transactions Transaction[]
+  createdAt    DateTime?
+  updatedAt    DateTime?
 }
 
 model Token {
   id           Int            @id @default(autoincrement())
   address      String
   cryptoWallet CryptoWallet[]
+  createdAt    DateTime?
+  updatedAt    DateTime?
 }
 
 model Transaction {
@@ -56,4 +68,6 @@ model Transaction {
   to             String
   cryptoWallet   CryptoWallet? @relation(fields: [cryptoWalletId], references: [id])
   cryptoWalletId Int?
+  createdAt      DateTime?
+  updatedAt      DateTime?
 }

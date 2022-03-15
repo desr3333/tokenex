@@ -1,3 +1,11 @@
-export class CreateqWalletDto {}
+import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateWalletDto {}
+export class CreateWalletDto {
+  @ApiProperty({ default: new Date() })
+  createdAt?: Date;
+}
+
+export class UpdateWalletDto {
+  @ApiProperty({ default: new Date() })
+  updatedAt?: Date;
+}

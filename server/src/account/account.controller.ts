@@ -7,11 +7,13 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { AccountService } from './account.service';
-import { Prisma } from '@prisma/client';
-import { WalletService } from 'src/wallet';
+import { WalletService } from './../wallet';
+import { CreateAccountDto, UpdateAccountDto } from './account.dto';
 
+@ApiTags('Account')
 @Controller('/accounts')
 export class AccountController {
   constructor(
@@ -26,6 +28,11 @@ export class AccountController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: 'integer',
+  })
   async getByKey(@Param() params): Promise<any> {
     const id = Number(params.id);
 
@@ -36,7 +43,7 @@ export class AccountController {
   }
 
   @Post()
-  async create(@Body() createDto: Prisma.AccountCreateInput): Promise<any> {
+  async create(@Body() createDto: CreateAccountDto): Promise<any> {
     // Creating Wallet
     const createdWallet = await this.walletService.create({});
     if (!createdWallet) return { error: `Wallet Not Created!` };
@@ -52,9 +59,14 @@ export class AccountController {
   }
 
   @Put(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: 'integer',
+  })
   async update(
     @Param() params,
-    @Body() updateDto: Prisma.AccountUpdateInput,
+    @Body() updateDto: UpdateAccountDto,
   ): Promise<any> {
     const id = Number(params.id);
 
@@ -68,6 +80,11 @@ export class AccountController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: 'integer',
+  })
   async delete(@Param() params): Promise<any> {
     const id = Number(params.id);
 

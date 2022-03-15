@@ -31,7 +31,7 @@ export class WalletService {
     });
   }
 
-  async create(data: Prisma.WalletCreateInput): Promise<Wallet> {
+  async create(data: Prisma.WalletUncheckedCreateInput): Promise<Wallet> {
     return this.prisma.wallet.create({
       data,
     });
