@@ -12,7 +12,7 @@ const main = async () => {
 
     app.setGlobalPrefix('api/v1');
 
-    app.listen(PORT).then(() => {
+    app.listen(PORT, '0.0.0.0').then(() => {
       console.log(`Server: Running (${PORT})`);
     });
 
