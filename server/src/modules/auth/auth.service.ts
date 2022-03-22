@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { TelegramAccountService } from './../account';
+import { TelegramAccountService } from './../telegram-account';
 import { TelegramAuthRequestDto } from './auth.dto';
 
 @Injectable()

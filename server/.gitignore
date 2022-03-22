@@ -2,8 +2,9 @@
 /node_modules
 
 *.env
+*.zip
 
-/prisma/migrations/*
+/prisma/migrations
 /prisma/*.db
 /prisma/*.env
 

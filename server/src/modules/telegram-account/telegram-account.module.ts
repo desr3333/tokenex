@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { PrismaService } from './../../prisma';
+import { PrismaService } from './../prisma';
 
-import { AccountService } from '../account.service';
+import { AccountService } from './../account/account.service';
 import { TelegramAccountController } from './telegram-account.controller';
 import { TelegramAccountService } from './telegram-account.service';
 
