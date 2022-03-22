@@ -16,18 +16,22 @@ import { USDTService } from './usdt.service';
 export class USDTController {
   constructor(private readonly USDTService: USDTService) {}
 
-  @Post()
-  async create(): Promise<any> {
-    const result = await this.USDTService.create();
-    if (!result) return { error: 'Account Not Created!' };
+  @Get('')
+  async getInfo() {
+    const { symbol } = this.USDTService;
+
+    const result = await this.USDTService.getInfo();
+    if (!result) return { error: `Token ${symbol} Not Found!` };
 
     return { result };
   }
 
-  @Get('')
-  async getInfo() {
-    const result = await this.USDTService.getInfo();
-    if (!result) return { error: 'Token USDT Not Found!' };
+  @Post()
+  async create() {
+    const { symbol } = this.USDTService;
+
+    const result = await this.USDTService.create();
+    if (!result) return { error: `${symbol} Account Not Created!` };
 
     return { result };
   }
@@ -35,9 +39,7 @@ export class USDTController {
   @Get(':address/balance')
   async getBalance(@Param() params) {
     const { address } = params;
-
     const result = await this.USDTService.getBalance(address);
-    if (!result) return { error: 'Account Not Found!' };
 
     return { result };
   }

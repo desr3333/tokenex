@@ -27,6 +27,7 @@ model TelegramAccount {
   chatId    Int       @unique
   username  String?
   firstName String?
+  banned    Boolean?  @default(false)
   account   Account?
   createdAt DateTime?
   updatedAt DateTime?
@@ -43,7 +44,9 @@ model Wallet {
 
 model CryptoWallet {
   id           Int           @id @default(autoincrement())
+  //  uuid          String         @unique
   address      String
+  balance      BigInt
   wallet       Wallet?       @relation(fields: [walletId], references: [id])
   walletId     Int?
   token        Token?        @relation(fields: [tokenId], references: [id])
@@ -55,6 +58,7 @@ model CryptoWallet {
 
 model Token {
   id           Int            @id @default(autoincrement())
+  //  uuid          String         @unique
   address      String
   cryptoWallet CryptoWallet[]
   createdAt    DateTime?
@@ -62,12 +66,24 @@ model Token {
 }
 
 model Transaction {
-  id             Int           @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
+  //  uuid          String         @unique
   hash           String
   from           String
   to             String
-  cryptoWallet   CryptoWallet? @relation(fields: [cryptoWalletId], references: [id])
+  cryptoWallet   CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
   cryptoWalletId Int?
+  transactionFee TransactionFee?
   createdAt      DateTime?
   updatedAt      DateTime?
+}
+
+model TransactionFee {
+  id            Int          @id @default(autoincrement())
+  //  uuid          String         @unique
+  value         Int          @default(0)
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId Int          @unique
+  createdAt     DateTime?
+  updatedAt     DateTime?
 }

@@ -24,13 +24,16 @@ export class ETHController {
     return { result };
   }
 
-  // @Get(':address/balance')
-  // async getBalance(@Param() params) {
-  //   const { address } = params;
+  @ApiParam({
+    name: 'address',
+    required: true,
+    type: 'string',
+  })
+  @Get(':address/balance')
+  async getBalance(@Param() params) {
+    const { address } = params;
+    const result = await this.ethService.getBalance(address);
 
-  //   const result = await this.ethService.getBalance(address);
-  //   if (!result) return { error: 'Account Not Found!' };
-
-  //   return { result };
-  // }
+    return { result };
+  }
 }

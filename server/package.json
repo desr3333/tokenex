@@ -19,6 +19,7 @@
     "docker": "npm run docker:build && npm run docker:run",
     "docker:build": "docker build -t tokenex-api .",
     "docker:run": "docker run -it --rm -p 5000:5000 --env-file .env --name tokenex-api tokenex-api",
+    "prisma:migrate": "npx prisma migrate dev --name init",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
