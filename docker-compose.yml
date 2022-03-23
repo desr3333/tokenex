@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  tokenex-server:
+    container_name: tokenex-server
+    image: tokenex-server
+    build:
+      context: ./server
+    ports:
+      - 5000:5000
+    networks:
+      - tokenex-network
+    restart: "always"
+
+  tokenex-bot:
+    container_name: tokenex-bot
+    image: tokenex-bot
+    build:
+      context: ./bot
+    ports:
+      - 5001:5001
+    networks:
+      - tokenex-network
+    restart: "always"
+
+networks:
+  tokenex-network:
