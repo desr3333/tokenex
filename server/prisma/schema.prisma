@@ -46,9 +46,9 @@ model CryptoWallet {
   id           Int           @id @default(autoincrement())
   //  uuid          String         @unique
   address      String
-  balance      BigInt
-  wallet       Wallet?       @relation(fields: [walletId], references: [id])
-  walletId     Int?
+  balance      Decimal?      @default(0)
+  wallet       Wallet        @relation(fields: [walletId], references: [id])
+  walletId     Int
   token        Token?        @relation(fields: [tokenId], references: [id])
   tokenId      Int?
   transactions Transaction[]
@@ -57,12 +57,13 @@ model CryptoWallet {
 }
 
 model Token {
-  id           Int            @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   //  uuid          String         @unique
-  address      String
-  cryptoWallet CryptoWallet[]
-  createdAt    DateTime?
-  updatedAt    DateTime?
+  symbol          String
+  contractAddress String
+  cryptoWallets   CryptoWallet[]
+  createdAt       DateTime?
+  updatedAt       DateTime?
 }
 
 model Transaction {

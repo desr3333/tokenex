@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Account } from '@prisma/client';
 
-import { PrismaService } from './../prisma';
+import { PrismaService } from './../prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
@@ -28,19 +28,23 @@ export class AccountService {
   async findOne(where?: Prisma.AccountWhereUniqueInput): Promise<Account> {
     return this.prisma.account.findUnique({
       where,
-      include: { wallet: true },
+      include: { wallet: true, telegramAccount: true },
     });
   }
 
   async create(data: Prisma.AccountUncheckedCreateInput): Promise<Account> {
-    return this.prisma.account.create({
-      data,
-    });
+    try {
+      return this.prisma.account.create({
+        data,
+      });
+    } catch (e) {
+      console.log({ e });
+    }
   }
 
   async update(
     where: Prisma.AccountWhereUniqueInput,
-    data: Prisma.AccountUpdateInput,
+    data: Prisma.AccountUncheckedUpdateInput,
   ): Promise<Account> {
     return this.prisma.account.update({
       data,

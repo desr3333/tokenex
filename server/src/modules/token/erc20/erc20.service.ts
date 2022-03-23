@@ -1,9 +1,11 @@
+import { Injectable, OnModuleInit } from '@nestjs/common';
+
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 
-import ERC20_ABI from './erc20.abi.json';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import ERC20_ABI from './erc20-abi.json';
+import { ERC20_USDT_CONTRACT } from './erc20-contract';
 
 interface ERC20ServiceParams {
   contractAddress: string;
@@ -72,5 +74,12 @@ export class ERC20Service implements OnModuleInit {
       console.log({ e });
       return null;
     }
+  }
+}
+
+@Injectable()
+export class USDTService extends ERC20Service {
+  constructor() {
+    super({ contractAddress: ERC20_USDT_CONTRACT });
   }
 }

@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { PrismaService } from './../prisma';
+import { TelegramAccountModule } from './../telegram-account';
 
 import { AuthController, TelegramAuthController } from './auth.controller';
 import { AuthService, TelegramAuthService } from './auth.service';
-import { TelegramAccountService } from './../telegram-account';
 
 @Module({
-  imports: [],
   controllers: [AuthController, TelegramAuthController],
-  providers: [
-    PrismaService,
-    AuthService,
-    TelegramAuthService,
-    TelegramAccountService,
-  ],
+  providers: [AuthService, TelegramAuthService],
+  exports: [AuthService, TelegramAuthService],
 })
 export class AuthModule {}

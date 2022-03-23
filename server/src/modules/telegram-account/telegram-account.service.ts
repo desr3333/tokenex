@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, TelegramAccount } from '@prisma/client';
 
-import { PrismaService } from './../prisma';
+import { PrismaService } from './../prisma/prisma.service';
 
 @Injectable()
 export class TelegramAccountService {
@@ -30,6 +30,7 @@ export class TelegramAccountService {
   ): Promise<TelegramAccount> {
     return this.prisma.telegramAccount.findFirst({
       where,
+      include: { account: true },
     });
   }
 

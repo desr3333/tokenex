@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Wallet } from '@prisma/client';
 
-import { PrismaService } from './../prisma';
+import { PrismaService } from './../prisma/prisma.service';
 
 @Injectable()
 export class WalletService {
@@ -22,19 +22,28 @@ export class WalletService {
       cursor,
       where,
       orderBy,
+      //  include: { cryptoWallets: true },
     });
   }
 
   async findOne(where?: Prisma.WalletWhereUniqueInput): Promise<Wallet> {
-    return this.prisma.wallet.findUnique({
-      where,
-    });
+    try {
+      return this.prisma.wallet.findUnique({
+        where,
+        include: { cryptoWallets: true },
+      });
+    } catch (e) {
+      console.log({ e });
+    }
   }
 
-  async create(data: Prisma.WalletUncheckedCreateInput): Promise<Wallet> {
-    return this.prisma.wallet.create({
-      data,
-    });
+  async create(data?: Prisma.WalletUncheckedCreateInput): Promise<Wallet> {
+    try {
+      return this.prisma.wallet.create({ data: data || {} });
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
   async update(

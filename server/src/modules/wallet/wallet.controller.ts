@@ -6,16 +6,22 @@ import {
   Param,
   Post,
   Put,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
+import { CryptoWalletService } from './../crypto-wallet';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto, UpdateWalletDto } from './wallet.dto';
 
 @ApiTags('Wallet')
 @Controller('/wallets')
 export class WalletController {
-  constructor(private readonly walletService: WalletService) {}
+  constructor(
+    private walletService: WalletService,
+    private cryptoWalletService: CryptoWalletService,
+  ) {}
 
   @Get()
   async getAll(): Promise<any> {
@@ -39,9 +45,26 @@ export class WalletController {
   }
 
   @Post()
-  async create(@Body() createDto: CreateWalletDto): Promise<any> {
-    const result = await this.walletService.create(createDto);
-    return { result };
+  async create(
+    @Res() res: Response,
+    @Body() createDto: CreateWalletDto,
+  ): Promise<any> {
+    // Creating Wallet
+    const createdWallet = await this.walletService.create(createDto);
+    if (!createdWallet)
+      return res.status(400).json({ error: `Wallet Not Created!` });
+
+    const walletId = createdWallet.id;
+
+    // Creating BTC Wallet TODO
+
+    // Creating Crypto Wallets
+    // const ETHWallet = await this.ETHWalletService.create({ walletId });
+    // const USDTWallet = await this.USDTWalletService.create({ walletId });
+
+    // Creating USDT Wallet TODO
+
+    return { result: createdWallet };
   }
 
   @Put(':id')
