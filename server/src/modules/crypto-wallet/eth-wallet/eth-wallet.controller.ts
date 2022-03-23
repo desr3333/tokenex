@@ -23,8 +23,6 @@ import { ETHWalletService } from './eth-wallet.service';
 @Controller('/crypto-wallets/eth')
 export class ETHWalletController {
   constructor(private ETHWalletService: ETHWalletService) {}
-  // @Inject(forwardRef(() => WalletService))
-  // private walletService: WalletService,
 
   @Post()
   async create(@Res() res: Response, @Body() createDto: CreateCryptoWalletDto) {
@@ -35,10 +33,6 @@ export class ETHWalletController {
       // Checking Wallet
       if (!walletId)
         return res.status(404).json({ error: `Wallet Not Found!` });
-
-      // const existedWallet = await this.walletService.findOne({ id: walletId });
-      // if (!existedWallet)
-      //   return res.status(404).json({ error: `Wallet Not Found!` });
 
       // Creating Wallet
       const result = await this.ETHWalletService.create(createDto);

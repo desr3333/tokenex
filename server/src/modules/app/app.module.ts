@@ -8,7 +8,10 @@ import { AuthModule } from '../../auth';
 import { WalletModule } from './../wallet/wallet.module';
 import { TelegramAccountModule } from './../telegram-account/telegram-account.module';
 
-// import { CryptoWalletModule } from '../crypto-wallet';
+import { ETHWalletModule } from './../crypto-wallet/eth-wallet';
+import { USDTWalletModule } from './../crypto-wallet/usdt-wallet';
+import { BTCWalletModule } from './../crypto-wallet/btc-wallet';
+import { CryptoWalletModule } from './../crypto-wallet/crypto-wallet';
 
 @Module({
   imports: [
@@ -20,9 +23,10 @@ import { TelegramAccountModule } from './../telegram-account/telegram-account.mo
     AccountModule,
     TelegramAccountModule,
     WalletModule,
-    // CryptoWalletModule,
-    // ETHWalletModule,
-    // USDTWalletModule,
+    CryptoWalletModule,
+    ETHWalletModule,
+    USDTWalletModule,
+    BTCWalletModule,
   ],
 })
 export class AppModule {}

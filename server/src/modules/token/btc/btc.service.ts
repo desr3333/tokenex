@@ -1,24 +1,38 @@
 import { Injectable } from '@nestjs/common';
 
+import * as bip32 from 'bip32';
+import * as bip39 from 'bip39';
+import * as bitcoin from 'bitcoinjs-lib';
+
 @Injectable()
 export class BTCService {
   async create() {
-    // const privateKey = new bitcore.PrivateKey();
-    // const address = privateKey.toAddress().toString();
-    // const mnemonics = new Mnemonic(Mnemonic.Words.ENGLISH);
-    // const code = mnemonics.toString();
-    // const xpriv = mnemonics.toHDPrivateKey();
-    // const utxo = {
-    //   txId: '115e8f72f39fad874cfab0deed11a80f24f967a84079fb56ddf53ea02e308986',
-    //   outputIndex: 0,
-    //   address: '17XBj6iFEsf8kzDMGQk5ghZipxX49VXuaV',
-    //   script: '76a91447862fe165e6121af80d5dde1ecb478ed170565b88ac',
-    //   satoshis: 50000,
-    // };
-    // const transaction = new bitcore.Transaction()
-    //   .from(utxo)
-    //   .to('1Gokm82v6DmtwKEB8AiVhm82hyFSsEvBDK', 15000)
-    //   .sign(privateKey);
-    // console.log({ transaction });
+    const network = bitcoin.networks.testnet;
+    const path = `m/49'/1'/0'/0`;
+
+    // m/49'/0'/0'/0 for networks.bitcoin
+    // m/49'/1'/0'/0 for networks.testnet
+
+    const mnemonic = bip39.generateMnemonic();
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const root = bip32.fromSeed(seed, network);
+
+    const account = root.derivePath(path);
+    const node = account.derive(0).derive(0);
+
+    const address = bitcoin.payments.p2pkh({
+      pubkey: node.publicKey,
+      network: network,
+    }).address;
+
+    const key = node.toWIF();
+
+    const result = {
+      address,
+      key,
+      mnemonic,
+    };
+
+    return result;
   }
 }

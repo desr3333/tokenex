@@ -31,7 +31,7 @@ export class ETHWalletService implements CryptoWalletServiceBuilder {
       const account = await this.ETHService.create();
       if (!account) throw Error(`${symbol} Account Not Generated!`);
 
-      const { address, privateKey } = account;
+      const { address } = account;
       const data = {
         ...createDto,
         address,

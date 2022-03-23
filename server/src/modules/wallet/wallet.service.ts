@@ -3,12 +3,14 @@ import { Prisma, Wallet } from '@prisma/client';
 
 import { PrismaService } from './../prisma/prisma.service';
 import { ETHWalletService } from '../crypto-wallet/eth-wallet';
+import { BTCWalletService } from '../crypto-wallet/btc-wallet';
 import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
 
 @Injectable()
 export class WalletService {
   constructor(
     private prisma: PrismaService,
+    private BTCWalletService: BTCWalletService,
     private ETHWalletService: ETHWalletService,
     private USDTWalletService: USDTWalletService,
   ) {}
@@ -61,10 +63,11 @@ export class WalletService {
       const walletId = wallet.id;
 
       // Creating Crypto Wallet
+      const BTCWallet = await this.BTCWalletService.create({ walletId });
       const ETHWallet = await this.ETHWalletService.create({ walletId });
       const USDTWallet = await this.USDTWalletService.create({ walletId });
 
-      // console.log({ ETHWallet, USDTWallet });
+      console.log({ BTCWallet, ETHWallet, USDTWallet });
 
       return wallet;
     } catch (e) {
