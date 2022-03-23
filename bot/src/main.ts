@@ -3,24 +3,38 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-import { TelegramBot } from "@core";
+import { TelegramBot, I18n } from "@core";
 import { routes } from "@helpers";
-import { I18n } from "@core/lib";
 
 import { session } from "telegraf";
 import { stage } from "./scenes";
+import { accountMiddleware, startMiddleware } from "./middlewares";
 
-const { BOT_TOKEN } = process.env;
+const { PORT, BOT_TOKEN } = process.env;
 
 export const bot = new TelegramBot(BOT_TOKEN);
 
+// Middlewares
 bot.use(I18n.middleware());
 bot.use(session());
 bot.use(stage.middleware());
-
 bot.catch((e: Error) => console.log({ e }));
 
-bot.start((ctx) => ctx.scene.enter(routes.MAIN));
+bot.hears(/.*/, accountMiddleware);
+bot.action(/.*/, accountMiddleware);
+
+// Handlers
+bot.on("text", (ctx) => {
+  const { account } = ctx.session;
+  if (!account) return;
+
+  switch (account.role) {
+    case "admin":
+      return ctx.scene.enter(routes.DASHBOARD_START);
+    default:
+      return ctx.scene.enter(routes.MAIN);
+  }
+});
 
 bot.on("callback_query", (ctx) => {
   if (!("data" in ctx.update.callback_query)) return;
@@ -32,28 +46,25 @@ bot.on("callback_query", (ctx) => {
       return ctx.scene.enter(routes.MAIN);
     default:
       if (query.includes("deposit_token__")) {
-        const token = query.split("deposit_token__")[1];
+        const token = query.split("deposit_token__")[1]?.toUpperCase();
 
-        ctx.session.token = token;
-
-        return ctx.scene.enter("deposit_token");
+        return ctx.scene
+          .enter("deposit_token", { token })
+          .catch((e) => console.log({ e }));
       }
 
-      return ctx.scene.enter(query);
+      return ctx.scene.enter(query).catch((e) => console.log({ e }));
   }
 });
 
-bot.on("text", (ctx) => {
-  console.log({ message: ctx.message?.text });
-
-  console.log(ctx.i18n.t("scene:test", { bot_username: "ETST" }));
-  console.log(ctx.i18n.t("scene:main", { bot_username: "ETST" }));
-
-  ctx.scene.enter(routes.MAIN);
-});
-bot.on("sticker", (ctx) => ctx.scene.enter(routes.MAIN));
+// bot.on("text", (ctx) => {});
+// bot.on("sticker", (ctx) => ctx.scene.enter(routes.MAIN));
 
 (async () => {
-  await bot.launch({}).then(() => console.log(`Bot: Running`));
-  await I18n.init().then(() => console.log(`I18n: Ready`));
+  await bot
+    .launch({})
+    .then(() => console.log(`Bot: Running (${PORT})`))
+    .catch((e) => console.log({ e }));
+
+  await I18n.init();
 })();

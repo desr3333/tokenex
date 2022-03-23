@@ -16,3 +16,5 @@ export const DEPOSIT = "deposit";
 export const DEPOSIT_TOKEN = "deposit_token";
 
 export const EXCHANGE = "exchange";
+
+export const DASHBOARD_START = "dashboard_start";

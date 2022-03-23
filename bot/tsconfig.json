@@ -25,7 +25,8 @@
       "@types": ["types/"],
       "@core": ["@core/"],
       "@lib": ["lib/"],
-      "@helpers": ["helpers/"]
+      "@helpers": ["helpers/"],
+      "@services": ["services/"]
     }
   },
   "include": ["src", "src/locales"],

@@ -40,7 +40,7 @@ export class I18n {
 
       return i18next;
     } catch (e) {
-      console.log({ e });
+      console.log(e.response?.data);
     }
   }
 

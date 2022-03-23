@@ -12,6 +12,10 @@
       }
     },
 
+    "dashboard": {
+      "main": "📊 Dashboard\n\nHey, {{first_name}}!\nHere you can monitor the statistics and customize the bot."
+    },
+
     "wallet": {
       "main": "💰️ My Wallet\n\nBTC: 0\nETH: 0\nUSDT: 0",
 
@@ -42,6 +46,13 @@
         }
       }
     },
+
+    "dashboard": { "transactions": "💰️ Transactions", "stats": "📊 Stats" },
+
+    "bot": {
+      "settings": "⚙️ Settings"
+    },
+
     "wallet": {
       "wallet": "💰️ My Wallet",
 

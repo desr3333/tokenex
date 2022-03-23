@@ -1,8 +1,6 @@
 import { Scene } from "@core";
 import { routes, inlineKeyboards } from "@helpers";
 
-const { SUPPORT } = process.env;
-
 export const scene = new Scene(routes.MAIN);
 
 scene.enter((ctx) => {
@@ -14,7 +12,7 @@ scene.enter((ctx) => {
       inlineKeyboards.main()
     );
 
-  return ctx.reply(
+  return ctx.replyWithHTML(
     ctx.i18n.t("scene:main", { bot_username }),
     inlineKeyboards.main()
   );

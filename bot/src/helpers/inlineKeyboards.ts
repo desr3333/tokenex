@@ -17,6 +17,18 @@ export const main = () =>
     ],
   ]);
 
+export const dashboard = () =>
+  Markup.inlineKeyboard([
+    [{ text: I18n.t("button:dashboard.transactions"), callback_data: "-" }],
+    [
+      { text: I18n.t("button:dashboard.stats"), callback_data: "-" },
+      {
+        text: I18n.t("button:bot.settings"),
+        callback_data: "-",
+      },
+    ],
+  ]);
+
 /*
  ** Account
  */

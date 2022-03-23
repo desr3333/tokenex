@@ -1,5 +1,5 @@
 import { i18n } from "i18next";
-import { Context, Scenes } from "telegraf";
+import { Context, Middleware, MiddlewareFn, Scenes } from "telegraf";
 
 export interface TelegramContext extends Context {
   session: TelegramSession;
@@ -10,9 +10,18 @@ export interface TelegramContext extends Context {
 
 export interface TelegramSession
   extends Scenes.SceneSession<TelegramSceneSession>,
-    TelegramSessionState {}
+    TelegramSessionState {
+  account: any;
+  wallet: any;
+  telegramAccount: any;
+
+  ETHWallet?: any;
+  USDTWallet?: any;
+}
 
 export interface TelegramSessionState {
   token?: string;
 }
 export interface TelegramSceneSession extends Scenes.SceneSessionData {}
+
+export type TelegramMiddleware = Middleware<TelegramContext>;
