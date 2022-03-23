@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from './../../prisma/prisma.service';
+import { PrismaService } from '@modules/prisma';
 
 import { ETHWalletService } from './../eth-wallet';
 import { USDTWalletService } from './../usdt-wallet';

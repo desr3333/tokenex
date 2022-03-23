@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CryptoWallet } from '@prisma/client';
 
-import { PrismaService } from './../../prisma/prisma.service';
+import { PrismaService } from '@modules/prisma';
 import { BTCService } from './../../token';
 
 import {

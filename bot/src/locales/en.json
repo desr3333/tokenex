@@ -55,6 +55,7 @@
 
     "wallet": {
       "wallet": "💰️ My Wallet",
+      "transactions": "☑️ Transactions",
 
       "deposit": {
         "deposit": "⬇️ Deposit"
@@ -72,7 +73,10 @@
     "language": {
       "english": "🇬🇧",
       "russian": "🇷🇺",
-      "german": "🇩🇪"
+      "german": "🇩🇪",
+      "en": "🇬🇧",
+      "ru": "🇷🇺",
+      "de": "🇩🇪"
     },
 
     "back": "↩️ Back"

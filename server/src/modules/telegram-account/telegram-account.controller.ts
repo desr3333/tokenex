@@ -11,14 +11,14 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+import { AccountService } from '@modules/account';
+
 import {
   CreateTelegramAccountDto,
   QueryTelegramAccountDto,
   UpdateTelegramAccountDto,
 } from './telegram-account.dto';
-
 import { TelegramAccountService } from './telegram-account.service';
-import { AccountService } from './../account';
 
 @ApiTags('TelegramAccount')
 @Controller('/telegram-accounts')
@@ -52,6 +52,8 @@ export class TelegramAccountController {
     try {
       const chatId = Number(params.chatId);
       if (!chatId) throw Error('Invalid Chat Id!');
+
+      console.log({ chatId });
 
       const result = await this.telegramAccountService.findOne({ chatId });
       if (!result)

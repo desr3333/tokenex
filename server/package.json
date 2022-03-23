@@ -36,6 +36,7 @@
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "bitcoinjs-lib": "^6.0.1",
+    "module-alias": "^2.2.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
@@ -87,5 +88,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "_moduleAliases": {
+    "@modules": "./dist/modules"
   }
 }

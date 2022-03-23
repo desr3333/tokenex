@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { TelegramAccountModule } from './../modules/telegram-account/telegram-account.module';
+import { TelegramAccountModule } from '@modules/telegram-account';
 
 import { AuthController, TelegramAuthController } from './auth.controller';
 import { AuthService, TelegramAuthService } from './auth.service';

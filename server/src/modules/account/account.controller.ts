@@ -13,10 +13,10 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
+import { WalletService } from '@modules/wallet';
+
 import { AccountService } from './account.service';
 import { CreateAccountDto, UpdateAccountDto } from './account.dto';
-
-import { WalletService } from './../wallet/wallet.service';
 
 @ApiTags('Account')
 @Controller('/accounts')

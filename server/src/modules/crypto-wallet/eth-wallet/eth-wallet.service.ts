@@ -1,25 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CryptoWallet } from '@prisma/client';
 
-import { PrismaService } from './../../prisma/prisma.service';
+import { PrismaService } from '@modules/prisma';
+import { ETHService } from '@modules/token';
+import { CryptoWalletServiceBuilder } from '@modules/crypto-wallet';
 
 import { CreateETHWalletDto } from './eth-wallet.dto';
-import { ETHService } from './../../token';
-
-import {
-  CryptoWalletService,
-  CryptoWalletServiceBuilder,
-} from './../crypto-wallet';
 
 @Injectable()
 export class ETHWalletService implements CryptoWalletServiceBuilder {
   public symbol: string;
 
-  constructor(
-    private prisma: PrismaService,
-    private cryptoWalletService: CryptoWalletService,
-    private ETHService: ETHService,
-  ) {
+  constructor(private prisma: PrismaService, private ETHService: ETHService) {
     this.symbol = 'ETH';
   }
 
