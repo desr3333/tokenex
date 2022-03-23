@@ -16,6 +16,7 @@ export interface TelegramSession
   telegramAccount: any;
 
   ETHWallet?: any;
+  BTCWallet?: any;
   USDTWallet?: any;
 }
 

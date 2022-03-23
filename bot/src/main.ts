@@ -24,6 +24,9 @@ bot.hears(/.*/, accountMiddleware);
 bot.action(/.*/, accountMiddleware);
 
 // Handlers
+
+bot.command(["raindrop"], (ctx) => ctx.reply("🌧️🌧️🌧️"));
+
 bot.on("text", (ctx) => {
   const { account } = ctx.session;
   if (!account) return;

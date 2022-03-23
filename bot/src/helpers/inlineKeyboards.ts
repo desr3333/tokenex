@@ -7,7 +7,10 @@ const { SUPPORT } = process.env;
 
 export const main = () =>
   Markup.inlineKeyboard([
-    [{ text: I18n.t("button:wallet.wallet"), callback_data: routes.WALLET }],
+    [
+      { text: I18n.t("button:wallet.wallet"), callback_data: routes.WALLET },
+      { text: I18n.t("button:wallet.transactions"), callback_data: "_" },
+    ],
     [
       { text: I18n.t("button:support.support"), url: SUPPORT },
       {
@@ -19,9 +22,11 @@ export const main = () =>
 
 export const dashboard = () =>
   Markup.inlineKeyboard([
-    [{ text: I18n.t("button:dashboard.transactions"), callback_data: "-" }],
     [
       { text: I18n.t("button:dashboard.stats"), callback_data: "-" },
+      { text: I18n.t("button:wallet.transactions"), callback_data: "-" },
+    ],
+    [
       {
         text: I18n.t("button:bot.settings"),
         callback_data: "-",

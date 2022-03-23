@@ -30,9 +30,12 @@ export const accountMiddleware: TelegramMiddleware = async (ctx, next) => {
       await ctx.reply("👍️ Account Created!");
     }
 
-    // Checking Wallet
+    // Checking Account
     const { account } = ctx.session;
 
+    if (account.banned) return ctx.reply(`❌ Error!\n\nYou've been banned.`);
+
+    // Checking Wallet
     const walletId = account?.walletId;
     if (!walletId) return ctx.reply("❌ Wallet Not Created!");
 
@@ -46,6 +49,7 @@ export const accountMiddleware: TelegramMiddleware = async (ctx, next) => {
     ctx.session.wallet = wallet;
     ctx.session.ETHWallet = _select("ETH", cryptoWallets);
     ctx.session.USDTWallet = _select("USDT", cryptoWallets);
+    ctx.session.BTCWallet = _select("BTC", cryptoWallets);
 
     next();
   } catch (e) {
