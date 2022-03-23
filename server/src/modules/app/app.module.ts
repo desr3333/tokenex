@@ -1,24 +1,25 @@
 import { forwardRef, Module } from '@nestjs/common';
 
 import { PrismaModule } from '../prisma/prisma.module';
-import { AccountModule } from './../account';
-import { WalletModule } from './../wallet';
-import { AuthModule } from './../auth';
-import { TelegramAccountModule } from './../telegram-account';
 
-// import {
-//   CryptoWalletModule,
-//   BTCWalletModule,
-//   ETHWalletModule,
-//   USDTWalletModule,
-// } from './../crypto-wallet';
+import { AccountModule } from './../account';
+import { AuthModule } from '../../auth';
+
+import { WalletModule } from './../wallet/wallet.module';
+import { TelegramAccountModule } from './../telegram-account/telegram-account.module';
+
+// import { CryptoWalletModule } from '../crypto-wallet';
 
 @Module({
   imports: [
+    // Global
     PrismaModule,
+    AuthModule,
+
+    // Modules
     AccountModule,
-    // TelegramAccountModule,
-    // WalletModule,
+    TelegramAccountModule,
+    WalletModule,
     // CryptoWalletModule,
     // ETHWalletModule,
     // USDTWalletModule,

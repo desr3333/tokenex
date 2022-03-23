@@ -6,37 +6,40 @@ import {
   Param,
   Post,
   Put,
+  Res,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
 import {
   CreateTelegramAccountDto,
   QueryTelegramAccountDto,
   UpdateTelegramAccountDto,
 } from './telegram-account.dto';
+
 import { TelegramAccountService } from './telegram-account.service';
-import { AccountService } from '../account';
+import { AccountService } from './../account';
 
 @ApiTags('TelegramAccount')
 @Controller('/telegram-accounts')
 export class TelegramAccountController {
   constructor(
-    private telegramService: TelegramAccountService,
+    private telegramAccountService: TelegramAccountService,
     private accountService: AccountService,
   ) {}
 
   @Post('/query')
-  async query(@Body() queryDto: QueryTelegramAccountDto) {
+  async query(@Res() res: Response, @Body() queryDto: QueryTelegramAccountDto) {
     const { where } = queryDto;
 
-    const result = await this.telegramService.query({ where });
-    return { result };
+    const result = await this.telegramAccountService.query({ where });
+    return res.status(200).json({ result });
   }
 
   @Get()
-  async getAll(): Promise<any> {
-    const result = await this.telegramService.query({});
-    return { result };
+  async getAll(@Res() res: Response): Promise<any> {
+    const result = await this.telegramAccountService.query({});
+    return res.status(200).json({ result });
   }
 
   @Get('@:chatId')
@@ -45,15 +48,18 @@ export class TelegramAccountController {
     required: true,
     type: 'integer',
   })
-  async getByChatId(@Param() params): Promise<any> {
+  async getByChatId(@Res() res: Response, @Param() params): Promise<any> {
     try {
       const chatId = Number(params.chatId);
       if (!chatId) throw Error('Invalid Chat Id!');
 
-      const result = await this.telegramService.findOne({ chatId });
-      if (!result) throw Error(`Telegram Account #${chatId} Not Found!`);
+      const result = await this.telegramAccountService.findOne({ chatId });
+      if (!result)
+        return res
+          .status(404)
+          .json({ error: `Telegram Account #${chatId} Not Found!` });
 
-      return { result };
+      return res.status(200).json({ result });
     } catch (error) {
       console.log({ error });
       return { error };
@@ -66,57 +72,55 @@ export class TelegramAccountController {
     required: true,
     type: 'integer',
   })
-  async getByKey(@Param() params): Promise<any> {
-    const id = params.id;
+  async getByKey(@Res() res: Response, @Param() params): Promise<any> {
+    const id = Number(params.id);
 
-    const result = await this.telegramService.findOne({ id });
-    if (!result) return { error: `Telegram Account #${id} Not Found!` };
+    const result = await this.telegramAccountService.findOne({ id });
+    if (!result)
+      return res
+        .status(400)
+        .json({ error: `Telegram Account #${id} Not Found!` });
 
-    return { result };
+    return res.status(200).json({ result });
   }
 
   @Post()
-  async create(@Body() createDto: CreateTelegramAccountDto): Promise<any> {
+  async create(
+    @Res() res: Response,
+    @Body() createDto: CreateTelegramAccountDto,
+  ): Promise<any> {
     const { chatId } = createDto;
 
-    console.log('Creating Telegram Account [..]');
-    console.log({ createDto });
+    // // Checking Telegram Account
+    // const existedTelegramAccount = await this.telegramAccountService.findOne({
+    //   chatId,
+    // });
+    // if (existedTelegramAccount)
+    //   return res
+    //     .status(400)
+    //     .json({ error: `Telegram Account Already Exists!` });
 
-    return;
-
-    // Checking Telegram Account
-    const existedTelegramAccount = await this.telegramService.findOne({
-      chatId,
-    });
-    if (existedTelegramAccount)
-      return {
-        error: `Telegram Account Already Exists!`,
-      };
+    // Creating Telegram Account
+    const createdTelegramAccount = await this.telegramAccountService.create(
+      createDto,
+    );
+    if (!createdTelegramAccount)
+      return res.status(400).json({ error: `Telegram Account Not Created!` });
 
     // Creating Account
     const createdAccount = await this.accountService.create({
-      telegramAccountId: 1,
+      telegramAccountId: createdTelegramAccount.id,
+      telegramAccountChatId: createdTelegramAccount.chatId,
     });
     if (!createdAccount)
-      return {
-        error: `Account Not Created!`,
-      };
+      return res.status(400).json({ error: 'Account Not Created!' });
 
-    // Creating Telegram Account
-    const result = await this.telegramService.create(createDto);
-    if (!result) return { error: `Telegram Account Not Created!` };
+    // Updating Telegram Account
+    const result = await this.telegramAccountService.findOne({ chatId });
+    if (!result)
+      return res.status(400).json({ error: `Telegram Account Not Created!` });
 
-    // Updating Account
-    const updatedAccount = await this.accountService.update(
-      { id: createdAccount.id },
-      { telegramAccountId: result.id },
-    );
-    if (!updatedAccount)
-      return {
-        error: `Account Not Updated!`,
-      };
-
-    return { result };
+    return res.status(201).json({ result });
   }
 
   @Put(':id')
@@ -126,18 +130,23 @@ export class TelegramAccountController {
     type: 'integer',
   })
   async update(
+    @Res() res: Response,
     @Param() params,
     @Body() updateDto: UpdateTelegramAccountDto,
   ): Promise<any> {
     const id = Number(params.id);
 
     // Checking Account
-    const existedAccount = await this.telegramService.findOne({ id });
-    if (!existedAccount) return { error: `Telegram Account #${id} Not Found!` };
+    const existedAccount = await this.telegramAccountService.findOne({ id });
+    if (!existedAccount)
+      return res
+        .status(400)
+        .json({ error: `Telegram Account #${id} Not Found!` });
 
     // Updating Account
-    const result = await this.telegramService.update({ id }, updateDto);
-    return { result };
+    const result = await this.telegramAccountService.update({ id }, updateDto);
+
+    return res.status(200).json({ result });
   }
 
   @Delete(':id')
@@ -146,15 +155,19 @@ export class TelegramAccountController {
     required: true,
     type: 'integer',
   })
-  async delete(@Param() params): Promise<any> {
+  async delete(@Res() res: Response, @Param() params): Promise<any> {
     const id = Number(params.id);
 
     // Checking Account
-    const existedAccount = await this.telegramService.findOne({ id });
-    if (!existedAccount) return { error: `Telegram Account #${id} Not Found!` };
+    const existedAccount = await this.telegramAccountService.findOne({ id });
+    if (!existedAccount)
+      return res
+        .status(404)
+        .json({ error: `Telegram Account #${id} Not Found!` });
 
     // Deleting Account
-    const result = await this.telegramService.delete({ id });
-    return { result };
+    const result = await this.telegramAccountService.delete({ id });
+
+    return res.status(200).json({ result });
   }
 }

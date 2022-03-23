@@ -6,8 +6,8 @@ import { TelegramAccountService } from './telegram-account.service';
 
 @Module({
   imports: [AccountModule],
-  exports: [TelegramAccountService],
   controllers: [TelegramAccountController],
   providers: [TelegramAccountService],
+  exports: [TelegramAccountService],
 })
 export class TelegramAccountModule {}

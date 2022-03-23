@@ -1,90 +1,92 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+    provider = "sqlite"
+    url      = "file:./dev.db"
 }
 
 model Account {
-  id                Int              @id @default(autoincrement())
-  //  uuid              String           @default(uuid()) // @db.Uuid
-  email             String?
-  password          String?
-  role              String?          @default("user")
-  banned            Boolean?         @default(false)
-  wallet            Wallet?          @relation(fields: [walletId], references: [id])
-  walletId          Int?             @unique
-  telegramAccount   TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
-  telegramAccountId Int?             @unique
-  createdAt         DateTime?
-  updatedAt         DateTime?
+    id                    Int              @id @default(autoincrement())
+    //  uuid              String           @default(uuid()) // @db.Uuid
+    email                 String?
+    password              String?
+    role                  String?          @default("user")
+    banned                Boolean?         @default(false)
+    wallet                Wallet?          @relation(fields: [walletId], references: [id])
+    walletId              Int?             @unique
+    telegramAccount       TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
+    telegramAccountId     Int?             @unique
+    telegramAccountChatId Int?
+    createdAt             DateTime?
+    updatedAt             DateTime?
 }
 
 model TelegramAccount {
-  id        Int       @id @default(autoincrement())
-  chatId    Int       @unique
-  username  String?
-  firstName String?
-  banned    Boolean?  @default(false)
-  account   Account?
-  createdAt DateTime?
-  updatedAt DateTime?
+    id        Int       @id @default(autoincrement())
+    chatId    Int       @unique
+    username  String?
+    firstName String?
+    banned    Boolean?  @default(false)
+    account   Account?
+    createdAt DateTime?
+    updatedAt DateTime?
 }
 
 model Wallet {
-  id            Int            @id @default(autoincrement())
-  //  uuid          String         @unique
-  account       Account?
-  cryptoWallets CryptoWallet[]
-  createdAt     DateTime?
-  updatedAt     DateTime?
+    id            Int            @id @default(autoincrement())
+    //  uuid          String         @unique
+    account       Account?
+    cryptoWallets CryptoWallet[]
+    createdAt     DateTime?
+    updatedAt     DateTime?
 }
 
 model CryptoWallet {
-  id           Int           @id @default(autoincrement())
-  //  uuid          String         @unique
-  address      String
-  balance      Decimal?      @default(0)
-  wallet       Wallet        @relation(fields: [walletId], references: [id])
-  walletId     Int
-  token        Token?        @relation(fields: [tokenId], references: [id])
-  tokenId      Int?
-  transactions Transaction[]
-  createdAt    DateTime?
-  updatedAt    DateTime?
+    id           Int           @id @default(autoincrement())
+    //  uuid          String         @unique
+    address      String
+    balance      Decimal?      @default(0)
+    symbol       String?
+    wallet       Wallet        @relation(fields: [walletId], references: [id])
+    walletId     Int
+    token        Token?        @relation(fields: [tokenId], references: [id])
+    tokenId      Int?
+    transactions Transaction[]
+    createdAt    DateTime?
+    updatedAt    DateTime?
 }
 
 model Token {
-  id              Int            @id @default(autoincrement())
-  //  uuid          String         @unique
-  symbol          String
-  contractAddress String
-  cryptoWallets   CryptoWallet[]
-  createdAt       DateTime?
-  updatedAt       DateTime?
+    id              Int            @id @default(autoincrement())
+    //  uuid          String         @unique
+    symbol          String
+    contractAddress String
+    cryptoWallets   CryptoWallet[]
+    createdAt       DateTime?
+    updatedAt       DateTime?
 }
 
 model Transaction {
-  id             Int             @id @default(autoincrement())
-  //  uuid          String         @unique
-  hash           String
-  from           String
-  to             String
-  cryptoWallet   CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
-  cryptoWalletId Int?
-  transactionFee TransactionFee?
-  createdAt      DateTime?
-  updatedAt      DateTime?
+    id             Int             @id @default(autoincrement())
+    //  uuid          String         @unique
+    hash           String
+    from           String
+    to             String
+    cryptoWallet   CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
+    cryptoWalletId Int?
+    transactionFee TransactionFee?
+    createdAt      DateTime?
+    updatedAt      DateTime?
 }
 
 model TransactionFee {
-  id            Int          @id @default(autoincrement())
-  //  uuid          String         @unique
-  value         Int          @default(0)
-  transaction   Transaction? @relation(fields: [transactionId], references: [id])
-  transactionId Int          @unique
-  createdAt     DateTime?
-  updatedAt     DateTime?
+    id            Int          @id @default(autoincrement())
+    //  uuid          String         @unique
+    value         Int          @default(0)
+    transaction   Transaction? @relation(fields: [transactionId], references: [id])
+    transactionId Int          @unique
+    createdAt     DateTime?
+    updatedAt     DateTime?
 }

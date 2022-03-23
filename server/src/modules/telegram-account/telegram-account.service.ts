@@ -28,10 +28,16 @@ export class TelegramAccountService {
   async findOne(
     where?: Prisma.TelegramAccountWhereUniqueInput,
   ): Promise<TelegramAccount> {
-    return this.prisma.telegramAccount.findFirst({
-      where,
-      include: { account: true },
-    });
+    try {
+      const result = await this.prisma.telegramAccount.findUnique({
+        where,
+        include: { account: true },
+      });
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+    }
   }
 
   async create(

@@ -1,15 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CryptoWalletDto {
-  // public symbol: string;
-  // constructor(params: CryptoWalletServiceParams) {
-  //   this.symbol = params?.symbol;
-  // }
-}
-
 export class CreateCryptoWalletDto {
   @ApiProperty()
   address: string;
+
+  @ApiProperty()
+  symbol: string;
 
   @ApiProperty({ default: 0 })
   balance?: number;

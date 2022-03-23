@@ -4,6 +4,7 @@ import { CryptoWallet, Prisma } from '@prisma/client';
 import { PrismaService } from './../../prisma/prisma.service';
 import { CryptoWalletServiceBuilder } from '../crypto-wallet';
 import { USDTService } from './../../token';
+import { CreateUSDTWalletDto } from './usdt-wallet.dto';
 
 @Injectable()
 export class USDTWalletService implements CryptoWalletServiceBuilder {
@@ -13,9 +14,7 @@ export class USDTWalletService implements CryptoWalletServiceBuilder {
     this.symbol = 'USDT';
   }
 
-  async create(
-    createDto: Prisma.CryptoWalletUncheckedCreateInput,
-  ): Promise<CryptoWallet> {
+  async create(createDto: CreateUSDTWalletDto): Promise<CryptoWallet> {
     try {
       const { symbol } = this;
 
@@ -28,6 +27,7 @@ export class USDTWalletService implements CryptoWalletServiceBuilder {
       const data = {
         ...createDto,
         address,
+        symbol,
       };
 
       // Creating Crypto Wallet

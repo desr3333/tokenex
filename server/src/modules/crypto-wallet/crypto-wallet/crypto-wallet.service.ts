@@ -8,17 +8,7 @@ import { USDTWalletService } from './../usdt-wallet';
 // CryptoWallet Service
 @Injectable()
 export class CryptoWalletService {
-  constructor(
-    private prisma: PrismaService,
-    private ETHWalletService: ETHWalletService,
-  ) {}
-
-  // private ETHWalletService: ETHWalletService,
-  // private USDTWalletService: USDTWalletService,
-
-  async generateAll() {
-    return [];
-  }
+  constructor(private prisma: PrismaService) {}
 }
 
 // CryptoWallet Builder

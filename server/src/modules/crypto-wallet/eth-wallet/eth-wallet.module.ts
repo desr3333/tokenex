@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 
-import { PrismaService } from './../../prisma/prisma.service';
+import { CryptoWalletModule } from './../crypto-wallet';
 import { ETHService } from './../../token';
 
 import { ETHWalletController } from './eth-wallet.controller';
 import { ETHWalletService } from './eth-wallet.service';
 
 @Module({
-  imports: [],
+  imports: [CryptoWalletModule],
   controllers: [ETHWalletController],
-  providers: [ETHWalletService, PrismaService, ETHService],
+  providers: [ETHWalletService, ETHService],
   exports: [ETHWalletService],
 })
 export class ETHWalletModule {}

@@ -11,22 +11,22 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
-import { CryptoWalletService } from './../crypto-wallet';
+import { CryptoWalletService } from './../crypto-wallet/crypto-wallet/crypto-wallet.service';
+
 import { WalletService } from './wallet.service';
 import { CreateWalletDto, UpdateWalletDto } from './wallet.dto';
+import { ETHWalletService } from '../crypto-wallet/eth-wallet';
+import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
 
 @ApiTags('Wallet')
 @Controller('/wallets')
 export class WalletController {
-  constructor(
-    private walletService: WalletService,
-    private cryptoWalletService: CryptoWalletService,
-  ) {}
+  constructor(private walletService: WalletService) {}
 
   @Get()
-  async getAll(): Promise<any> {
+  async getAll(@Res() res: Response): Promise<any> {
     const result = await this.walletService.query({});
-    return { result };
+    return res.status(200).json({ result });
   }
 
   @Get(':id')
@@ -35,36 +35,21 @@ export class WalletController {
     required: true,
     type: 'integer',
   })
-  async getByKey(@Param() params): Promise<any> {
+  async getByKey(@Res() res: Response, @Param() params) {
     const id = Number(params.id);
 
     const result = await this.walletService.findOne({ id });
-    if (!result) return { error: `Wallet #${id} Not Found!` };
+    if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
 
-    return { result };
+    return res.status(200).json({ result });
   }
 
   @Post()
-  async create(
-    @Res() res: Response,
-    @Body() createDto: CreateWalletDto,
-  ): Promise<any> {
-    // Creating Wallet
-    const createdWallet = await this.walletService.create(createDto);
-    if (!createdWallet)
-      return res.status(400).json({ error: `Wallet Not Created!` });
+  async create(@Res() res: Response, @Body() createDto: CreateWalletDto) {
+    const result = await this.walletService.create(createDto);
+    if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
 
-    const walletId = createdWallet.id;
-
-    // Creating BTC Wallet TODO
-
-    // Creating Crypto Wallets
-    // const ETHWallet = await this.ETHWalletService.create({ walletId });
-    // const USDTWallet = await this.USDTWalletService.create({ walletId });
-
-    // Creating USDT Wallet TODO
-
-    return { result: createdWallet };
+    return res.status(201).json({ result });
   }
 
   @Put(':id')
@@ -74,18 +59,22 @@ export class WalletController {
     type: 'integer',
   })
   async update(
+    @Res() res: Response,
     @Param() params,
     @Body() updateDto: UpdateWalletDto,
-  ): Promise<any> {
+  ) {
     const id = Number(params.id);
 
     // Checking Wallet
     const existedWallet = await this.walletService.findOne({ id });
-    if (!existedWallet) return { error: `Wallet #${id} Not Found!` };
+    if (!existedWallet)
+      return res.status(404).json({ error: 'Wallet Not Updated!' });
 
     // Updating Wallet
     const result = await this.walletService.update({ id }, updateDto);
-    return { result };
+    if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
+
+    return res.status(200).json({ result });
   }
 
   @Delete(':id')
@@ -94,15 +83,18 @@ export class WalletController {
     required: true,
     type: 'integer',
   })
-  async delete(@Param() params): Promise<any> {
+  async delete(@Res() res: Response, @Param() params): Promise<any> {
     const id = Number(params.id);
 
     // Checking Wallet
     const existedWallet = await this.walletService.findOne({ id });
-    if (!existedWallet) return { error: `Wallet #${id} Not Found!` };
+    if (!existedWallet)
+      return res.status(404).json({ error: 'Wallet Not Updated!' });
 
     // Deleting Wallet
     const result = await this.walletService.delete({ id });
-    return { result };
+    if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
+
+    return res.status(200).json({ result });
   }
 }

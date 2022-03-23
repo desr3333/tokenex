@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Account } from '@prisma/client';
+import { WalletService } from '../wallet/wallet.service';
 
 import { PrismaService } from './../prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private walletService: WalletService,
+  ) {}
 
   async query(params: {
     skip?: number;
@@ -34,11 +38,20 @@ export class AccountService {
 
   async create(data: Prisma.AccountUncheckedCreateInput): Promise<Account> {
     try {
-      return this.prisma.account.create({
-        data,
+      // Creating Wallet + Crypto Wallets
+      const wallet = await this.walletService.initiate();
+      if (!wallet) throw Error('Wallet Not Created!');
+
+      // Creating Account
+      const account = this.prisma.account.create({
+        data: { ...data, walletId: wallet.id },
       });
+      if (!account) throw Error('Account Not Created!');
+
+      return account;
     } catch (e) {
       console.log({ e });
+      return null;
     }
   }
 

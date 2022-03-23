@@ -12,10 +12,10 @@ export class CreateTelegramAccountDto {
   chatId: number;
 
   @ApiProperty({ default: `TelegramAccount#${Date.now()}` })
-  username: string;
+  username?: string;
 
   @ApiProperty({ default: null })
-  firstName: string;
+  firstName?: string;
 
   @ApiProperty({ default: new Date() })
   createdAt?: Date;

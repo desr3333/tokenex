@@ -11,17 +11,13 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
-import { WalletService } from './../../wallet';
 import { CreateCryptoWalletDto } from '../crypto-wallet';
 import { USDTWalletService } from './usdt-wallet.service';
 
 @ApiTags('USDT Wallet')
 @Controller('/crypto-wallets/usdt')
 export class USDTWalletController {
-  constructor(
-    private walletService: WalletService,
-    private USDTWalletService: USDTWalletService,
-  ) {}
+  constructor(private USDTWalletService: USDTWalletService) {}
 
   @Post()
   async create(@Res() res: Response, @Body() createDto: CreateCryptoWalletDto) {
@@ -33,9 +29,9 @@ export class USDTWalletController {
       if (!walletId)
         return res.status(404).json({ error: `Wallet Not Found!` });
 
-      const existedWallet = await this.walletService.findOne({ id: walletId });
-      if (!existedWallet)
-        return res.status(404).json({ error: `Wallet Not Found!` });
+      // const existedWallet = await this.walletService.findOne({ id: walletId });
+      // if (!existedWallet)
+      //   return res.status(404).json({ error: `Wallet Not Found!` });
 
       // Creating Wallet
       const result = await this.USDTWalletService.create(createDto);

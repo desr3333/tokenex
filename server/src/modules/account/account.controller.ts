@@ -2,25 +2,29 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Post,
   Put,
   Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { AccountService } from './account.service';
-import { WalletService } from './../wallet';
 import { CreateAccountDto, UpdateAccountDto } from './account.dto';
-import { Response } from 'express';
+
+import { WalletService } from './../wallet/wallet.service';
 
 @ApiTags('Account')
 @Controller('/accounts')
 export class AccountController {
-  constructor(private readonly accountService: AccountService) {}
-
-  // private readonly walletService: WalletService,
+  constructor(
+    private accountService: AccountService,
+    private walletService: WalletService,
+  ) {}
 
   @Get()
   async getAll(): Promise<any> {
@@ -48,25 +52,18 @@ export class AccountController {
     @Res() res: Response,
     @Body() createDto: CreateAccountDto,
   ): Promise<any> {
+    // // Creating Wallet + Crypto Wallets
+    const wallet = await this.walletService.initiate();
+    if (!wallet) return res.status(400).json({ error: `Wallet Not Created!` });
+
     // Creating Account
-    const createdAccount = await this.accountService.create(createDto);
-    if (!createdAccount)
+    const account = await this.accountService.create({
+      ...createDto,
+    });
+    if (!account)
       return res.status(400).json({ error: `Account Not Created!` });
 
-    // Creating Wallet
-    // const createdWallet = await this.walletService.create();
-    // if (!createdWallet)
-    //   return res.status(400).json({ error: `Wallet Not Created!` });
-
-    // Updating Account
-    // const updatedAccount = await this.accountService.update(
-    //   { id: createdAccount.id },
-    //   { walletId: createdWallet.id },
-    // );
-    // if (!updatedAccount)
-    //   return res.status(400).json({ error: `Account Not Created!` });
-
-    // return res.status(201).json({ result: updatedAccount });
+    return res.status(201).json({ result: account });
   }
 
   @Put(':id')

@@ -6,13 +6,20 @@ import { PrismaService } from './../../prisma/prisma.service';
 import { CreateETHWalletDto } from './eth-wallet.dto';
 import { ETHService } from './../../token';
 
-import { CryptoWalletServiceBuilder } from '../crypto-wallet';
+import {
+  CryptoWalletService,
+  CryptoWalletServiceBuilder,
+} from './../crypto-wallet';
 
 @Injectable()
 export class ETHWalletService implements CryptoWalletServiceBuilder {
   public symbol: string;
 
-  constructor(private prisma: PrismaService, private ETHService: ETHService) {
+  constructor(
+    private prisma: PrismaService,
+    private cryptoWalletService: CryptoWalletService,
+    private ETHService: ETHService,
+  ) {
     this.symbol = 'ETH';
   }
 
@@ -20,15 +27,15 @@ export class ETHWalletService implements CryptoWalletServiceBuilder {
     try {
       const { symbol } = this;
 
-      // Generating Address
+      // Creating ETH Account
       const account = await this.ETHService.create();
       if (!account) throw Error(`${symbol} Account Not Generated!`);
 
-      // Processing Data
       const { address, privateKey } = account;
       const data = {
         ...createDto,
         address,
+        symbol,
       };
 
       // Creating Crypto Wallet
