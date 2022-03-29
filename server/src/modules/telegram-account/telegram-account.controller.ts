@@ -53,7 +53,7 @@ export class TelegramAccountController {
       const chatId = Number(params.chatId);
       if (!chatId) throw Error('Invalid Chat Id!');
 
-      console.log({ chatId });
+      // console.log({ chatId });
 
       const result = await this.telegramAccountService.findOne({ chatId });
       if (!result)

@@ -75,6 +75,10 @@ export class ERC20Service implements OnModuleInit {
       return null;
     }
   }
+
+  async sendTransaction() {
+    return;
+  }
 }
 
 @Injectable()
