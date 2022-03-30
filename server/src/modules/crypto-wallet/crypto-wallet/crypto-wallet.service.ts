@@ -1,25 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { CryptoWallet, Prisma } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
 
-import { ETHWalletService } from './../eth-wallet';
-import { USDTWalletService } from './../usdt-wallet';
-
-// CryptoWallet Service
 @Injectable()
 export class CryptoWalletService {
   constructor(private prisma: PrismaService) {}
-}
 
-// CryptoWallet Builder
-interface CryptoWalletServiceBuilderOptions {
-  symbol: string;
-}
+  async findOne(where?: Prisma.CryptoWalletWhereInput): Promise<CryptoWallet> {
+    try {
+      const result = await this.prisma.cryptoWallet.findFirst({
+        where,
+        include: { token: true },
+      });
 
-export class CryptoWalletServiceBuilder {
-  public symbol: string;
-
-  constructor(options: CryptoWalletServiceBuilderOptions) {
-    this.symbol = options?.symbol;
+      return result;
+    } catch (e) {
+      console.log({ e });
+    }
   }
 }

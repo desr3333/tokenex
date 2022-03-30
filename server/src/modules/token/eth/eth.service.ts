@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
+import { ETHTransactionDto } from './eth.dto';
 
 @Injectable()
 export class ETHService {
@@ -8,8 +9,9 @@ export class ETHService {
   public name: string;
   public symbol: string;
 
-  TEST_ADDRESS = '0xD66fE26C24AA90F31eB1b1d5FD05Cd05De77Fd07';
+  TEST_ETH_ADDRESS = '0xD66fE26C24AA90F31eB1b1d5FD05Cd05De77Fd07';
   TEST_ETH_PRIVATE_KEY = process.env.TEST_ETH_PRIVATE_KEY;
+  TEST_ETH_GAS = 45000;
 
   constructor() {
     const { ERC20_NODE_API_KEY, ERC20_NODE_PROVIDER } = process.env;
@@ -43,22 +45,30 @@ export class ETHService {
     }
   }
 
-  async sendTransaction(val: number, to: string) {
+  async getGasPrice() {
     try {
-      const { web3, TEST_ADDRESS, TEST_ETH_PRIVATE_KEY } = this;
+      const result = await this.web3.eth.getGasPrice();
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
 
-      const address = TEST_ADDRESS;
-      const privateKey = TEST_ETH_PRIVATE_KEY;
+  async sendTransaction({ value, from, to, privateKey }: ETHTransactionDto) {
+    try {
+      const { web3, TEST_ETH_ADDRESS, TEST_ETH_PRIVATE_KEY, TEST_ETH_GAS } =
+        this;
 
-      const nonce = await web3.eth.getTransactionCount(address, 'latest');
-      const gas = 45000;
-      const value = web3.utils.toWei(`${val}`);
-      const from = address;
+      // const address = TEST_ETH_ADDRESS;
+      // const privateKey = TEST_ETH_PRIVATE_KEY;
+      const gas = TEST_ETH_GAS;
+
+      const nonce = await web3.eth.getTransactionCount(from, 'latest');
 
       const transaction = {
+        value: web3.utils.toWei(`${value}`),
         from,
         to,
-        value,
         nonce,
         gas,
       };

@@ -47,6 +47,7 @@ model CryptoWallet {
     id           Int           @id @default(autoincrement())
     //  uuid          String         @unique
     address      String
+    privateKey   String
     balance      Decimal?      @default(0)
     symbol       String?
     wallet       Wallet        @relation(fields: [walletId], references: [id])

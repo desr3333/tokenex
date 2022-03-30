@@ -15,10 +15,10 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
+import { BTCService } from '@modules/token/btc';
+
 import { CreateBTCWalletDto } from './btc-wallet.dto';
 import { BTCWalletService } from './btc-wallet.service';
-
-import { BTCService } from './../../token';
 
 @ApiTags('BTC Wallet')
 @Controller('/crypto-wallets/btc')

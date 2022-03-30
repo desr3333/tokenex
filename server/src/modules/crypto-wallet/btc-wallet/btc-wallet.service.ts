@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CryptoWallet } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
-import { BTCService } from './../../token';
+import { BTCService } from '@modules/token/btc';
 
 import {
   CryptoWalletService,
@@ -30,10 +30,12 @@ export class BTCWalletService implements CryptoWalletServiceBuilder {
       const account = await this.BTCService.create();
       if (!account) throw Error(`${symbol} Account Not Generated!`);
 
-      const { address } = account;
+      const { address, key: privateKey, mnemonic } = account;
+
       const data = {
         ...createDto,
         address,
+        privateKey,
         symbol,
       };
 

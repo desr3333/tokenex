@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -7,22 +7,18 @@ import {
 } from '@nestjs/swagger';
 
 import { TelegramAuthRequestDto } from './auth.dto';
-import { TelegramAuthService } from './auth.service';
+import { RoleGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @ApiTags('Auth')
+@UseGuards(RoleGuard)
 @Controller('/auth')
-export class AuthController {}
-
-@ApiTags('Auth/Telegram')
-@Controller('/auth/telegram')
-export class TelegramAuthController {
-  constructor(private telegramAuthService: TelegramAuthService) {}
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
   @Post()
   async authenticate(@Body() telegramAuthRequestDto: TelegramAuthRequestDto) {
-    const result = await this.telegramAuthService.authenticate(
-      telegramAuthRequestDto,
-    );
+    const result = await this.authService.authenticate(telegramAuthRequestDto);
 
     if (!result) return { error: `You Can't Access This Telegram Account` };
 

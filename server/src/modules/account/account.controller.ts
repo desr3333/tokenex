@@ -53,7 +53,7 @@ export class AccountController {
     @Body() createDto: CreateAccountDto,
   ): Promise<any> {
     // // Creating Wallet + Crypto Wallets
-    const wallet = await this.walletService.initiate();
+    const wallet = await this.walletService.setup();
     if (!wallet) return res.status(400).json({ error: `Wallet Not Created!` });
 
     // Creating Account

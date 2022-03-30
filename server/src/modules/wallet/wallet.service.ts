@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Wallet } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
+import { CryptoWalletService } from '@modules/crypto-wallet';
+
 import { ETHWalletService } from '../crypto-wallet/eth-wallet';
 import { BTCWalletService } from '../crypto-wallet/btc-wallet';
 import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
@@ -10,6 +12,7 @@ import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
 export class WalletService {
   constructor(
     private prisma: PrismaService,
+    private cryptoWalletService: CryptoWalletService,
     private BTCWalletService: BTCWalletService,
     private ETHWalletService: ETHWalletService,
     private USDTWalletService: USDTWalletService,
@@ -30,7 +33,6 @@ export class WalletService {
       cursor,
       where,
       orderBy,
-      //  include: { cryptoWallets: true },
     });
   }
 
@@ -54,7 +56,7 @@ export class WalletService {
     }
   }
 
-  async initiate(data?: Prisma.WalletUncheckedCreateInput) {
+  async setup(data?: Prisma.WalletUncheckedCreateInput) {
     try {
       // Creating Wallet
       const wallet = await this.create(data);
@@ -62,12 +64,12 @@ export class WalletService {
 
       const walletId = wallet.id;
 
-      // Creating Crypto Wallet
+      // Creating Crypto Wallets
       const BTCWallet = await this.BTCWalletService.create({ walletId });
       const ETHWallet = await this.ETHWalletService.create({ walletId });
       const USDTWallet = await this.USDTWalletService.create({ walletId });
 
-      console.log({ BTCWallet, ETHWallet, USDTWallet });
+      // console.log({ BTCWallet, ETHWallet, USDTWallet });
 
       return wallet;
     } catch (e) {

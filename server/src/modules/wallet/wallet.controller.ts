@@ -46,7 +46,7 @@ export class WalletController {
 
   @Post()
   async create(@Res() res: Response, @Body() createDto: CreateWalletDto) {
-    const result = await this.walletService.create(createDto);
+    const result = await this.walletService.setup(createDto);
     if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
 
     return res.status(201).json({ result });

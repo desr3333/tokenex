@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { CryptoWalletModule } from './../crypto-wallet';
-import { ETHService } from './../../token';
+import { CryptoWalletModule } from '@modules/crypto-wallet/crypto-wallet';
+import { ETHService } from '@modules/token/eth';
 
 import { ETHWalletController } from './eth-wallet.controller';
 import { ETHWalletService } from './eth-wallet.service';

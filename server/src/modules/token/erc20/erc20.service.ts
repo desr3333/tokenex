@@ -5,11 +5,11 @@ import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 
 import ERC20_ABI from './erc20-abi.json';
-import { ERC20_USDT_CONTRACT } from './erc20-contract';
+import { ERC20TransferDto } from './erc20.dto';
 
 interface ERC20ServiceParams {
   contractAddress: string;
-  abi?: AbiItem | AbiItem[];
+  abi?: any; // AbiItem | AbiItem[];
 }
 
 @Injectable()
@@ -76,14 +76,34 @@ export class ERC20Service implements OnModuleInit {
     }
   }
 
+  async transfer({ from, to, value }: ERC20TransferDto) {
+    try {
+      // const transferFrom = await this.contract.methods
+      //   .transferFrom(from, to, value)
+      //   .call();
+
+      const transfer = await this.contract.methods.getOwner().call(); //.increase(10000);
+
+      // .send({ from, gasPrice: '0xFF', gasLimit: '0x24A22' });
+
+      // const transfer = await this.contract.methods
+      //   .transferFrom(from, to, value)
+      //   .send();
+      // // .send({
+      // //   from,
+      // //   gas: 50000,
+      // //   gasPrice: 1e6,
+      // // });
+
+      console.log({ transfer });
+    } catch (e) {
+      console.log('transfer failed!');
+      console.log({ e });
+      return null;
+    }
+  }
+
   async sendTransaction() {
     return;
-  }
-}
-
-@Injectable()
-export class USDTService extends ERC20Service {
-  constructor() {
-    super({ contractAddress: ERC20_USDT_CONTRACT });
   }
 }

@@ -4,13 +4,7 @@ import { TelegramAccountService } from '@modules/telegram-account';
 import { TelegramAuthRequestDto } from './auth.dto';
 
 @Injectable()
-export class AuthService {}
-
-@Injectable()
-export class DiscordAuthService {}
-
-@Injectable()
-export class TelegramAuthService {
+export class AuthService {
   constructor(private telegramAccountService: TelegramAccountService) {}
 
   validateBot({ botToken }: TelegramAuthRequestDto): boolean {

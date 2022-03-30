@@ -38,8 +38,8 @@ export class AccountService {
 
   async create(data: Prisma.AccountUncheckedCreateInput): Promise<Account> {
     try {
-      // Creating Wallet + Crypto Wallets
-      const wallet = await this.walletService.initiate();
+      // Creating Wallet
+      const wallet = await this.walletService.setup();
       if (!wallet) throw Error('Wallet Not Created!');
 
       // Creating Account

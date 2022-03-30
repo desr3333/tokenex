@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { USDTService } from './../../token';
+import { CryptoWalletModule } from '@modules/crypto-wallet/crypto-wallet';
+import { USDTService } from '@modules/token/usdt';
 
 import { USDTWalletController } from './usdt-wallet.controller';
 import { USDTWalletService } from './usdt-wallet.service';
 
 @Module({
-  imports: [],
+  imports: [CryptoWalletModule],
   controllers: [USDTWalletController],
   providers: [USDTWalletService, USDTService],
   exports: [USDTWalletService],

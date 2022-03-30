@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BTCService } from 'src/modules/token';
 
-import { CryptoWalletModule } from './../crypto-wallet';
+import { CryptoWalletModule } from '@modules/crypto-wallet/crypto-wallet';
+import { BTCService } from '@modules/token/btc';
+
 import { BTCWalletController } from './btc-wallet.controller';
 import { BTCWalletService } from './btc-wallet.service';
 
