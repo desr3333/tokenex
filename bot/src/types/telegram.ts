@@ -1,23 +1,24 @@
 import { i18n } from "i18next";
 import { Context, Middleware, MiddlewareFn, Scenes } from "telegraf";
+import { WalletDto } from "./api";
 
 export interface TelegramContext extends Context {
   session: TelegramSession;
   scene: Scenes.SceneContextScene<TelegramContext, TelegramSceneSession>;
 
-  i18n: i18n;
+  t: i18n["t"];
 }
 
 export interface TelegramSession
   extends Scenes.SceneSession<TelegramSceneSession>,
     TelegramSessionState {
   account: any;
-  wallet: any;
   telegramAccount: any;
+  wallet: WalletDto;
 
-  ETHWallet?: any;
-  BTCWallet?: any;
-  USDTWallet?: any;
+  BTCWallet: any;
+  ETHWallet: any;
+  USDTWallet: any;
 }
 
 export interface TelegramSessionState {

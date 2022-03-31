@@ -1,20 +1,25 @@
-export const MAIN = "MAIN";
+export const Routes = {
+  MAIN: "MAIN",
+  ERROR_NOT_FOUND: "error_not_found",
 
-export const ERROR_NOT_FOUND = "error_not_found";
+  ACCOUNT: "account",
+  ACCOUNT_INFO: "account_info",
+  ACCOUNT_SETTINGS: "ACCOUNT_SETTINGS",
+  ACCOUNT_SETTINGS_LANGUAGE: "account_settings_language",
 
-export const ACCOUNT = "account";
-export const ACCOUNT_INFO = "account_info";
+  WALLET_START: "WALLET_START",
 
-export const ACCOUNT_SETTINGS = "ACCOUNT_SETTINGS";
-export const ACCOUNT_SETTINGS_LANGUAGE = "account_settings_language";
+  WITHDRAW_START: "WITHDRAW_START",
+  WITHDRAW_AMOUNT: "WITHDRAW_AMOUNT",
+  WITHDRAW_ADDRESS: "WITHDRAW_ADDRESS",
+  WITHDRAW_WALLET: "WITHDRAW_WALLET",
+  WITHDRAW_WALLET_SELECT: (s?: string) => `WITHDRAW_WALLET__${s || ""}`,
 
-export const WALLET = "wallet";
+  DEPOSIT_START: "DEPOSIT_START",
+  DEPOSIT_WALLET: "DEPOSIT_WALLET",
+  DEPOSIT_WALLET_SELECT: (s?: string) => `DEPOSIT_WALLET__${s || ""}`,
+  DEPOSIT_ADDRESS: "DEPOSIT_ADDRESS",
 
-export const WITHDRAW = "withdraw";
-
-export const DEPOSIT = "deposit";
-export const DEPOSIT_TOKEN = "deposit_token";
-
-export const EXCHANGE = "exchange";
-
-export const DASHBOARD_START = "dashboard_start";
+  EXCHANGE: "exchange",
+  DASHBOARD_START: "dashboard_start",
+};

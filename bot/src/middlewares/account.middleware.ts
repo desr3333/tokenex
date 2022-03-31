@@ -4,6 +4,7 @@ import {
   telegramAccountService,
   walletService,
 } from "@services";
+import { selectFromArray, Token } from "@helpers";
 
 export const accountMiddleware: TelegramMiddleware = async (ctx, next) => {
   try {
@@ -12,16 +13,17 @@ export const accountMiddleware: TelegramMiddleware = async (ctx, next) => {
     // Checking Telegram Account
     const telegramAccount = await telegramAccountService.getByChatId(chatId);
 
-    ctx.session.telegramAccount = telegramAccount;
+    // console.log({ telegramAccount });
+
     ctx.session.account = telegramAccount?.account;
 
     // Creating Telegram Account
     if (!telegramAccount) {
-      await ctx.reply("Creating Account ..");
+      await ctx.reply("⌛️ Creating Account ..");
+
+      //  console.log("Creating..");
 
       const telegramAccount = await telegramAccountService.create({ chatId });
-      // const telegramAccount = await telegramAccountService.getByChatId(chatId);
-
       if (!telegramAccount) return ctx.reply("❌ Account Not Created!");
 
       ctx.session.telegramAccount = telegramAccount;
@@ -40,19 +42,25 @@ export const accountMiddleware: TelegramMiddleware = async (ctx, next) => {
     if (!walletId) return ctx.reply("❌ Wallet Not Created!");
 
     const wallet = await walletService.getById(walletId);
-    const cryptoWallets = wallet?.cryptoWallets || [];
 
-    const _select = (symbol: string, wallets: any[]) => {
-      return wallets?.filter((w) => w.symbol === symbol)?.[0] || null;
-    };
+    console.log("Updating Walllet ..");
 
     ctx.session.wallet = wallet;
-    ctx.session.ETHWallet = _select("ETH", cryptoWallets);
-    ctx.session.USDTWallet = _select("USDT", cryptoWallets);
-    ctx.session.BTCWallet = _select("BTC", cryptoWallets);
+
+    const BTCWallet = selectFromArray(wallet?.cryptoWallets, {
+      symbol: Token.BTC,
+    });
+    const ETHWallet = selectFromArray(wallet?.cryptoWallets, {
+      symbol: Token.ETH,
+    });
+    const USDTWallet = selectFromArray(wallet?.cryptoWallets, {
+      symbol: Token.USDT,
+    });
+
+    console.log({ ETHWallet });
 
     next();
   } catch (e) {
-    console.log({ e });
+    ctx.reply("Server Error");
   }
 };

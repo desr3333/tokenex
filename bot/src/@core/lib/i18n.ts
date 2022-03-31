@@ -49,7 +49,7 @@ export class I18n {
       // @ts-ignore
       const languageCode: LanguageCode = ctx.from?.language_code || "en";
 
-      ctx.i18n = await this.init(languageCode);
+      ctx.t = (await this.init(languageCode))?.t;
 
       return next();
     };

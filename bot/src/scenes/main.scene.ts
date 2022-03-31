@@ -1,19 +1,19 @@
 import { Scene } from "@core";
-import { routes, inlineKeyboards } from "@helpers";
+import { Routes, keyboards } from "@helpers";
 
-export const scene = new Scene(routes.MAIN);
+export const scene = new Scene(Routes.MAIN);
 
 scene.enter((ctx) => {
   const bot_username = ctx.botInfo.username;
 
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.i18n.t("scene:main", { bot_username }),
-      inlineKeyboards.main()
+      ctx.t("scene:main", { bot_username }),
+      keyboards.main()
     );
 
   return ctx.replyWithHTML(
-    ctx.i18n.t("scene:main", { bot_username }),
-    inlineKeyboards.main()
+    ctx.t("scene:main", { bot_username }),
+    keyboards.main()
   );
 });

@@ -17,21 +17,21 @@
     },
 
     "wallet": {
-      "main": "💰️ My Wallet\n\nBTC: 0\nETH: 0\nUSDT: 0",
+      "main": "💰️ My Wallet\n\nBTC: {{btc_wallet_balance}}\nETH: {{eth_wallet_balance}}\nUSDT: {{usdt_wallet_balance}}",
 
       "deposit": {
-        "token": {
-          "choose": "⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?",
-          "hint": "⬇️ Deposit\n\nUse the address below to send ETH to the bot wallet. Funds will be credited within 30-60 minutes",
-          "address": "```{{wallet}}```"
+        "wallet": {
+          "select": "⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?",
+          "hint": "⬇️ Deposit\n\nUse the address below to send {{wallet_symbol}} to the bot wallet. Funds will be credited within 30-60 minutes",
+          "address": "```{{wallet_address}}```"
         }
       },
 
       "withdraw": {
-        "token": {
-          "choose": "⬇️ Deposit\n\nWhat cryptocurrency do you want to deposit into your wallet?",
-          "hint": "⬇️ Deposit\n\nUse the address below to send ETH to the bot wallet. Funds will be credited within 30-60 minutes",
-          "address": "```{{wallet}}```"
+        "amount": "⬆️ Withdraw\n\nHow much {{wallet_symbol}} you want to withdraw?",
+        "address": "⬆️ Withdraw\n\nType the address where you want to withdraw the money. Funds will be withdrawn within 30-60 minutes",
+        "wallet": {
+          "select": "⬆️ Withdraw\n\nSelect a wallet from which you want to withdraw."
         }
       }
     }
@@ -79,7 +79,8 @@
       "de": "🇩🇪"
     },
 
-    "back": "↩️ Back"
+    "back": "↩️ Back",
+    "cancel": "🚫 Cancel"
   },
 
   "error": {

@@ -1,19 +1,25 @@
 import { Scene } from "@core";
-import { routes, inlineKeyboards } from "@helpers";
+import { Routes, keyboards } from "@helpers";
 
-export const scene = new Scene(routes.WALLET);
+export const scene = new Scene(Routes.WALLET_START);
 
 scene.enter((ctx) => {
-  const { wallet } = ctx.session;
+  const { wallet, BTCWallet, ETHWallet, USDTWallet } = ctx.session;
+
+  const balances = {
+    btc_wallet_balance: BTCWallet?.balance || 0,
+    eth_wallet_balance: ETHWallet?.balance || 0,
+    usdt_wallet_balance: USDTWallet?.balance || 0,
+  };
 
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.i18n.t("scene:wallet.main"),
-      inlineKeyboards.wallet_main()
+      ctx.t("scene:wallet.main", { ...balances }),
+      keyboards.wallet_main()
     );
 
   return ctx.reply(
-    ctx.i18n.t("scene:wallet.main"),
-    inlineKeyboards.wallet_main()
+    ctx.t("scene:wallet.main", { ...balances }),
+    keyboards.wallet_main()
   );
 });

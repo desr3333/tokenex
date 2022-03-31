@@ -1,17 +1,8 @@
 import { Scene } from "@core";
-import { routes } from "@helpers";
+import { Routes } from "@helpers";
 
-export const scene = new Scene(routes.WITHDRAW);
+export const scene = new Scene(Routes.WITHDRAW_START);
 
-scene.enter((ctx) => {
-  const text = `❌ Error!\n\nYour balance is insufficient. Please, deposit crypto into your wallet!`;
-  const markup = {
-    reply_markup: {
-      inline_keyboard: [[{ text: "↩️ Back", callback_data: routes.WALLET }]],
-    },
-  };
-
-  if (!ctx.message) return ctx.editMessageText(text, markup);
-
-  return ctx.reply(text, markup);
+scene.enter(async (ctx) => {
+  return ctx.scene.enter(Routes.WITHDRAW_WALLET);
 });

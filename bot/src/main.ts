@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { TelegramBot, I18n } from "@core";
-import { routes } from "@helpers";
+import { Routes } from "@helpers";
 
 import { session } from "telegraf";
 import { stage } from "./scenes";
@@ -33,35 +33,19 @@ bot.on("text", (ctx) => {
 
   switch (account.role) {
     case "admin":
-      return ctx.scene.enter(routes.DASHBOARD_START);
+      return ctx.scene.enter(Routes.DASHBOARD_START);
     default:
-      return ctx.scene.enter(routes.MAIN);
+      return ctx.scene.enter(Routes.MAIN);
   }
 });
 
 bot.on("callback_query", (ctx) => {
   if (!("data" in ctx.update.callback_query)) return;
 
-  const query = ctx.update.callback_query.data;
+  const callbackQuery = ctx.update.callback_query.data;
 
-  switch (query) {
-    case "back":
-      return ctx.scene.enter(routes.MAIN);
-    default:
-      if (query.includes("deposit_token__")) {
-        const token = query.split("deposit_token__")[1]?.toUpperCase();
-
-        return ctx.scene
-          .enter("deposit_token", { token })
-          .catch((e) => console.log({ e }));
-      }
-
-      return ctx.scene.enter(query).catch((e) => console.log({ e }));
-  }
+  return ctx.scene.enter(callbackQuery).catch((e) => console.log({ e }));
 });
-
-// bot.on("text", (ctx) => {});
-// bot.on("sticker", (ctx) => ctx.scene.enter(routes.MAIN));
 
 (async () => {
   await bot

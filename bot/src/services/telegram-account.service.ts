@@ -5,7 +5,7 @@ export const getByChatId = async (chatId: number) => {
     const response = await APIService.get(`telegram-accounts/@${chatId}`);
     return response.data?.result;
   } catch (e) {
-    console.log(e.response?.data);
+    // console.log(e.response?.data);
     return null;
   }
 };
@@ -15,7 +15,6 @@ export const create = async (data: any) => {
     const response = await APIService.post("telegram-accounts", data);
     return response.data?.result;
   } catch (e) {
-    console.log(e.response?.data);
     return null;
   }
 };

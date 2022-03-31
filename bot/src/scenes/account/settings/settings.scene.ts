@@ -1,15 +1,15 @@
 import { Scene } from "@core";
-import { inlineKeyboards, routes } from "@helpers";
+import { keyboards, Routes } from "@helpers";
 
-export const scene = new Scene(routes.ACCOUNT_SETTINGS);
+export const scene = new Scene(Routes.ACCOUNT_SETTINGS);
 
 scene.enter((ctx) => {
   const { language_code } = ctx.from;
 
   ctx.editMessageText(
-    ctx.i18n.t("scene:account.settings.main", {
-      language: ctx.i18n.t(`button:language.${language_code}`),
+    ctx.t("scene:account.settings.main", {
+      language: ctx.t(`button:language.${language_code}`),
     }),
-    inlineKeyboards.account_settings()
+    keyboards.account_settings()
   );
 });

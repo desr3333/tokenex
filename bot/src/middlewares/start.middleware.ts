@@ -4,7 +4,7 @@ import {
   telegramAccountService,
   walletService,
 } from "@services";
-import { routes } from "@helpers";
+import { Routes } from "@helpers";
 
 export const startMiddleware: TelegramMiddleware = async (ctx, next) => {
   try {

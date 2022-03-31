@@ -1,7 +1,7 @@
 import { Scene } from "@core";
-import { routes, inlineKeyboards } from "@helpers";
+import { Routes, keyboards } from "@helpers";
 
-export const scene = new Scene(routes.DASHBOARD_START);
+export const scene = new Scene(Routes.DASHBOARD_START);
 
 scene.enter((ctx) => {
   const { first_name } = ctx.from;
@@ -9,12 +9,12 @@ scene.enter((ctx) => {
 
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.i18n.t("scene:dashboard.main", { first_name }),
-      inlineKeyboards.dashboard()
+      ctx.t("scene:dashboard.main", { first_name }),
+      keyboards.dashboard()
     );
 
   return ctx.reply(
-    ctx.i18n.t("scene:dashboard.main", { first_name }),
-    inlineKeyboards.dashboard()
+    ctx.t("scene:dashboard.main", { first_name }),
+    keyboards.dashboard()
   );
 });
