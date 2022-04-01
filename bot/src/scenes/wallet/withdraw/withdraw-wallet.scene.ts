@@ -29,6 +29,12 @@ scene.on("callback_query", (ctx) => {
 
     console.log({ symbol, cryptoWallet });
 
+    ctx.session.transaction = {
+      ...ctx.session.transaction,
+      from: cryptoWallet?.address,
+      cryptoWallet: { symbol },
+    };
+
     return ctx.scene.enter(Routes.WITHDRAW_AMOUNT, { cryptoWallet });
   }
 

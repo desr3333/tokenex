@@ -138,7 +138,21 @@ export const wallet_withdraw_wallet = () =>
         callback_data: Routes.WITHDRAW_WALLET_SELECT(Token.USDT),
       },
     ],
-    [{ text: I18n.t("button:back"), callback_data: Routes.WALLET_START }],
+    [buttons.back(Routes.WALLET_START)],
+  ]);
+
+export const wallet_withdraw_confirm = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: I18n.t("button:cancel"),
+        callback_data: Routes.WITHDRAW__CANCEL,
+      },
+      {
+        text: I18n.t("button:confirm"),
+        callback_data: Routes.WITHDRAW__CONFIRM,
+      },
+    ],
   ]);
 
 export const wallet_withdraw_cancel = () =>

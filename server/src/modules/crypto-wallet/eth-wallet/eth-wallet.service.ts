@@ -18,7 +18,6 @@ export class ETHWalletService implements CryptoWalletServiceBuilder {
   public symbol: string;
 
   constructor(
-    private prisma: PrismaService,
     private cryptoWalletService: CryptoWalletService,
     private ETHService: ETHService,
   ) {
@@ -29,15 +28,21 @@ export class ETHWalletService implements CryptoWalletServiceBuilder {
     try {
       const { symbol } = this;
 
+      // Fetching Wallet
       const wallet = await this.cryptoWalletService.findOne({
         symbol,
         address,
       });
       if (!wallet) throw Error(`${symbol} Wallet ${address} Not Found!`);
 
-      const balance = await this.ETHService.getBalance(address);
-      const result = { ...wallet, balance };
+      // Updating Balance
+      const walletBalance = Number(wallet.balance);
+      const balance = Number(await this.ETHService.getBalance(address));
 
+      if (walletBalance !== balance)
+        await this.cryptoWalletService.update({ address }, { balance });
+
+      const result = { ...wallet };
       return result;
     } catch (e) {
       console.log({ e });
@@ -63,10 +68,10 @@ export class ETHWalletService implements CryptoWalletServiceBuilder {
       };
 
       // Creating Crypto Wallet
-      const createdWallet = await this.prisma.cryptoWallet.create({ data });
-      if (!createdWallet) throw Error(`${symbol} Crypto Wallet Not Created!`);
+      const wallet = await this.cryptoWalletService.create(data);
+      if (!wallet) throw Error(`${symbol} Crypto Wallet Not Created!`);
 
-      return createdWallet;
+      return wallet;
     } catch (e) {
       console.log({ e });
       return null;

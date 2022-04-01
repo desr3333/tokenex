@@ -15,7 +15,6 @@ export class USDTWalletService implements CryptoWalletServiceBuilder {
   public symbol: string;
 
   constructor(
-    private prisma: PrismaService,
     private cryptoWalletService: CryptoWalletService,
     private USDTService: USDTService,
   ) {
@@ -60,7 +59,7 @@ export class USDTWalletService implements CryptoWalletServiceBuilder {
       };
 
       // Creating Crypto Wallet
-      const createdWallet = await this.prisma.cryptoWallet.create({ data });
+      const createdWallet = await this.cryptoWalletService.create(data);
       if (!createdWallet) throw Error(`${symbol} Crypto Wallet Not Created!`);
 
       return createdWallet;

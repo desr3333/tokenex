@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { TelegramBot, I18n } from "@core";
-import { Routes } from "@helpers";
+import { handleCallbackQuery, Routes } from "@helpers";
 
 import { session } from "telegraf";
 import { stage } from "./scenes";
@@ -23,9 +23,11 @@ bot.catch((e: Error) => console.log({ e }));
 bot.hears(/.*/, accountMiddleware);
 bot.action(/.*/, accountMiddleware);
 
-// Handlers
-
+// Commands
+bot.command(["test"], (ctx) => ctx.reply("🤔🤔🤔"));
 bot.command(["raindrop"], (ctx) => ctx.reply("🌧️🌧️🌧️"));
+
+// Handlers
 
 bot.on("text", (ctx) => {
   const { account } = ctx.session;
@@ -40,13 +42,15 @@ bot.on("text", (ctx) => {
 });
 
 bot.on("callback_query", (ctx) => {
-  if (!("data" in ctx.update.callback_query)) return;
+  const data = handleCallbackQuery(ctx.callbackQuery);
 
-  const callbackQuery = ctx.update.callback_query.data;
-
-  return ctx.scene.enter(callbackQuery).catch((e) => console.log({ e }));
+  return ctx.scene.enter(data).catch((e) => {
+    console.log({ e });
+    return ctx.scene.enter(Routes.MAIN);
+  });
 });
 
+// Launching Bot
 (async () => {
   await bot
     .launch({})

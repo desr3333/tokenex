@@ -32,7 +32,10 @@
         "address": "⬆️ Withdraw\n\nType the address where you want to withdraw the money. Funds will be withdrawn within 30-60 minutes",
         "wallet": {
           "select": "⬆️ Withdraw\n\nSelect a wallet from which you want to withdraw."
-        }
+        },
+        "confirm": "⬆️ Withdraw\n\nFrom: {{from}}\nTo: {{to}}\nValue: {{value}}\n\nConfirm the transaction, please.",
+        "fulfilled": "⬆️ Withdraw\n\nWithdrawal request #12345 has been fulfilled!",
+        "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!"
       }
     }
   },
@@ -80,6 +83,7 @@
     },
 
     "back": "↩️ Back",
+    "confirm": "✅ Confirm",
     "cancel": "🚫 Cancel"
   },
 

@@ -46,9 +46,9 @@ model Wallet {
 model CryptoWallet {
     id           Int           @id @default(autoincrement())
     //  uuid          String         @unique
-    address      String
+    address      String        @unique
     privateKey   String
-    balance      Decimal?      @default(0)
+    balance      Float?        @default(0)
     symbol       String?
     wallet       Wallet        @relation(fields: [walletId], references: [id])
     walletId     Int
@@ -65,29 +65,35 @@ model Token {
     symbol          String
     contractAddress String
     cryptoWallets   CryptoWallet[]
+    feeAddress      String
+    transactionFee  Float?         @default(0.0)
+    withdrawalFee   Float?         @default(0.0)
+    depositFee      Float?         @default(0.0)
+    raindropFee     Float?         @default(0.0)
     createdAt       DateTime?
     updatedAt       DateTime?
 }
 
 model Transaction {
-    id             Int             @id @default(autoincrement())
+    id               Int             @id @default(autoincrement())
     //  uuid          String         @unique
-    hash           String
-    from           String
-    to             String
-    cryptoWallet   CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
-    cryptoWalletId Int?
-    transactionFee TransactionFee?
-    createdAt      DateTime?
-    updatedAt      DateTime?
+    value            Int
+    from             String
+    to               String
+    hash             String
+    cryptoWallet     CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
+    cryptoWalletId   Int?
+    transactionFee   TransactionFee? @relation(fields: [transactionFeeId], references: [id])
+    transactionFeeId Int             @unique
+    createdAt        DateTime?
+    updatedAt        DateTime?
 }
 
 model TransactionFee {
-    id            Int          @id @default(autoincrement())
+    id          Int          @id @default(autoincrement())
     //  uuid          String         @unique
-    value         Int          @default(0)
-    transaction   Transaction? @relation(fields: [transactionId], references: [id])
-    transactionId Int          @unique
-    createdAt     DateTime?
-    updatedAt     DateTime?
+    value       Int          @default(0)
+    transaction Transaction?
+    createdAt   DateTime?
+    updatedAt   DateTime?
 }

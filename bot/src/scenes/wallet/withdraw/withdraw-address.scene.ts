@@ -1,23 +1,42 @@
 import { Scene } from "@core";
-import { Routes, selectFromArray } from "@helpers";
+import { keyboards, Routes, selectFromArray } from "@helpers";
 
 export const scene = new Scene(Routes.WITHDRAW_ADDRESS);
 
 scene.enter(async (ctx) => {
   const { cryptoWallet } = <{ cryptoWallet: any }>ctx.scene.state;
 
-  const wallet_symbol = cryptoWallet?.symbol;
-  const wallet_address = cryptoWallet?.address;
+  if (!ctx.message)
+    return ctx.editMessageText(
+      ctx.t("scene:wallet.withdraw.address"),
+      keyboards.cancel(Routes.WITHDRAW_START)
+    );
 
-  // await ctx.editMessageText(
-  //   `⬇️ Deposit\n\nUse the address below to send ${cryptoWallet.symbol} to the bot wallet. Funds will be credited within 30-60 minutes`,
-  //   { parse_mode: "HTML" }
+  return ctx.reply(
+    ctx.t("scene:wallet.withdraw.address"),
+    keyboards.cancel(Routes.WITHDRAW_START)
+  );
+});
+
+scene.on("text", async (ctx) => {
+  const { wallet, transaction } = ctx.session;
+
+  const cryptoWallet = transaction?.cryptoWallet;
+  const value = transaction?.value;
+
+  // Checking Value
+  const address = ctx.message.text;
+  if (!address) return ctx.reply("Error! Incorrect Value.");
+
+  // Updating Session
+  ctx.session.transaction = {
+    ...ctx.session.transaction,
+    to: address,
+  };
+
+  // await ctx.reply(
+  //   JSON.stringify({ from: cryptoWallet?.address, to: address, value })
   // );
 
-  // await ctx.reply(`<pre>${cryptoWallet.address}</pre>`, {
-  //   parse_mode: "HTML",
-  //   reply_markup: {
-  //     inline_keyboard: [[{ text: "↩️ Back", callback_data: Routes.DEPOSIT }]],
-  //   },
-  // });
+  return ctx.scene.enter(Routes.WITHDRAW_CONFIRM);
 });

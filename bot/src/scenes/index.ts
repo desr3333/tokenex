@@ -23,6 +23,9 @@ export const stage = new Stage([
   wallet.withdraw.wallet.scene,
   wallet.withdraw.amount.scene,
   wallet.withdraw.address.scene,
+  wallet.withdraw.confirm.scene,
+  wallet.withdraw.fulfilled.scene,
+  wallet.withdraw.failed.scene,
 
   wallet.exchange.start.scene,
 

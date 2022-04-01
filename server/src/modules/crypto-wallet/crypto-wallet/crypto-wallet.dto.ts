@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCryptoWalletDto {
   @ApiProperty()
-  address?: string;
+  address: string;
 
   @ApiProperty()
   symbol: string;
@@ -16,11 +16,6 @@ export class CreateCryptoWalletDto {
   @ApiProperty()
   tokenId: number;
 }
-
-// export class CreateMultipleCryptoWalletDto {
-//   @ApiProperty()
-//   walletId: number;
-// }
 
 export class CryptoWalletTransactionDto {}
 
