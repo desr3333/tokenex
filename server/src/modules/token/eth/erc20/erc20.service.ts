@@ -6,6 +6,7 @@ import { Contract } from 'web3-eth-contract';
 
 import ERC20_ABI from './erc20-abi.json';
 import { ERC20TransferDto } from './erc20.dto';
+import { CryptoWalletKeyPair } from '@modules/crypto-wallet';
 
 interface ERC20ServiceParams {
   contractAddress: string;
@@ -37,9 +38,13 @@ export class ERC20Service implements OnModuleInit {
     await this.getInfo();
   }
 
-  async create() {
+  async create(): Promise<CryptoWalletKeyPair> {
     try {
-      const result = await this.web3.eth.accounts.create();
+      const account = await this.web3.eth.accounts.create();
+
+      const { address, privateKey } = account;
+      const result = { address, privateKey };
+
       return result;
     } catch (e) {
       console.log({ e });

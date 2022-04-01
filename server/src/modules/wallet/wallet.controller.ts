@@ -11,17 +11,23 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
-import { CryptoWalletService } from './../crypto-wallet/crypto-wallet/crypto-wallet.service';
+import { CryptoWalletService } from '@modules/crypto-wallet';
 
 import { WalletService } from './wallet.service';
-import { CreateWalletDto, UpdateWalletDto } from './wallet.dto';
-import { ETHWalletService } from '../crypto-wallet/eth-wallet';
-import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
+import {
+  CreateWalletDto,
+  UpdateWalletDto,
+  WalletTransferDto,
+  WalletWithdrawDto,
+} from './wallet.dto';
 
 @ApiTags('Wallet')
 @Controller('/wallets')
 export class WalletController {
-  constructor(private walletService: WalletService) {}
+  constructor(
+    private walletService: WalletService,
+    private cryptoWalletService: CryptoWalletService,
+  ) {}
 
   @Get()
   async getAll(@Res() res: Response): Promise<any> {
@@ -94,6 +100,40 @@ export class WalletController {
     // Deleting Wallet
     const result = await this.walletService.delete({ id });
     if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
+
+    return res.status(200).json({ result });
+  }
+
+  @Post('withdraw')
+  async withdraw(@Res() res: Response, @Body() withdrawDto: WalletWithdrawDto) {
+    const { from, to, value } = withdrawDto;
+
+    // Checking Wallet
+    const cryptoWallet = await this.cryptoWalletService.findOne({
+      address: from,
+    });
+    if (!cryptoWallet)
+      return res
+        .status(404)
+        .json({ error: `Crypto Wallet ${from} Not Found!` });
+
+    // TODO: Calculating Transaction
+
+    // Checking Balance
+    const isBalanceSufficient = cryptoWallet.balance >= value;
+    if (!isBalanceSufficient)
+      return res
+        .status(400)
+        .json({ error: `Crypto Wallet ${from} Has Insufficient Balance!` });
+
+    // Sending Transaction
+
+    console.log({ cryptoWallet });
+
+    const result = {
+      ...withdrawDto,
+      cryptoWallet,
+    };
 
     return res.status(200).json({ result });
   }

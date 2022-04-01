@@ -4,18 +4,15 @@ import { Prisma, Wallet } from '@prisma/client';
 import { PrismaService } from '@modules/prisma';
 import { CryptoWalletService } from '@modules/crypto-wallet';
 
-import { ETHWalletService } from '../crypto-wallet/eth-wallet';
-import { BTCWalletService } from '../crypto-wallet/btc-wallet';
-import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
+// import { ETHWalletService } from '../crypto-wallet/eth-wallet';
+// import { BTCWalletService } from '../crypto-wallet/btc-wallet';
+// import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
 
 @Injectable()
 export class WalletService {
   constructor(
     private prisma: PrismaService,
     private cryptoWalletService: CryptoWalletService,
-    private BTCWalletService: BTCWalletService,
-    private ETHWalletService: ETHWalletService,
-    private USDTWalletService: USDTWalletService,
   ) {}
 
   async query(params: {
@@ -64,10 +61,10 @@ export class WalletService {
 
       const walletId = wallet.id;
 
-      // Creating Crypto Wallets
-      const BTCWallet = await this.BTCWalletService.create({ walletId });
-      const ETHWallet = await this.ETHWalletService.create({ walletId });
-      const USDTWallet = await this.USDTWalletService.create({ walletId });
+      // TODO: Creating Crypto Wallets
+      // const BTCWallet = await this.BTCWalletService.create({ walletId });
+      // const ETHWallet = await this.ETHWalletService.create({ walletId });
+      // const USDTWallet = await this.USDTWalletService.create({ walletId });
 
       // console.log({ BTCWallet, ETHWallet, USDTWallet });
 
@@ -87,6 +84,7 @@ export class WalletService {
       where,
     });
   }
+
   async delete(where: Prisma.WalletWhereUniqueInput): Promise<Wallet> {
     return this.prisma.wallet.delete({
       where,

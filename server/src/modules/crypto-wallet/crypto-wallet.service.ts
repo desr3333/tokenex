@@ -1,12 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CryptoWallet, Prisma } from '@prisma/client';
 
+import { Token } from '@types';
 import { PrismaService } from '@modules/prisma';
-import { CreateCryptoWalletDto } from './crypto-wallet.dto';
+import {
+  CreateCryptoWalletDto,
+  CryptoWalletKeyPair,
+} from './crypto-wallet.dto';
+
+import { ETHService } from '@modules/token/eth';
+import { USDTService } from '@modules/token/usdt';
+import { BTCService } from '@modules/token/btc';
 
 @Injectable()
 export class CryptoWalletService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private BTCService: BTCService,
+    private ETHService: ETHService,
+    private USDTService: USDTService,
+  ) {}
 
   async getAll() {
     try {
@@ -35,11 +48,35 @@ export class CryptoWalletService {
     }
   }
 
-  async create(data: Prisma.CryptoWalletUncheckedCreateInput) {
+  async create(createDto: CreateCryptoWalletDto) {
     try {
-      const { symbol } = data;
+      const symbol = createDto.symbol?.toUpperCase();
+
+      let keyPair: CryptoWalletKeyPair;
+
+      switch (symbol) {
+        case Token.BTC:
+          keyPair = await this.BTCService.create();
+          break;
+        case Token.ETH:
+          keyPair = await this.ETHService.create();
+          break;
+        case Token.USDT:
+          keyPair = await this.USDTService.create();
+          break;
+        default:
+          throw Error('Incorrect Symbol!');
+      }
+
+      const data = {
+        ...createDto,
+        ...keyPair,
+      };
+
       const result = await this.prisma.cryptoWallet.create({ data });
       if (!result) throw Error(`${symbol} Crypto Wallet Not Created!`);
+
+      return result;
     } catch (e) {
       console.log({ e });
       return null;
@@ -74,5 +111,13 @@ export class CryptoWalletService {
       console.log({ e });
       return null;
     }
+  }
+
+  async deposit() {
+    return;
+  }
+
+  async withdraw() {
+    return;
   }
 }

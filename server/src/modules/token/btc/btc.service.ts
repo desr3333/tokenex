@@ -1,3 +1,4 @@
+import { CryptoWalletKeyPair } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 
 import * as bip32 from 'bip32';
@@ -6,7 +7,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 
 @Injectable()
 export class BTCService {
-  async create() {
+  async create(): Promise<CryptoWalletKeyPair> {
     const network = bitcoin.networks.testnet;
     const path = `m/49'/1'/0'/0`;
 
@@ -29,8 +30,8 @@ export class BTCService {
 
     const result = {
       address,
-      key,
-      mnemonic,
+      privateKey: key,
+      // mnemonic,
     };
 
     return result;

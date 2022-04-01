@@ -1,3 +1,4 @@
+import { CryptoWalletKeyPair } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
 import { ETHTransactionDto } from './eth.dto';
@@ -21,10 +22,14 @@ export class ETHService {
     this.symbol = 'ETH';
   }
 
-  async create() {
+  async create(): Promise<CryptoWalletKeyPair> {
     try {
       const account = await this.web3.eth.accounts.create();
-      return account;
+
+      const { address, privateKey } = account;
+      const result = { address, privateKey };
+
+      return result;
     } catch (e) {
       console.log({ e });
       return null;

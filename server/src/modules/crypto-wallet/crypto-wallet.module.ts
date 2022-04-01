@@ -3,11 +3,12 @@ import { Module } from '@nestjs/common';
 import { CryptoWalletController } from './crypto-wallet.controller';
 import { CryptoWalletService } from './crypto-wallet.service';
 
-import { ETHWalletModule } from './../eth-wallet/eth-wallet.module';
-import { USDTWalletModule } from './../usdt-wallet';
+import { BTCModule } from '@modules/token/btc';
+import { ETHModule } from '@modules/token/eth';
+import { USDTModule } from '@modules/token/usdt';
 
 @Module({
-  imports: [],
+  imports: [ETHModule, BTCModule, USDTModule],
   controllers: [CryptoWalletController],
   providers: [CryptoWalletService],
   exports: [CryptoWalletService],
