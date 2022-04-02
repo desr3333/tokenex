@@ -17,7 +17,6 @@ import { WalletService } from './wallet.service';
 import {
   CreateWalletDto,
   UpdateWalletDto,
-  WalletTransferDto,
   WalletWithdrawDto,
 } from './wallet.dto';
 
@@ -127,13 +126,8 @@ export class WalletController {
         .json({ error: `Crypto Wallet ${from} Has Insufficient Balance!` });
 
     // Sending Transaction
-
-    console.log({ cryptoWallet });
-
-    const result = {
-      ...withdrawDto,
-      cryptoWallet,
-    };
+    const result = await this.cryptoWalletService.withdraw({ from, to, value });
+    if (!result) return res.status(400).json({ error: `Wihdrawal Failed!` });
 
     return res.status(200).json({ result });
   }

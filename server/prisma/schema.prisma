@@ -63,13 +63,13 @@ model Token {
     id              Int            @id @default(autoincrement())
     //  uuid          String         @unique
     symbol          String
-    contractAddress String
-    cryptoWallets   CryptoWallet[]
+    contractAddress String?
     feeAddress      String
     transactionFee  Float?         @default(0.0)
-    withdrawalFee   Float?         @default(0.0)
+    withdrawFee     Float?         @default(0.0)
     depositFee      Float?         @default(0.0)
     raindropFee     Float?         @default(0.0)
+    cryptoWallets   CryptoWallet[]
     createdAt       DateTime?
     updatedAt       DateTime?
 }
@@ -77,10 +77,13 @@ model Token {
 model Transaction {
     id               Int             @id @default(autoincrement())
     //  uuid          String         @unique
+    type             String?         @default("TRANSACTION")
     value            Int
     from             String
     to               String
     hash             String
+    gasUsed          Float?
+    explorerLink     String?
     cryptoWallet     CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
     cryptoWalletId   Int?
     transactionFee   TransactionFee? @relation(fields: [transactionFeeId], references: [id])
@@ -92,6 +95,7 @@ model Transaction {
 model TransactionFee {
     id          Int          @id @default(autoincrement())
     //  uuid          String         @unique
+    status      String?
     value       Int          @default(0)
     transaction Transaction?
     createdAt   DateTime?

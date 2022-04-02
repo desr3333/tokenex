@@ -6,6 +6,10 @@ import { PrismaService } from '@modules/prisma';
 import {
   CreateCryptoWalletDto,
   CryptoWalletKeyPair,
+  CryptoWalletTransactionDto,
+  CryptoWalletTransferDto,
+  CryptoWalletWithdrawDto,
+  UpdateCryptoWalletDto,
 } from './crypto-wallet.dto';
 
 import { ETHService } from '@modules/token/eth';
@@ -21,6 +25,10 @@ export class CryptoWalletService {
     private USDTService: USDTService,
   ) {}
 
+  async query() {
+    return [];
+  }
+
   async getAll() {
     try {
       const result = this.prisma.cryptoWallet.findMany();
@@ -29,10 +37,6 @@ export class CryptoWalletService {
       console.log({ e });
       return [];
     }
-  }
-
-  async query() {
-    return [];
   }
 
   async findOne(where?: Prisma.CryptoWalletWhereInput): Promise<CryptoWallet> {
@@ -45,6 +49,16 @@ export class CryptoWalletService {
       return result;
     } catch (e) {
       console.log({ e });
+    }
+  }
+
+  async findOneByAddress(address: string) {
+    try {
+      const result = await this.findOne({ address });
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
     }
   }
 
@@ -113,11 +127,127 @@ export class CryptoWalletService {
     }
   }
 
-  async deposit() {
-    return;
+  async getBalance(cryptoWalletDto: UpdateCryptoWalletDto): Promise<number> {
+    try {
+      const { symbol, address } = cryptoWalletDto;
+
+      let balance: number;
+
+      switch (symbol) {
+        case Token.BTC:
+          balance = await this.BTCService.getBalance(address);
+          break;
+        case Token.ETH:
+          balance = await this.ETHService.getBalance(address);
+          break;
+        case Token.USDT:
+          balance = await this.ETHService.getBalance(address);
+          break;
+        default:
+          throw Error('Incorrect Symbol!');
+      }
+
+      return balance;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
-  async withdraw() {
-    return;
+  async updateBalance(updateDto: UpdateCryptoWalletDto): Promise<void> {
+    try {
+      const { symbol, address } = updateDto;
+
+      let balance: number;
+
+      // Fetching Balance
+      switch (symbol) {
+        case Token.BTC:
+          balance = await this.BTCService.getBalance(address);
+          break;
+        case Token.ETH:
+          balance = await this.ETHService.getBalance(address);
+          break;
+        case Token.USDT:
+          balance = await this.ETHService.getBalance(address);
+          break;
+        default:
+          throw Error('Balance Update Error!');
+      }
+
+      // Updating Balance
+      this.update({ address }, { balance });
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
+  async transfer(transferdto: CryptoWalletTransferDto) {
+    try {
+      const { from, to, value } = transferdto;
+
+      let transaction: CryptoWalletTransactionDto;
+
+      // Checking Wallet
+      const wallet = await this.findOneByAddress(from);
+      if (!wallet) throw Error(`Wallet Not Found!`);
+
+      // TODO: Calculating Gas
+      // const totalCharge = await this.ETHService.calculateTransaction(
+      //   transferdto,
+      // );
+
+      // Checking Balance
+      const isBalanceSufficient = wallet.balance >= value;
+      if (!isBalanceSufficient) throw Error(`Wallet Has Insufficient Balance!`);
+
+      // Sending Transaction
+      const { symbol, privateKey } = wallet;
+
+      switch (symbol) {
+        case Token.BTC:
+          transaction = await this.BTCService.sendTransaction({
+            value,
+            from,
+            to,
+            privateKey,
+          });
+          break;
+        case Token.ETH:
+          transaction = await this.ETHService.sendTransaction({
+            value,
+            from,
+            to,
+            privateKey,
+          });
+          break;
+        case Token.USDT:
+          // transaction = await this.USDTService.sendTransaction({
+          //   value,
+          //   from,
+          //   to,
+          //   privateKey,
+          // });
+          break;
+        default:
+          throw Error('Transfer Error!');
+      }
+
+      return transaction;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
+  async withdraw(withdrawDto: CryptoWalletWithdrawDto) {
+    try {
+      const result = await this.transfer(withdrawDto);
+      if (!result) throw Error('Withdrawal Failed!');
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 }

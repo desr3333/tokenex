@@ -17,6 +17,40 @@ export class CreateCryptoWalletDto {
   tokenId?: number;
 }
 
+export class UpdateCryptoWalletDto {
+  @ApiProperty()
+  address?: string;
+
+  @ApiProperty()
+  symbol?: string;
+
+  @ApiProperty()
+  balance?: number;
+
+  @ApiProperty()
+  walletId?: number;
+
+  @ApiProperty()
+  tokenId?: number;
+}
+
+export class CryptoWalletTransactionDto {
+  @ApiProperty()
+  from: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  value: number;
+
+  @ApiProperty()
+  tx: string;
+
+  @ApiProperty()
+  gas?: number;
+}
+
 export class CryptoWalletTransferDto {
   @ApiProperty()
   from: string;
