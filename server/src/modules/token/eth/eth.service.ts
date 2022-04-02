@@ -1,4 +1,7 @@
-import { CryptoWalletKeyPair } from '@modules/crypto-wallet';
+import {
+  CryptoWalletKeyPair,
+  CryptoWalletTransactionDto,
+} from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
 import { ETHTransactionDto } from './eth.dto';
@@ -10,9 +13,7 @@ export class ETHService {
   public name: string;
   public symbol: string;
 
-  TEST_ETH_ADDRESS = '0xD66fE26C24AA90F31eB1b1d5FD05Cd05De77Fd07';
-  TEST_ETH_PRIVATE_KEY = process.env.TEST_ETH_PRIVATE_KEY;
-  TEST_ETH_GAS = 45000;
+  GAS = 21000;
 
   constructor() {
     const { ERC20_NODE_API_KEY, ERC20_NODE_PROVIDER } = process.env;
@@ -50,28 +51,45 @@ export class ETHService {
     }
   }
 
-  async getGasPrice() {
+  async getGasPrice(): Promise<number> {
     try {
       const result = await this.web3.eth.getGasPrice();
-      return result;
+      return Number(result);
     } catch (e) {
       return null;
     }
   }
 
-  async sendTransaction({ value, from, to, privateKey }: ETHTransactionDto) {
+  async calculateTransaction({ value }: ETHTransactionDto): Promise<number> {
     try {
-      const { web3, TEST_ETH_ADDRESS, TEST_ETH_PRIVATE_KEY, TEST_ETH_GAS } =
-        this;
+      const gasUsed = this.GAS;
+      const gasPrice = await this.getGasPrice();
+      const gas = this.web3.utils.fromWei((gasUsed * gasPrice).toString());
 
-      // const address = TEST_ETH_ADDRESS;
-      // const privateKey = TEST_ETH_PRIVATE_KEY;
-      const gas = TEST_ETH_GAS;
+      const result = Number(gas) + Number(value);
+      if (!result) throw Error(`Transaction Not Calculated`);
 
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return 0;
+    }
+  }
+
+  async sendTransaction({
+    value,
+    from,
+    to,
+    privateKey,
+  }: ETHTransactionDto): Promise<CryptoWalletTransactionDto> {
+    try {
+      const { web3, GAS } = this;
+
+      const gas = GAS;
       const nonce = await web3.eth.getTransactionCount(from, 'latest');
 
       const transaction = {
-        value: web3.utils.toWei(`${value}`),
+        value: web3.utils.toWei(value.toString()),
         from,
         to,
         nonce,
@@ -90,7 +108,20 @@ export class ETHService {
       if (!tx)
         throw Error(`Transaction #${signedTx.transactionHash} Not Sent!`);
 
-      return tx;
+      const { transactionHash, gasUsed } = tx;
+
+      const gasPrice = await this.getGasPrice();
+      const _gas = web3.utils.fromWei((gasUsed * gasPrice).toString());
+
+      const result = {
+        from,
+        to,
+        tx: transactionHash,
+        value: Number(value),
+        gas: Number(_gas),
+      };
+
+      return result;
     } catch (e) {
       console.log({ e });
     }

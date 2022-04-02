@@ -17,7 +17,6 @@ import { WalletService } from './wallet.service';
 import {
   CreateWalletDto,
   UpdateWalletDto,
-  WalletTransferDto,
   WalletWithdrawDto,
 } from './wallet.dto';
 

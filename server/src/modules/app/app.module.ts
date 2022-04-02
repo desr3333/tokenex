@@ -7,6 +7,7 @@ import { AccountModule } from '@modules/account';
 import { WalletModule } from '@modules/wallet';
 import { TelegramAccountModule } from '@modules/telegram-account';
 import { CryptoWalletModule } from '@modules/crypto-wallet';
+import { TokenModule } from '@modules/token/token';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CryptoWalletModule } from '@modules/crypto-wallet';
     AccountModule,
     TelegramAccountModule,
     WalletModule,
+    TokenModule,
     CryptoWalletModule,
   ],
 })

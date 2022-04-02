@@ -12,7 +12,10 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { CryptoWallet } from '@prisma/client';
 import { Response } from 'express';
-import { CreateCryptoWalletDto } from './crypto-wallet.dto';
+import {
+  CreateCryptoWalletDto,
+  CryptoWalletWithdrawDto,
+} from './crypto-wallet.dto';
 
 import { CryptoWalletService } from './crypto-wallet.service';
 
@@ -92,6 +95,19 @@ export class CryptoWalletController {
         return res
           .status(404)
           .json({ error: `Crypto Wallet ${address} Not Updated!` });
+
+      return res.status(200).json({ result });
+    } catch (e) {}
+  }
+
+  @Post('withdraw')
+  async withdraw(
+    @Res() res: Response,
+    @Body() withdrawDto: CryptoWalletWithdrawDto,
+  ) {
+    try {
+      const result = await this.cryptoWalletService.withdraw(withdrawDto);
+      if (!result) return res.status(400).json({ error: `Withdrawal Failed!` });
 
       return res.status(200).json({ result });
     } catch (e) {}

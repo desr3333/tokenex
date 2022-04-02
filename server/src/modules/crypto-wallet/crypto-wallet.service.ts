@@ -6,6 +6,9 @@ import { PrismaService } from '@modules/prisma';
 import {
   CreateCryptoWalletDto,
   CryptoWalletKeyPair,
+  CryptoWalletTransactionDto,
+  CryptoWalletTransferDto,
+  CryptoWalletWithdrawDto,
 } from './crypto-wallet.dto';
 
 import { ETHService } from '@modules/token/eth';
@@ -21,6 +24,10 @@ export class CryptoWalletService {
     private USDTService: USDTService,
   ) {}
 
+  async query() {
+    return [];
+  }
+
   async getAll() {
     try {
       const result = this.prisma.cryptoWallet.findMany();
@@ -29,10 +36,6 @@ export class CryptoWalletService {
       console.log({ e });
       return [];
     }
-  }
-
-  async query() {
-    return [];
   }
 
   async findOne(where?: Prisma.CryptoWalletWhereInput): Promise<CryptoWallet> {
@@ -45,6 +48,20 @@ export class CryptoWalletService {
       return result;
     } catch (e) {
       console.log({ e });
+    }
+  }
+
+  async findOneByAddress(address: string) {
+    try {
+      // Updating
+      const balance = '';
+
+      // Fetching
+      const result = await this.findOne({ address });
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
     }
   }
 
@@ -113,11 +130,67 @@ export class CryptoWalletService {
     }
   }
 
-  async deposit() {
-    return;
+  async transfer(transferdto: CryptoWalletTransferDto) {
+    try {
+      const { from, to, value } = transferdto;
+
+      let transaction: CryptoWalletTransactionDto;
+
+      // Checking Wallet
+      const wallet = await this.findOneByAddress(from);
+      if (!wallet) throw Error(`Wallet Not Found!`);
+
+      // Calculating Transaction
+      const totalCharge = await this.ETHService.calculateTransaction(
+        transferdto,
+      );
+
+      // Checking Balance
+      const isBalanceSufficient = wallet.balance >= totalCharge;
+      if (!isBalanceSufficient) throw Error(`Wallet Has Insufficient Balance!`);
+
+      // Sending Transaction
+      const { symbol, privateKey } = wallet;
+
+      switch (symbol) {
+        case Token.BTC:
+          // keyPair = await this.BTCService.create();
+          break;
+        case Token.ETH:
+          transaction = await this.ETHService.sendTransaction({
+            value,
+            from,
+            to,
+            privateKey,
+          });
+          break;
+        case Token.USDT:
+          // transaction = await this.USDTService.sendTransaction({
+          //   value,
+          //   from,
+          //   to,
+          //   privateKey,
+          // });
+          break;
+        default:
+          throw Error('Transfer Error!');
+      }
+
+      return transaction;
+    } catch (e) {
+      console.log({ e });
+    }
   }
 
-  async withdraw() {
-    return;
+  async withdraw(withdrawDto: CryptoWalletWithdrawDto) {
+    try {
+      const result = await this.transfer(withdrawDto);
+      if (!result) throw Error('Withdrawal Failed!');
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 }

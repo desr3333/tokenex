@@ -63,13 +63,13 @@ model Token {
     id              Int            @id @default(autoincrement())
     //  uuid          String         @unique
     symbol          String
-    contractAddress String
-    cryptoWallets   CryptoWallet[]
+    contractAddress String?
     feeAddress      String
     transactionFee  Float?         @default(0.0)
-    withdrawalFee   Float?         @default(0.0)
+    withdrawFee     Float?         @default(0.0)
     depositFee      Float?         @default(0.0)
     raindropFee     Float?         @default(0.0)
+    cryptoWallets   CryptoWallet[]
     createdAt       DateTime?
     updatedAt       DateTime?
 }

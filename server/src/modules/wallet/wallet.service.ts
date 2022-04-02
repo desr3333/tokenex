@@ -3,6 +3,7 @@ import { Prisma, Wallet } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
 import { CryptoWalletService } from '@modules/crypto-wallet';
+import { Token } from '@types';
 
 // import { ETHWalletService } from '../crypto-wallet/eth-wallet';
 // import { BTCWalletService } from '../crypto-wallet/btc-wallet';
@@ -61,12 +62,10 @@ export class WalletService {
 
       const walletId = wallet.id;
 
-      // TODO: Creating Crypto Wallets
-      // const BTCWallet = await this.BTCWalletService.create({ walletId });
-      // const ETHWallet = await this.ETHWalletService.create({ walletId });
-      // const USDTWallet = await this.USDTWalletService.create({ walletId });
-
-      // console.log({ BTCWallet, ETHWallet, USDTWallet });
+      // Creating Crypto Wallets
+      this.cryptoWalletService.create({ symbol: Token.BTC, walletId });
+      this.cryptoWalletService.create({ symbol: Token.ETH, walletId });
+      this.cryptoWalletService.create({ symbol: Token.USDT, walletId });
 
       return wallet;
     } catch (e) {
