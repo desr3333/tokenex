@@ -45,10 +45,12 @@ export class CryptoWalletTransactionDto {
   value: number;
 
   @ApiProperty()
-  tx: string;
+  tx?: string;
 
   @ApiProperty()
   gas?: number;
+
+  output?: number;
 }
 
 export class CryptoWalletTransferDto {
@@ -68,7 +70,6 @@ export class CryptoWalletDepositDto extends CryptoWalletTransferDto {}
 export class CryptoWalletKeyPair {
   address: string;
   privateKey: string;
-  //  mnemonic: string;
 }
 
 // CryptoWallet Builder

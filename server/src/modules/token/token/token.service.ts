@@ -6,7 +6,7 @@ import { PrismaService } from '@modules/prisma';
 import { CreateTokenDto, TokenServiceInterface } from './token.dto';
 
 @Injectable()
-export class TokenService implements TokenServiceInterface {
+export class TokenService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Token[]> {

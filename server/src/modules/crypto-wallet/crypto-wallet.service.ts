@@ -39,26 +39,33 @@ export class CryptoWalletService {
     }
   }
 
-  async findOne(where?: Prisma.CryptoWalletWhereInput): Promise<CryptoWallet> {
+  async findOne(
+    where?: Prisma.CryptoWalletWhereUniqueInput,
+  ): Promise<CryptoWallet> {
     try {
       const result = await this.prisma.cryptoWallet.findFirst({
         where,
         include: { token: true },
       });
 
-      return result;
-    } catch (e) {
-      console.log({ e });
-    }
-  }
+      const { address, symbol } = result;
+      const balance = await this.getBalance({ address, symbol });
 
-  async findOneByAddress(address: string) {
-    try {
-      const result = await this.findOne({ address });
+      // Updating Balance
+      if (result.balance !== balance) {
+        await this.update(where, { balance });
+
+        const result = await this.prisma.cryptoWallet.findFirst({
+          where,
+          include: { token: true },
+        });
+
+        return result;
+      }
+
       return result;
     } catch (e) {
       console.log({ e });
-      return null;
     }
   }
 
@@ -103,8 +110,8 @@ export class CryptoWalletService {
   ): Promise<CryptoWallet> {
     try {
       const result = await this.prisma.cryptoWallet.update({
-        data,
         where,
+        data,
       });
       return result;
     } catch (e) {
@@ -160,6 +167,8 @@ export class CryptoWalletService {
 
       let balance: number;
 
+      //  console.log(`⌛️ Updating Balance > ${symbol}:${address}`);
+
       // Fetching Balance
       switch (symbol) {
         case Token.BTC:
@@ -189,13 +198,8 @@ export class CryptoWalletService {
       let transaction: CryptoWalletTransactionDto;
 
       // Checking Wallet
-      const wallet = await this.findOneByAddress(from);
+      const wallet = await this.findOne({ address: from });
       if (!wallet) throw Error(`Wallet Not Found!`);
-
-      // TODO: Calculating Gas
-      // const totalCharge = await this.ETHService.calculateTransaction(
-      //   transferdto,
-      // );
 
       // Checking Balance
       const isBalanceSufficient = wallet.balance >= value;
@@ -239,15 +243,47 @@ export class CryptoWalletService {
     }
   }
 
-  async withdraw(withdrawDto: CryptoWalletWithdrawDto) {
+  async calculateTx(transferdto: CryptoWalletTransferDto) {
     try {
-      const result = await this.transfer(withdrawDto);
-      if (!result) throw Error('Withdrawal Failed!');
+      const { from, to, value } = transferdto;
 
-      return result;
+      let transaction: CryptoWalletTransactionDto;
+
+      // Checking Wallet
+      const cryptoWallet = await this.findOne({ address: from });
+      if (!cryptoWallet) throw Error(`Wallet Not Found!`);
+
+      // Calculating Transaction
+      switch (cryptoWallet.symbol) {
+        case Token.BTC:
+          transaction = await this.BTCService.calculateTx({
+            value,
+            from,
+            to,
+          });
+          break;
+        case Token.ETH:
+          transaction = await this.ETHService.calculateTx({
+            value,
+            from,
+            to,
+          });
+          break;
+        case Token.USDT:
+          // transaction = await this.USDTService.sendTransaction({
+          //   value,
+          //   from,
+          //   to,
+          //   privateKey,
+          // });
+          break;
+        default:
+          throw Error('Transfer Error!');
+      }
+
+      return transaction;
     } catch (e) {
       console.log({ e });
-      return null;
     }
   }
 }

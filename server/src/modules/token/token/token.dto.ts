@@ -57,8 +57,11 @@ export class QueryTokenDto {
 }
 
 export class TokenServiceInterface {
-  create: (...args) => Promise<any>;
-  update?: (...args) => Promise<any>;
-  delete?: (...args) => Promise<any>;
-  getBalance?: (...args) => Promise<number>;
+  create: (...args) => any;
+  update?: (...args) => any;
+  delete?: (...args) => any;
+  getBalance: (...args) => any;
+  sendTransaction: (...args) => any;
+  calculateTx: (...args) => any;
+  calculateGas: (...args) => any;
 }

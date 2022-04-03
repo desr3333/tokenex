@@ -116,18 +116,23 @@ export class WalletController {
         .status(404)
         .json({ error: `Crypto Wallet ${from} Not Found!` });
 
-    // TODO: Calculating Transaction
+    // Calculating Transaction
+    const calculatedTx = await this.cryptoWalletService.calculateTx({
+      from,
+      to,
+      value,
+    });
 
     // Checking Balance
-    const isBalanceSufficient = cryptoWallet.balance >= value;
-    if (!isBalanceSufficient)
+    const isBalanceValid = cryptoWallet.balance >= calculatedTx?.output;
+    if (!isBalanceValid)
       return res
         .status(400)
-        .json({ error: `Crypto Wallet ${from} Has Insufficient Balance!` });
+        .json({ error: `Crypto Wallet ${from} Has Insufficient Funds!` });
 
     // Sending Transaction
-    const result = await this.cryptoWalletService.withdraw({ from, to, value });
-    if (!result) return res.status(400).json({ error: `Wihdrawal Failed!` });
+    const result = await this.cryptoWalletService.transfer({ from, to, value });
+    if (!result) return res.status(400).json({ error: `Withdrawal Failed!` });
 
     return res.status(200).json({ result });
   }

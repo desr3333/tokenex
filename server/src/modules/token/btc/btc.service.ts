@@ -4,7 +4,7 @@ import {
 } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import bitcore, { Address } from 'bitcore-lib';
+import bitcore, { Address, Transaction } from 'bitcore-lib';
 
 import * as bip32 from 'bip32';
 import * as bip39 from 'bip39';
@@ -19,6 +19,8 @@ export class BTCService implements TokenServiceInterface {
   EXPLORER = process.env.BTC_EXPLORER;
   NETWORK = bitcore.Networks.testnet;
 
+  GAS = 500;
+
   axios = axios.create({
     headers: {
       'api-key': this.NODE_API_KEY,
@@ -26,11 +28,11 @@ export class BTCService implements TokenServiceInterface {
   });
 
   toSatoshis(btc: number) {
-    return btc ? Math.floor(btc * 100000000) : 0;
+    return bitcore.Unit.fromBTC(Number(btc)).toSatoshis();
   }
 
-  fromSatoshis(satoshis: number) {
-    return satoshis ? satoshis / 100000000 : 0;
+  toBTC(satoshis: number) {
+    return bitcore.Unit.fromSatoshis(Number(satoshis)).toBTC();
   }
 
   async create(): Promise<CryptoWalletKeyPair> {
@@ -51,9 +53,10 @@ export class BTCService implements TokenServiceInterface {
       if (!response) throw Error('BTC Balance Not Fetched!');
 
       const { balance, txs, txids, totalReceived, totalSent } = response.data;
+
       const result = {
         address,
-        balance: Number(balance) || 0,
+        balance: this.toBTC(balance),
         totalReceived: Number(totalReceived) || 0,
         totalSent: Number(totalSent) || 0,
         txs: Number(txs) || 0,
@@ -71,19 +74,36 @@ export class BTCService implements TokenServiceInterface {
       const result = await this.get(address);
       if (!result) throw Error('BTC Balance Not Fetched!');
 
-      const balance = result.balance;
-      return balance;
+      return result.balance;
     } catch (e) {
       console.log({ e });
     }
   }
 
-  async getUtxo(address: string): Promise<bitcore.Transaction.UnspentOutput[]> {
+  async getUtxo({
+    address,
+    satoshis,
+  }: {
+    address: string;
+    satoshis: number;
+  }): Promise<Transaction.UnspentOutput[]> {
     try {
       const response = await this.axios.get(`${this.EXPLORER}/utxo/${address}`);
       const utxos = response.data;
 
-      const result = utxos?.map(
+      const selectMinUtxo = (
+        utxos: Transaction.UnspentOutput[],
+        satoshis: number,
+      ): Transaction.UnspentOutput => {
+        const sortedUtxos =
+          utxos
+            ?.filter((u) => u.satoshis >= satoshis)
+            ?.sort((a, b) => a.satoshis - b.satoshis) || [];
+
+        return sortedUtxos[0];
+      };
+
+      const utxo = utxos?.map(
         (e) =>
           new bitcore.Transaction.UnspentOutput({
             txId: e.txid,
@@ -96,7 +116,8 @@ export class BTCService implements TokenServiceInterface {
           }),
       );
 
-      return result;
+      // const result = selectMinUtxo(unspents, satoshis);
+      return utxo;
     } catch (e) {
       console.log({ e });
     }
@@ -134,15 +155,19 @@ export class BTCService implements TokenServiceInterface {
       const wallet = await this.get(from);
       if (!wallet) return null;
 
-      const utxo = await this.getUtxo(from);
-      const satoshis = bitcore.Unit.fromBTC(value).toSatoshis();
-      const fee = 5000;
-      const amount = satoshis - fee;
-      const gas = bitcore.Unit.fromSatoshis(fee).toBTC();
+      const address = from;
+      const satoshis = this.toSatoshis(value);
+      const fee = this.calculateGas(value);
+      const amount = satoshis;
+      const gas = this.toBTC(fee);
+
+      const utxo = await this.getUtxo({ address, satoshis });
 
       const signedTx = new bitcore.Transaction()
         .from(utxo)
         .to(to, amount)
+        .fee(fee)
+        .change(address)
         .sign(privateKey);
 
       if (!signedTx) throw Error(`Transaction Not Signed!`);
@@ -163,11 +188,50 @@ export class BTCService implements TokenServiceInterface {
       const result = {
         from,
         to,
-        value,
         tx,
         gas,
+        value: this.toBTC(amount),
       };
 
+      return result;
+    } catch (e) {
+      console.log({ e });
+      console.log(e?.response?.data);
+    }
+  }
+
+  async calculateTx({
+    value,
+    from,
+    to,
+  }: BTCTransactionDto): Promise<CryptoWalletTransactionDto> {
+    try {
+      const balance = await this.getBalance(from);
+      const satoshis = this.toSatoshis(value);
+      const gas = await this.calculateGas(value);
+
+      const input = this.toSatoshis(balance);
+      const output = this.toBTC(satoshis + gas);
+
+      const result = {
+        value,
+        from,
+        to,
+        gas,
+        output,
+      };
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
+  calculateGas(value: number) {
+    try {
+      const satoshis = this.toSatoshis(value);
+      const result = satoshis * 0.025;
       return result;
     } catch (e) {
       console.log({ e });

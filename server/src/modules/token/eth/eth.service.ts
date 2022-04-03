@@ -4,10 +4,11 @@ import {
 } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
+import { TokenServiceInterface } from '../token';
 import { ETHTransactionDto } from './eth.dto';
 
 @Injectable()
-export class ETHService {
+export class ETHService implements TokenServiceInterface {
   public web3: Web3;
 
   public name: string;
@@ -60,22 +61,6 @@ export class ETHService {
     }
   }
 
-  async calculateTransaction({ value }: ETHTransactionDto): Promise<number> {
-    try {
-      const gasUsed = this.GAS;
-      const gasPrice = await this.getGasPrice();
-      const gas = this.web3.utils.fromWei((gasUsed * gasPrice).toString());
-
-      const result = Number(gas) + Number(value);
-      if (!result) throw Error(`Transaction Not Calculated`);
-
-      return result;
-    } catch (e) {
-      console.log({ e });
-      return 0;
-    }
-  }
-
   async sendTransaction({
     value,
     from,
@@ -121,6 +106,41 @@ export class ETHService {
         gas: Number(_gas),
       };
 
+      return result;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
+  async calculateTx({
+    value,
+    from,
+    to,
+  }: ETHTransactionDto): Promise<CryptoWalletTransactionDto> {
+    try {
+      const gas = this.calculateGas(value);
+      const gasETH = Number(this.web3.utils.fromWei(gas.toString()));
+
+      const output = value + gasETH;
+
+      const result = {
+        value,
+        from,
+        to,
+        gas,
+        output,
+      };
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
+  calculateGas(value: number) {
+    try {
+      const result = this.GAS;
       return result;
     } catch (e) {
       console.log({ e });

@@ -46,22 +46,11 @@ export class CryptoWalletController {
     try {
       const { address } = params;
 
-      const cryptoWallet = await this.cryptoWalletService.findOne({ address });
-      if (!cryptoWallet)
+      const result = await this.cryptoWalletService.findOne({ address });
+      if (!result)
         return res
           .status(404)
           .json({ error: `Crypto Wallet ${address} Not Found!` });
-
-      const { symbol } = cryptoWallet;
-      const balance = await this.cryptoWalletService.getBalance({
-        address,
-        symbol,
-      });
-
-      const result = {
-        ...cryptoWallet,
-        balance,
-      };
 
       return res.status(200).json({ result });
     } catch (e) {
@@ -106,19 +95,6 @@ export class CryptoWalletController {
         return res
           .status(404)
           .json({ error: `Crypto Wallet ${address} Not Updated!` });
-
-      return res.status(200).json({ result });
-    } catch (e) {}
-  }
-
-  @Post('withdraw')
-  async withdraw(
-    @Res() res: Response,
-    @Body() withdrawDto: CryptoWalletWithdrawDto,
-  ) {
-    try {
-      const result = await this.cryptoWalletService.withdraw(withdrawDto);
-      if (!result) return res.status(400).json({ error: `Withdrawal Failed!` });
 
       return res.status(200).json({ result });
     } catch (e) {}
