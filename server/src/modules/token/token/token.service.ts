@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Token } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
+
 import { CreateTokenDto, TokenServiceInterface } from './token.dto';
 
 @Injectable()

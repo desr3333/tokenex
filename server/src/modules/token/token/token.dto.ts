@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Token, Prisma } from '@prisma/client';
+
+import { Prisma } from '@prisma/client';
 
 export class CreateTokenDto {
   @ApiProperty()
