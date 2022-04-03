@@ -1,7 +1,8 @@
 import "module-alias/register";
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, "./../.env") });
 
 import { TelegramBot, I18n } from "@core";
 import { handleCallbackQuery, Routes } from "@helpers";
