@@ -7,8 +7,8 @@ import { TelegramBot, I18n } from "@core";
 import { handleCallbackQuery, Routes } from "@helpers";
 
 import { session } from "telegraf";
-import { stage } from "./scenes";
-import { accountMiddleware, startMiddleware } from "./middlewares";
+import { stage } from "./scenes/stage";
+import { updateMiddleware, startMiddleware } from "./middlewares";
 
 const { PORT, BOT_TOKEN } = process.env;
 
@@ -20,8 +20,8 @@ bot.use(session());
 bot.use(stage.middleware());
 bot.catch((e: Error) => console.log({ e }));
 
-bot.hears(/.*/, accountMiddleware);
-bot.action(/.*/, accountMiddleware);
+bot.hears(/.*/, updateMiddleware);
+bot.action(/.*/, updateMiddleware);
 
 // Commands
 bot.command(["test"], (ctx) => ctx.reply("🤔🤔🤔"));
@@ -33,12 +33,7 @@ bot.on("text", (ctx) => {
   const { account } = ctx.session;
   if (!account) return;
 
-  switch (account.role) {
-    case "admin":
-      return ctx.scene.enter(Routes.DASHBOARD_START);
-    default:
-      return ctx.scene.enter(Routes.MAIN);
-  }
+  return ctx.scene.enter(Routes.START);
 });
 
 bot.on("callback_query", (ctx) => {
@@ -46,7 +41,7 @@ bot.on("callback_query", (ctx) => {
 
   return ctx.scene.enter(data).catch((e) => {
     console.log({ e });
-    return ctx.scene.enter(Routes.MAIN);
+    return ctx.scene.enter(Routes.START);
   });
 });
 

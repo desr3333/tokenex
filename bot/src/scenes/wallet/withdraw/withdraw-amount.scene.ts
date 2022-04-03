@@ -28,19 +28,27 @@ scene.on("text", (ctx) => {
 
   // Checking Value
   const value = Number(ctx.message.text);
-  if (!value) return ctx.reply("Error! Incorrect Value.");
+  if (!value)
+    return ctx.reply(
+      ctx.t("error:incorrect_format"),
+      keyboards.cancel(Routes.WALLET_START)
+    );
 
   // Checking Wallet
   const cryptoWallet = selectFromArray(wallet.cryptoWallets, { symbol });
-  if (!cryptoWallet) return ctx.reply("Error! Incorrect Wallet.");
+  if (!cryptoWallet)
+    return ctx.reply(
+      ctx.t("error:incorrect_format"),
+      keyboards.cancel(Routes.WALLET_START)
+    );
 
   // Checking Balance
   const isBalanceSufficient = cryptoWallet?.balance >= value || false;
-
-  console.log({ value, isBalanceSufficient, cryptoWallet });
-
   if (!isBalanceSufficient)
-    return ctx.reply(ctx.t("error:wallet.insufficient_balance"));
+    return ctx.reply(
+      ctx.t("error:wallet.insufficient_balance"),
+      keyboards.back(Routes.WALLET_START)
+    );
 
   // Updating Session
   ctx.session.transaction = {

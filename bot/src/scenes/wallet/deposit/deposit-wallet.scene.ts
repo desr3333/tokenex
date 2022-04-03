@@ -21,7 +21,7 @@ scene.on("callback_query", (ctx) => {
 
   const { wallet } = ctx.session;
   const callbackQuery = ctx.update.callback_query.data;
-  const hash = Routes.DEPOSIT_WALLET_SELECT();
+  const hash = Routes.DEPOSIT_WALLET__SELECT();
 
   if (callbackQuery.includes(hash)) {
     const symbol = callbackQuery.split(hash)[1]?.toUpperCase();

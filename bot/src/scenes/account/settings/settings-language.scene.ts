@@ -10,6 +10,6 @@ scene.enter((ctx) => {
     ctx.t("scene:account.settings.language.edit", {
       language: language_code,
     }),
-    keyboards.account_settings_language()
+    keyboards.account.settings.language()
   );
 });

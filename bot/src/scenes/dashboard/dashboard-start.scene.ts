@@ -9,12 +9,12 @@ scene.enter((ctx) => {
 
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.t("scene:dashboard.main", { first_name }),
-      keyboards.dashboard()
+      ctx.t("scene:dashboard.start", { first_name }),
+      keyboards.dashboard.start()
     );
 
   return ctx.reply(
-    ctx.t("scene:dashboard.main", { first_name }),
-    keyboards.dashboard()
+    ctx.t("scene:dashboard.start", { first_name }),
+    keyboards.dashboard.start()
   );
 });

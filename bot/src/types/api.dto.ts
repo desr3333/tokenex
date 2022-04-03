@@ -11,10 +11,17 @@ export class TransactionDto {
   to?: string;
   value?: number;
   cryptoWallet?: CryptoWalletDto;
+  explorerLink?: string;
 }
 
 export class CryptoWalletDto {
   address?: string;
   balance?: number;
   symbol?: string;
+  feeAddress?: string;
+  depositFee?: number;
+  withdrawFee?: number;
+  raindropFee?: number;
 }
+
+export class TokenDto {}

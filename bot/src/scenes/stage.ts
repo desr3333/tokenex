@@ -1,14 +1,12 @@
 import { Stage } from "@core";
 import { Scenes } from "telegraf";
 
-import * as start from "./main.scene";
+import * as start from "./start.scene";
 
+import * as account from "./account";
 import * as wallet from "./wallet";
-
-import * as settings from "./account/settings/settings.scene";
-import * as language from "./account/settings/language.scene";
-
 import * as dashboard from "./dashboard";
+import * as settings from "./settings";
 
 export const stage = new Stage([
   start.scene,
@@ -24,13 +22,19 @@ export const stage = new Stage([
   wallet.withdraw.amount.scene,
   wallet.withdraw.address.scene,
   wallet.withdraw.confirm.scene,
-  wallet.withdraw.fulfilled.scene,
+  wallet.withdraw.transaction.scene,
   wallet.withdraw.failed.scene,
 
   wallet.exchange.start.scene,
 
-  settings.scene,
-  language.scene,
+  account.start.scene,
+  account.settings.start.scene,
+  account.settings.language.scene,
 
   dashboard.start.scene,
+  dashboard.stats.start.scene,
+
+  settings.start.scene,
+  settings.bot.start.scene,
+  settings.token.start.scene,
 ]);

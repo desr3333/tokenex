@@ -9,8 +9,19 @@ scene.enter(async (ctx) => {
   const wallet_symbol = cryptoWallet?.symbol;
   const wallet_address = cryptoWallet?.address;
 
-  await ctx.reply(ctx.t("scene:wallet.deposit.wallet.hint", { wallet_symbol }));
+  if (!ctx.message) {
+    await ctx.editMessageText(
+      ctx.t("scene:wallet.deposit.wallet.hint", { wallet_symbol })
+    );
+    await ctx.replyWithMarkdown(
+      ctx.t("scene:wallet.deposit.wallet.address", { wallet_address }),
+      keyboards.back(Routes.DEPOSIT_WALLET)
+    );
 
+    return;
+  }
+
+  await ctx.reply(ctx.t("scene:wallet.deposit.wallet.hint", { wallet_symbol }));
   await ctx.replyWithMarkdown(
     ctx.t("scene:wallet.deposit.wallet.address", { wallet_address }),
     keyboards.back(Routes.DEPOSIT_WALLET)

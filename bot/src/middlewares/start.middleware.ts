@@ -11,9 +11,6 @@ export const startMiddleware: TelegramMiddleware = async (ctx, next) => {
     const { account } = ctx.session;
 
     if (!account) return next();
-
-    console.log("Role ..");
-    console.log({ account });
   } catch (e) {
     console.log(e.response?.data);
     next();

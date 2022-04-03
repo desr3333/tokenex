@@ -1,23 +1,36 @@
 {
   "scene": {
-    "test": "TESTED!",
-    "main": "Use the @{{bot_username}} bot as your regular cryptocurrency wallet. The wallet is linked to your Telegram account.\n\nBuy, send, receive, and exchange cryptocurrencies",
+    "start": "v0.4.21\n\nUse the @{{bot_username}} bot as your regular cryptocurrency wallet. The wallet is linked to your Telegram account.\n\nBuy, send, receive, and exchange cryptocurrencies",
 
     "account": {
+      "start": "🔒️ Account\n\nID: {{id}}\nName: {{first_name}}",
       "settings": {
-        "main": "⚙️ Settings\n\nLanguage: {{language}}",
+        "start": "⚙️ Settings\n\nLanguage: {{language}}",
         "language": {
           "edit": "⚙️ Settings\n\nChoose Language:"
         }
       }
     },
 
+    "settings": {
+      "start": "⚙️ Settings",
+      "bot": {
+        "start": "⚙️ Settings / Bot"
+      },
+      "token": {
+        "start": "⚙️ Settings / {{symbol}}\n\nAddress: {{fee_address}}\nDeposit Fee: {{deposit_fee}}\nWithdraw Fee: {{withdraw_fee}}\n"
+      }
+    },
+
     "dashboard": {
-      "main": "📊 Dashboard\n\nHey, {{first_name}}!\nHere you can monitor the statistics and customize the bot."
+      "start": "🤖🔥\n\nHey, {{first_name}}!\nHere you can monitor the statistics and customize the bot.",
+      "stats": {
+        "start": "📊 Stats\n\nTransactions: 4345\nUsers: 235"
+      }
     },
 
     "wallet": {
-      "main": "💰️ My Wallet\n\nBTC: {{btc_wallet_balance}}\nETH: {{eth_wallet_balance}}\nUSDT: {{usdt_wallet_balance}}",
+      "start": "💰️ My Wallet\n\nBTC: {{btc_wallet_balance}}\nETH: {{eth_wallet_balance}}\nUSDT: {{usdt_wallet_balance}}",
 
       "deposit": {
         "wallet": {
@@ -29,50 +42,46 @@
 
       "withdraw": {
         "amount": "⬆️ Withdraw\n\nHow much {{wallet_symbol}} you want to withdraw?",
-        "address": "⬆️ Withdraw\n\nType the address where you want to withdraw the money. Funds will be withdrawn within 30-60 minutes",
+        "address": "⬆️ Withdraw\n\nType the address where you want to withdraw the money. Funds will be withdrawn within 30-60 minutes.",
         "wallet": {
           "select": "⬆️ Withdraw\n\nSelect a wallet from which you want to withdraw."
         },
-        "confirm": "⬆️ Withdraw\n\nFrom: {{from}}\nTo: {{to}}\nValue: {{value}}\n\nConfirm the transaction, please.",
-        "fulfilled": "⬆️ Withdraw\n\nWithdrawal request #12345 has been fulfilled!",
-        "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!"
+
+        "confirm": "⬆️ Withdraw\n\nValue: {{value}} {{symbol}}\nTo: {{to}}\n\nConfirm the transaction, please.",
+        "fulfilled": "⬆️ Withdraw\n\nWithdrawal Request #12345 has been fulfilled!",
+        "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!",
+        "transaction": "⬆️ Withdraw\n\nValue: {{value}} {{symbol}}\nTo: {{to}}\nStatus: {{status}}\n\nYou can check the transaction at the link below."
       }
     }
   },
 
   "button": {
-    "account": {
-      "settings": {
-        "settings": "⚙️ Settings",
-        "language": {
-          "edit": "Change Language"
-        }
-      }
-    },
+    "dashboard": "📊 Dashboard",
+    "settings": "⚙️ Settings",
+    "bot": "🤖 Bot",
+    "fee": "💰️ Fee",
+    "fees": "💰️ Fees",
+    "wallet": "💰️ Wallet",
+    "account": "🔒️ Account",
+    "transactions": "☑️ Transactions",
+    "transaction": "🔗 Transaction",
+    "deposit": "⬇️ Deposit",
+    "withdraw": "⬆️ Withdraw",
+    "exchange": "♻️ Exchange",
+    "support": "💬 Support",
+    "stats": "📊 Stats",
 
-    "dashboard": { "transactions": "💰️ Transactions", "stats": "📊 Stats" },
+    "back": "↩️ Back",
+    "back_to_wallet": "↩️ Back To Wallet",
+    "confirm": "✅ Confirm",
+    "cancel": "🚫 Cancel",
+    "edit_language": "Edit Language",
 
-    "bot": {
-      "settings": "⚙️ Settings"
-    },
+    "address": "Address",
+    "deposit_fee": "Deposit Fee",
+    "withdraw_fee": "Withdraw Fee",
+    "raindrop_fee": "Raindrop Fee",
 
-    "wallet": {
-      "wallet": "💰️ My Wallet",
-      "transactions": "☑️ Transactions",
-
-      "deposit": {
-        "deposit": "⬇️ Deposit"
-      },
-      "withdraw": {
-        "withdraw": "⬆️ Withdraw"
-      },
-      "exchange": {
-        "exchange": "♻️ Exchange"
-      }
-    },
-    "support": {
-      "support": "💬 Support"
-    },
     "language": {
       "english": "🇬🇧",
       "russian": "🇷🇺",
@@ -80,17 +89,21 @@
       "en": "🇬🇧",
       "ru": "🇷🇺",
       "de": "🇩🇪"
-    },
+    }
+  },
 
-    "back": "↩️ Back",
-    "confirm": "✅ Confirm",
-    "cancel": "🚫 Cancel"
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "canceled": "Canceled"
   },
 
   "error": {
     "unexpected_error": "❌ Error!",
     "account": {
-      "banned": "❌ Error!\n\nYou've been banned!"
+      "banned": "❌ Error!\n\nYou've been banned!",
+      "not_found": "❌ Error!\n\nAccount Not Found!",
+      "not_created": "❌ Error!\n\nAccount Not Created!"
     },
     "wallet": {
       "insufficient_balance": "❌ Error!\n\nYour balance is insufficient. Please, deposit crypto into your wallet!"

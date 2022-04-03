@@ -1,4 +1,5 @@
 import { APIService } from "@services";
+import { TransactionDto } from "types";
 
 export const getAll = async () => {
   try {
@@ -39,6 +40,15 @@ export const update = async (id: number, data: any) => {
 export const remove = async (id: number) => {
   try {
     const response = await APIService.post(`wallets/${id}`);
+    return response.data?.result;
+  } catch (e) {
+    console.log(e.response?.data);
+  }
+};
+
+export const withdraw = async (withdrawDto: TransactionDto) => {
+  try {
+    const response = await APIService.post(`wallets/withdraw`, withdrawDto);
     return response.data?.result;
   } catch (e) {
     console.log(e.response?.data);

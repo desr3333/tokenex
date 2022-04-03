@@ -21,13 +21,11 @@ scene.on("callback_query", (ctx) => {
 
   const { wallet } = ctx.session;
   const callbackQuery = ctx.update.callback_query.data;
-  const hash = Routes.WITHDRAW_WALLET_SELECT();
+  const hash = Routes.WITHDRAW__WALLET_SELECT();
 
   if (callbackQuery.includes(hash)) {
     const symbol = callbackQuery.split(hash)[1]?.toUpperCase();
     const cryptoWallet = selectFromArray(wallet.cryptoWallets, { symbol });
-
-    console.log({ symbol, cryptoWallet });
 
     ctx.session.transaction = {
       ...ctx.session.transaction,

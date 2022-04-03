@@ -17,6 +17,8 @@ export interface TelegramSession
   wallet: WalletDto;
   transaction: TransactionDto;
 
+  tokens: any[];
+
   BTCWallet: any;
   ETHWallet: any;
   USDTWallet: any;

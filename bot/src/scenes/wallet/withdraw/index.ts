@@ -4,5 +4,5 @@ export * as amount from "./withdraw-amount.scene";
 export * as address from "./withdraw-address.scene";
 export * as confirm from "./withdraw-confirm.scene";
 
-export * as fulfilled from "./withdraw-fulfilled.scene";
+export * as transaction from "./withdraw-transaction.scene";
 export * as failed from "./withdraw-failed.scene";
