@@ -15,6 +15,7 @@ export class ETHService implements TokenServiceInterface {
   public symbol: string;
 
   GAS = 21000;
+  TESTNET_EXPLORER = 'https://rinkeby.etherscan.io';
 
   constructor() {
     const { ETH_NODE_API_KEY, ETH_NODE_PROVIDER } = process.env;
@@ -70,7 +71,7 @@ export class ETHService implements TokenServiceInterface {
     try {
       const { web3, GAS } = this;
 
-      const gas = GAS;
+      const gas = this.calculateGas(value);
       const nonce = await web3.eth.getTransactionCount(from, 'latest');
 
       const transaction = {
@@ -89,21 +90,23 @@ export class ETHService implements TokenServiceInterface {
       if (!signedTx) throw Error(`Transaction Not Signed!`);
 
       // Sending
-      const tx = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-      if (!tx)
+      const sentTx = await web3.eth.sendSignedTransaction(
+        signedTx.rawTransaction,
+      );
+      if (!sentTx)
         throw Error(`Transaction #${signedTx.transactionHash} Not Sent!`);
 
-      const { transactionHash, gasUsed } = tx;
+      const { transactionHash: tx } = sentTx;
 
-      const gasPrice = await this.getGasPrice();
-      const _gas = web3.utils.fromWei((gasUsed * gasPrice).toString());
+      const explorerLink = this.generateExplorerLink(tx);
 
       const result = {
         from,
         to,
-        tx: transactionHash,
         value: Number(value),
-        gas: Number(_gas),
+        gas,
+        tx,
+        explorerLink,
       };
 
       return result;
@@ -145,5 +148,9 @@ export class ETHService implements TokenServiceInterface {
     } catch (e) {
       console.log({ e });
     }
+  }
+
+  generateExplorerLink(tx: string) {
+    return `${this.TESTNET_EXPLORER}/tx/${tx}`;
   }
 }

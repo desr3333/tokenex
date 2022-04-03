@@ -19,6 +19,8 @@ export class BTCService implements TokenServiceInterface {
   EXPLORER = process.env.BTC_EXPLORER;
   NETWORK = bitcore.Networks.testnet;
 
+  TESTNET_EXPLORER = 'https://www.blockchain.com/btc-testnet';
+
   GAS = 500;
 
   axios = axios.create({
@@ -184,6 +186,7 @@ export class BTCService implements TokenServiceInterface {
       });
 
       const tx = sentTx.data.result;
+      const explorerLink = this.generateExplorerLink(tx);
 
       const result = {
         from,
@@ -191,6 +194,7 @@ export class BTCService implements TokenServiceInterface {
         tx,
         gas,
         value: this.toBTC(amount),
+        explorerLink,
       };
 
       return result;
@@ -236,5 +240,9 @@ export class BTCService implements TokenServiceInterface {
     } catch (e) {
       console.log({ e });
     }
+  }
+
+  generateExplorerLink(tx: string) {
+    return `${this.TESTNET_EXPLORER}/tx/${tx}`;
   }
 }

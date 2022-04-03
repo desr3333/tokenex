@@ -48,6 +48,9 @@ export class CryptoWalletTransactionDto {
   tx?: string;
 
   @ApiProperty()
+  explorerLink?: string;
+
+  @ApiProperty()
   gas?: number;
 
   output?: number;

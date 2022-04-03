@@ -64,4 +64,5 @@ export class TokenServiceInterface {
   sendTransaction: (...args) => any;
   calculateTx: (...args) => any;
   calculateGas: (...args) => any;
+  generateExplorerLink: (...args) => any;
 }
