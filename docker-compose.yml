@@ -7,10 +7,10 @@ services:
     build:
       context: ./server
     ports:
-      - 5000:5000
+      - "5000:5000"
     networks:
       - tokenex-network
-    restart: "always"
+    restart: always
 
   tokenex-bot:
     container_name: tokenex-bot
@@ -18,10 +18,10 @@ services:
     build:
       context: ./bot
     ports:
-      - 5001:5001
+      - "5001:5001"
     networks:
       - tokenex-network
-    restart: "always"
+    restart: always
 
 networks:
   tokenex-network:
