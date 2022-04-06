@@ -8,6 +8,7 @@ import { WalletModule } from '@modules/wallet';
 import { TelegramAccountModule } from '@modules/telegram-account';
 import { CryptoWalletModule } from '@modules/crypto-wallet';
 import { TokenModule } from '@modules/token/token';
+import { CoindataModule } from '@modules/coindata';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TokenModule } from '@modules/token/token';
     WalletModule,
     TokenModule,
     CryptoWalletModule,
+    CoindataModule,
   ],
 })
 export class AppModule {}
