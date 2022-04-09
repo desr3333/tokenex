@@ -4,11 +4,11 @@ import {
 } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
-import { TokenServiceInterface } from '../token';
-import { ETHTransactionDto } from './eth.dto';
+import { TokenServiceInterface } from '../../crypto-token';
+import { ETHRawTransactionDto } from './ethereum.dto';
 
 @Injectable()
-export class ETHService implements TokenServiceInterface {
+export class EthereumService implements TokenServiceInterface {
   public web3: Web3;
 
   public name: string;
@@ -67,7 +67,7 @@ export class ETHService implements TokenServiceInterface {
     from,
     to,
     privateKey,
-  }: ETHTransactionDto): Promise<CryptoWalletTransactionDto> {
+  }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
     try {
       const { web3, GAS } = this;
 
@@ -119,7 +119,7 @@ export class ETHService implements TokenServiceInterface {
     value,
     from,
     to,
-  }: ETHTransactionDto): Promise<CryptoWalletTransactionDto> {
+  }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
     try {
       const gas = this.calculateGas(value);
       const gasETH = Number(this.web3.utils.fromWei(gas.toString()));

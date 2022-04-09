@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { CoindataTicker } from './coindata.dto';
+
+import { CoinMarketTicker } from './coin-market.dto';
 
 const { COINDATA_API, COINDATA_API_KEY } = process.env;
 
 @Injectable()
-export class CoindataService {
+export class CoinMarketService {
   private fetch;
 
   constructor() {
@@ -15,7 +16,7 @@ export class CoindataService {
     });
   }
 
-  async getTickers(symbols: string[]): Promise<CoindataTicker[]> {
+  async getTickers(symbols: string[]): Promise<CoinMarketTicker[]> {
     try {
       if (!symbols.length) return [];
 
@@ -25,7 +26,7 @@ export class CoindataService {
 
       const data = response.data.data;
 
-      const result: CoindataTicker[] = symbols?.map((symbol) => {
+      const result: CoinMarketTicker[] = symbols?.map((symbol) => {
         const ticker = data[symbol];
 
         const { id, name } = ticker;
@@ -50,7 +51,7 @@ export class CoindataService {
     }
   }
 
-  async getTicker(symbol: string): Promise<CoindataTicker> {
+  async getTicker(symbol: string): Promise<CoinMarketTicker> {
     try {
       if (!symbol) throw Error(`Ticker ${symbol} Not Found!`);
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ERC20Service } from '@modules/token/eth';
+import { ERC20Service } from '@modules/blockchain/ethereum';
 
 import abi from './usdt.abi.json';
 

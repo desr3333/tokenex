@@ -6,14 +6,11 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import bitcore, { Address, Transaction } from 'bitcore-lib';
 
-import * as bip32 from 'bip32';
-import * as bip39 from 'bip39';
-
-import { TokenServiceInterface } from './../token';
-import { BTCTransactionDto, BTCWalletDto } from './btc.dto';
+import { BlockchainServiceInterface } from '../blockchain.dto';
+import { BTCTransactionDto, BTCWalletDto } from './bitcoin.dto';
 
 @Injectable()
-export class BTCService implements TokenServiceInterface {
+export class BitcoinService implements BlockchainServiceInterface {
   NODE_API_KEY = process.env.BTC_NODE_API_KEY;
   NODE_PROVIDER = process.env.BTC_NODE_PROVIDER;
   EXPLORER = process.env.BTC_EXPLORER;
@@ -22,6 +19,11 @@ export class BTCService implements TokenServiceInterface {
   TESTNET_EXPLORER = 'https://www.blockchain.com/btc-testnet';
 
   GAS = 500;
+
+  explorer = axios.create({
+    baseURL: this.EXPLORER,
+    headers: { 'api-key': this.NODE_API_KEY },
+  });
 
   axios = axios.create({
     headers: {
@@ -47,7 +49,7 @@ export class BTCService implements TokenServiceInterface {
     return result;
   }
 
-  async get(address: string): Promise<BTCWalletDto> {
+  async getAddress(address: string): Promise<BTCWalletDto> {
     try {
       const response = await this.axios.get(
         `${this.EXPLORER}/address/${address}`,
@@ -73,7 +75,7 @@ export class BTCService implements TokenServiceInterface {
 
   async getBalance(address: string): Promise<number> {
     try {
-      const result = await this.get(address);
+      const result = await this.getAddress(address);
       if (!result) throw Error('BTC Balance Not Fetched!');
 
       return result.balance;
@@ -154,7 +156,7 @@ export class BTCService implements TokenServiceInterface {
     privateKey,
   }: BTCTransactionDto): Promise<CryptoWalletTransactionDto> {
     try {
-      const wallet = await this.get(from);
+      const wallet = await this.getAddress(from);
       if (!wallet) return null;
 
       const address = from;
@@ -229,6 +231,16 @@ export class BTCService implements TokenServiceInterface {
     } catch (e) {
       console.log({ e });
       return null;
+    }
+  }
+
+  async getLatestBlock() {
+    try {
+      const response = await this.explorer.get('block/703052');
+      const result = response?.data?.height;
+      return result;
+    } catch (e) {
+      console.log({ e });
     }
   }
 
