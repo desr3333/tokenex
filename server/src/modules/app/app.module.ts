@@ -10,6 +10,7 @@ import { CryptoWalletModule } from '@modules/crypto-wallet';
 import { TokenModule } from '@modules/crypto-token';
 import { CoinMarketModule } from '@modules/coin-market';
 import { ExplorerModule } from '@modules/explorer';
+import { TelegramModule } from '@modules/telegram';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { ExplorerModule } from '@modules/explorer';
     WalletModule,
     TokenModule,
     CryptoWalletModule,
+
+    TelegramModule,
 
     ExplorerModule,
     CoinMarketModule,
