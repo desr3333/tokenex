@@ -5,7 +5,7 @@ declare namespace NodeJS {
     NODE_ENV: "development" | "production";
     PWD: string;
 
-    PORT?: string;
+    PORT?: number;
     BOT_TOKEN?: string;
     SUPPORT?: string;
   }

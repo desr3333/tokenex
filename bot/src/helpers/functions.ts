@@ -10,7 +10,7 @@ export const selectFromArray = (array: any[], condition: object) => {
   return array?.filter((item) => item[key] === value)?.[0] || null;
 };
 
-export const handleCallbackQuery = (callback_query: CallbackQuery) => {
+export const parseCallbackQuery = (callback_query: CallbackQuery) => {
   if (!("data" in callback_query)) return null;
   return callback_query.data;
 };

@@ -4,54 +4,71 @@ import path from "path";
 
 dotenv.config({ path: path.join(__dirname, "./../.env") });
 
+import fastify from "fastify";
 import { TelegramBot, I18n } from "@core";
-import { handleCallbackQuery, Routes } from "@helpers";
+import { parseCallbackQuery, Routes } from "@helpers";
 
 import { session } from "telegraf";
 import { stage } from "./scenes/stage";
-import { updateMiddleware, startMiddleware } from "./middlewares";
+import { updateMiddleware } from "./middlewares";
+import { Update } from "telegraf/typings/core/types/typegram";
+import { TelegramTextMessageDto } from "types";
 
-const { PORT, BOT_TOKEN } = process.env;
+const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
 
-export const bot = new TelegramBot(BOT_TOKEN);
-
-// Middlewares
-bot.use(I18n.middleware());
-bot.use(session());
-bot.use(stage.middleware());
-bot.catch((e: Error) => console.log({ e }));
-
-bot.hears(/.*/, updateMiddleware);
-bot.action(/.*/, updateMiddleware);
-
-// Commands
-bot.command(["test"], (ctx) => ctx.reply("🤔🤔🤔"));
-bot.command(["raindrop"], (ctx) => ctx.reply("🌧️🌧️🌧️"));
-
-// Handlers
-
-bot.on("text", (ctx) => {
-  const { account } = ctx.session;
-  if (!account) return;
-
-  return ctx.scene.enter(Routes.START);
-});
-
-bot.on("callback_query", (ctx) => {
-  const data = handleCallbackQuery(ctx.callbackQuery);
-
-  return ctx.scene.enter(data).catch((e) => {
-    console.log({ e });
-    return ctx.scene.enter(Routes.START);
-  });
-});
-
-// Launching Bot
 (async () => {
-  await bot
-    .launch({})
-    .then(() => console.log(`Bot: Running (${PORT})`))
-    .catch((e) => console.log({ e }));
+  try {
+    const app = fastify();
+    const bot = new TelegramBot(BOT_TOKEN);
 
-  await I18n.init();
+    const SECRET_PATH = bot.secretPathComponent();
+    const WEBHOOK = `${BOT_WEBHOOK}/${SECRET_PATH}`;
+
+    // Bot
+    bot.use(I18n.middleware());
+    bot.use(session());
+    bot.use(stage.middleware());
+    bot.catch((e: Error) => console.log({ e }));
+
+    bot.hears(/.*/, updateMiddleware);
+    bot.action(/.*/, updateMiddleware);
+
+    bot.command(["test"], (ctx) => ctx.reply("🤔🤔🤔"));
+    bot.command(["raindrop"], (ctx) => ctx.reply("🌧️🌧️🌧️"));
+
+    bot.on("text", (ctx) => {
+      const { account } = ctx.session;
+      if (!account) return;
+
+      return ctx.scene.enter(Routes.START);
+    });
+
+    bot.on("callback_query", (ctx) => {
+      const data = parseCallbackQuery(ctx.callbackQuery);
+
+      return ctx.scene.enter(data).catch((e) => {
+        console.log({ e });
+        return ctx.scene.enter(Routes.START);
+      });
+    });
+
+    await bot.telegram.setWebhook(WEBHOOK);
+    await I18n.init();
+
+    // App
+    app.post(`/${SECRET_PATH}`, (req, rep) => {
+      bot.handleUpdate(<Update>req.body, rep.raw);
+    });
+
+    app.post(`/${SECRET_PATH}/sendMessage`, (req, rep) => {
+      const { chat_id, text, extra } = <TelegramTextMessageDto>req.body;
+      return bot.telegram.sendMessage(chat_id, text, extra);
+    });
+
+    app.listen({ port: PORT }).then(() => {
+      console.log(`Bot Running [${PORT}]`);
+    });
+  } catch (e) {
+    console.log({ e });
+  }
 })();

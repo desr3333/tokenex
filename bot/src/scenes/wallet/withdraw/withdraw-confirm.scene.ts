@@ -1,5 +1,5 @@
 import { Scene } from "@core";
-import { handleCallbackQuery, keyboards, Routes } from "@helpers";
+import { parseCallbackQuery, keyboards, Routes } from "@helpers";
 import { walletService } from "@services";
 
 export const scene = new Scene(Routes.WITHDRAW_CONFIRM);
@@ -27,7 +27,7 @@ scene.enter(async (ctx) => {
 });
 
 scene.on("callback_query", async (ctx) => {
-  const data = handleCallbackQuery(ctx.callbackQuery);
+  const data = parseCallbackQuery(ctx.callbackQuery);
   const { from, to, value } = ctx.session.transaction;
 
   switch (data) {

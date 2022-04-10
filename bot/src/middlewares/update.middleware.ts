@@ -4,7 +4,7 @@ import {
   telegramAccountService,
   walletService,
 } from "@services";
-import { selectFromArray, Token } from "@helpers";
+import { parseCallbackQuery, Routes, selectFromArray, Token } from "@helpers";
 
 export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
   try {
@@ -67,4 +67,22 @@ export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
     ctx.reply("Server Error");
     console.log({ e });
   }
+};
+
+export const handleTextMessage: TelegramMiddleware = (ctx) => {
+  const data = parseCallbackQuery(ctx.callbackQuery);
+
+  return ctx.scene.enter(data).catch((e) => {
+    console.log({ e });
+    ctx.scene.enter(Routes.START);
+  });
+};
+
+export const handleCallbackQuery: TelegramMiddleware = (ctx) => {
+  const data = parseCallbackQuery(ctx.callbackQuery);
+
+  return ctx.scene.enter(data).catch((e) => {
+    console.log({ e });
+    ctx.scene.enter(Routes.START);
+  });
 };

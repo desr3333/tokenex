@@ -1,6 +1,6 @@
 import { Scene } from "@core";
 import {
-  handleCallbackQuery,
+  parseCallbackQuery,
   keyboards,
   Routes,
   selectFromArray,
@@ -20,7 +20,7 @@ scene.enter(async (ctx) => {
 
 scene.on("callback_query", (ctx) => {
   const { wallet } = ctx.session;
-  const callbackQuery = handleCallbackQuery(ctx.callbackQuery);
+  const callbackQuery = parseCallbackQuery(ctx.callbackQuery);
   const route = Routes.SETTINGS_TOKEN__SELECT();
 
   if (callbackQuery?.includes(route)) {

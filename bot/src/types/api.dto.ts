@@ -1,3 +1,5 @@
+import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
+
 export class WalletDto {
   id: number;
   account: any;
@@ -25,3 +27,9 @@ export class CryptoWalletDto {
 }
 
 export class TokenDto {}
+
+export class TelegramTextMessageDto {
+  chat_id: number;
+  text: string;
+  extra?: ExtraReplyMessage;
+}
