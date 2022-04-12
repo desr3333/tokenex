@@ -6,13 +6,18 @@ dotenv.config({ path: path.join(__dirname, "./../.env") });
 
 import fastify from "fastify";
 import { TelegramBot, I18n } from "@core";
-import { parseCallbackQuery, Routes } from "@helpers";
+import {
+  keyboards,
+  parseCallbackQuery,
+  Routes,
+  TelegramNotication,
+} from "@helpers";
 
 import { session } from "telegraf";
 import { stage } from "./scenes/stage";
 import { updateMiddleware } from "./middlewares";
 import { Update } from "telegraf/typings/core/types/typegram";
-import { TelegramTextMessageDto } from "types";
+import { TelegramNotificationDto, TelegramTextMessageDto } from "types";
 
 const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
 
@@ -63,6 +68,28 @@ const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
     app.post(`/${SECRET_PATH}/sendMessage`, (req, rep) => {
       const { chat_id, text, extra } = <TelegramTextMessageDto>req.body;
       return bot.telegram.sendMessage(chat_id, text, extra);
+    });
+
+    app.post(`/${SECRET_PATH}/sendNotification`, (req, rep) => {
+      const { chat_id, type, data } = <TelegramNotificationDto>req.body;
+
+      const { symbol, value, from, to, explorerLink } = data;
+
+      switch (type) {
+        case TelegramNotication.TRANSACTION:
+          return bot.telegram.sendMessage(
+            chat_id,
+            I18n.t("notification:wallet.transaction", {
+              symbol,
+              value,
+              from,
+              to,
+            }),
+            keyboards.wallet_transaction({ explorerLink })
+          );
+        default:
+          return;
+      }
     });
 
     app.listen({ port: PORT }).then(() => {

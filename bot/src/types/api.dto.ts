@@ -1,3 +1,4 @@
+import { TelegramNotication } from "helpers";
 import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
 
 export class WalletDto {
@@ -32,4 +33,10 @@ export class TelegramTextMessageDto {
   chat_id: number;
   text: string;
   extra?: ExtraReplyMessage;
+}
+
+export class TelegramNotificationDto<T = any> {
+  type: string;
+  chat_id: number;
+  data: T;
 }

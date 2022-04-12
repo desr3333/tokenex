@@ -108,5 +108,10 @@
     "wallet": {
       "insufficient_balance": "❌ Error!\n\nYour balance is insufficient. Please, deposit crypto into your wallet!"
     }
+  },
+  "notification": {
+    "wallet": {
+      "transaction": "Transaction 🔗\n\nValue: {{value}} {{symbol}}\nFrom: {{from}}\nStatus: {{status}}\n\nYou can check the transaction at the link below."
+    }
   }
 }

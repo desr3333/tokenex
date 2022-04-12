@@ -1,4 +1,4 @@
-import i18next, { i18n } from "i18next";
+import i18next, { i18n, t } from "i18next";
 import { TelegramContext } from "types";
 import fs from "fs";
 import path from "path";
@@ -11,6 +11,8 @@ type LanguageCode = "en" | "ru";
 const locales = { en, ru };
 
 export class I18n {
+  static t = t;
+
   constructor() {}
 
   static async init(lng: LanguageCode = "en"): Promise<i18n> {
@@ -38,6 +40,8 @@ export class I18n {
         keySeparator: ".",
       });
 
+      this.t = i18next.t;
+
       return i18next;
     } catch (e) {
       console.log(e.response?.data);
@@ -48,14 +52,12 @@ export class I18n {
     return async (ctx: TelegramContext, next: Function) => {
       // @ts-ignore
       const languageCode: LanguageCode = ctx.from?.language_code || "en";
-
       ctx.t = (await this.init(languageCode))?.t;
-
       return next();
     };
   }
 
-  static t(key: string) {
-    return i18next.t(key);
-  }
+  // static t(key: string) {
+  //   return i18next.t(key);
+  // }
 }
