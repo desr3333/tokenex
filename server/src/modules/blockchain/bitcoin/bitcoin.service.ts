@@ -17,7 +17,6 @@ export class BitcoinService implements BlockchainServiceInterface {
   NETWORK = bitcore.Networks.testnet;
 
   TESTNET_EXPLORER = 'https://www.blockchain.com/btc-testnet';
-
   GAS = 500;
 
   explorer = axios.create({
@@ -25,7 +24,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     headers: { 'api-key': this.NODE_API_KEY },
   });
 
-  axios = axios.create({
+  node = axios.create({
     headers: {
       'api-key': this.NODE_API_KEY,
     },
@@ -51,7 +50,7 @@ export class BitcoinService implements BlockchainServiceInterface {
 
   async getAddress(address: string): Promise<BTCWalletDto> {
     try {
-      const response = await this.axios.get(
+      const response = await this.node.get(
         `${this.EXPLORER}/address/${address}`,
       );
       if (!response) throw Error('BTC Balance Not Fetched!');
@@ -92,7 +91,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     satoshis: number;
   }): Promise<Transaction.UnspentOutput[]> {
     try {
-      const response = await this.axios.get(`${this.EXPLORER}/utxo/${address}`);
+      const response = await this.node.get(`${this.EXPLORER}/utxo/${address}`);
       const utxos = response.data;
 
       const selectMinUtxo = (
@@ -129,11 +128,9 @@ export class BitcoinService implements BlockchainServiceInterface {
 
   async getRawTransaction(txid: string) {
     try {
-      const { axios, NODE_PROVIDER, NODE_API_KEY } = this;
+      const { NODE_API_KEY } = this;
 
-      axios.defaults.baseURL = NODE_PROVIDER;
-
-      const response = await this.axios.post('', {
+      const response = await this.node.post('', {
         API_key: NODE_API_KEY,
         jsonrpc: '2.0',
         id: 'test',
@@ -179,7 +176,7 @@ export class BitcoinService implements BlockchainServiceInterface {
       const signedhex = signedTx.serialize();
 
       // Sending
-      const sentTx = await this.axios.post(this.NODE_PROVIDER, {
+      const sentTx = await this.node.post(this.NODE_PROVIDER, {
         API_key: this.NODE_API_KEY,
         jsonrpc: '2.0',
         id: 'test',

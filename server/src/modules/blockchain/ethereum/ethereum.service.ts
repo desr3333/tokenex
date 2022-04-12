@@ -3,22 +3,29 @@ import {
   CryptoWalletTransactionDto,
 } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 import Web3 from 'web3';
 import { TokenServiceInterface } from '../../crypto-token';
 import { ETHRawTransactionDto } from './ethereum.dto';
 
+const { ETH_NODE_API_KEY, ETH_EXPLORER } = process.env;
+
 @Injectable()
 export class EthereumService implements TokenServiceInterface {
   public web3: Web3;
-
   public name: string;
   public symbol: string;
+  public defaultGas = 21000;
 
-  GAS = 21000;
-  TESTNET_EXPLORER = 'https://rinkeby.etherscan.io';
+  EXPLORER = ETH_EXPLORER;
+
+  explorer = axios.create({
+    baseURL: ETH_EXPLORER,
+    headers: { 'api-key': ETH_NODE_API_KEY },
+  });
 
   constructor() {
-    const { ETH_NODE_API_KEY, ETH_NODE_PROVIDER } = process.env;
+    const { ETH_NODE_PROVIDER } = process.env;
 
     this.web3 = new Web3(`${ETH_NODE_PROVIDER}/${ETH_NODE_API_KEY}`);
     this.name = 'Ethereum';
@@ -69,7 +76,7 @@ export class EthereumService implements TokenServiceInterface {
     privateKey,
   }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
     try {
-      const { web3, GAS } = this;
+      const { web3 } = this;
 
       const gas = this.calculateGas(value);
       const nonce = await web3.eth.getTransactionCount(from, 'latest');
@@ -143,7 +150,7 @@ export class EthereumService implements TokenServiceInterface {
 
   calculateGas(value: number) {
     try {
-      const result = this.GAS;
+      const result = this.defaultGas;
       return result;
     } catch (e) {
       console.log({ e });
@@ -151,6 +158,6 @@ export class EthereumService implements TokenServiceInterface {
   }
 
   generateExplorerLink(tx: string) {
-    return `${this.TESTNET_EXPLORER}/tx/${tx}`;
+    return `${this.EXPLORER}/tx/${tx}`;
   }
 }

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 
-import { TelegramTextMessageDto } from './telegram.dto';
+import {
+  TelegramNotificationDto,
+  TelegramTextMessageDto,
+} from './telegram.dto';
 
 const { TELEGRAM_BOT_WEBHOOK } = process.env;
 
@@ -19,6 +22,20 @@ export class TelegramService {
     try {
       const response = await this.fetch.post('sendMessage', data);
       if (!response) throw Error('Telegram Message Not Sent!');
+
+      return data;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
+  async sendNotification(
+    data: TelegramNotificationDto,
+  ): Promise<TelegramNotificationDto> {
+    try {
+      const response = await this.fetch.post('sendNotification', data);
+      if (!response) throw Error('Telegram Notification Not Sent!');
 
       return data;
     } catch (e) {

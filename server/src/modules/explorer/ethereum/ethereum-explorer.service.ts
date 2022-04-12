@@ -3,11 +3,12 @@ import axios, { AxiosInstance } from 'axios';
 
 import { EthereumService } from '@modules/blockchain/ethereum';
 import { ETHTransactionDto } from './ethereum-explorer.dto';
+import { ExplorerServiceInterface } from '../explorer.dto';
 
 export const { NOWNODES_API_KEY, BTC_EXPLORER, ETH_EXPLORER } = process.env;
 
 @Injectable()
-export class EthereumExplorerService {
+export class EthereumExplorerService implements ExplorerServiceInterface {
   private fetch: AxiosInstance;
 
   constructor(private EthereumService: EthereumService) {
@@ -55,12 +56,12 @@ export class EthereumExplorerService {
 
       return result;
     } catch (e) {
-      console.log([e]);
+      console.log({ e });
       return null;
     }
   }
 
-  async watchTransactions(address: string) {
+  async watchAddress(address: string): Promise<string> {
     try {
       const { web3 } = this.EthereumService;
 
@@ -75,15 +76,15 @@ export class EthereumExplorerService {
         console.log({ blockNumber, address });
 
         // Checking Transactions
-        block.transactions?.map(async (tx) => {
-          const transaction = await this.getTransaction(tx);
+        if (block.transactions?.length >= 0) {
+          block.transactions?.map(async (tx) => {
+            const transaction = await this.getTransaction(tx);
+            if (transaction?.to !== address) return;
 
-          if (transaction.to !== address) return;
-
-          // TODO: Event Emitter implementation
-          console.log({ blockNumber, transaction });
-        });
-      }, 3000);
+            console.log({ transaction });
+          });
+        }
+      }, 5000);
     } catch (e) {
       console.log({ e });
       return null;

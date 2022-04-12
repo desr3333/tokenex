@@ -15,3 +15,9 @@ export class ETHTransactionDto extends ExplorerTransactionDto {
   gas: number;
   gasUsed: number;
 }
+
+export class ExplorerServiceInterface {
+  getAddress: (...args) => Promise<any>;
+  getTransaction: (...args) => Promise<any>;
+  watchAddress: (...args) => Promise<any>;
+}

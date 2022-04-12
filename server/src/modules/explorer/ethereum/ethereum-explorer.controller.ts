@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Param } from '@nestjs/common';
+import { Controller, Get, Res, Param, Post } from '@nestjs/common';
 import { Response } from 'express';
 
 import { EthereumExplorerService } from './ethereum-explorer.service';
@@ -29,6 +29,19 @@ export class EthereumExplorerController {
       return res
         .status(404)
         .json({ error: `ETH Transaction ${tx} Not Found!` });
+
+    return res.status(200).json({ result });
+  }
+
+  @Post('watch/:address')
+  async watchAddress(@Res() res: Response, @Param() params) {
+    const { address } = params;
+
+    const result = await this.EthereumExplorerService.watchAddress(address);
+    if (!result)
+      return res
+        .status(404)
+        .json({ error: `ETH Address ${address} Not Found!` });
 
     return res.status(200).json({ result });
   }
