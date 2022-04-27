@@ -6,10 +6,6 @@ export class TelegramTextMessageDto {
   extra?: InlineKeyboardMarkup;
 }
 
-export class TelegramNotificationDto<T = any> {
-  chat_id: number;
-  type: TelegramNotificationType;
-  data: T;
-}
+// export class TelegramNotificationDto {}
 
-export type TelegramNotificationType = 'TRANSACTION';
+// export type TelegramNotificationType = any;

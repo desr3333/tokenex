@@ -1,10 +1,11 @@
+import {
+  NotificationDto,
+  TelegramNotificationDto,
+} from '@modules/notification';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 
-import {
-  TelegramNotificationDto,
-  TelegramTextMessageDto,
-} from './telegram.dto';
+import { TelegramTextMessageDto } from './telegram.dto';
 
 const { TELEGRAM_BOT_WEBHOOK } = process.env;
 
