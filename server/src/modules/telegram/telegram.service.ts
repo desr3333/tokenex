@@ -20,7 +20,7 @@ export class TelegramService {
     data: TelegramTextMessageDto,
   ): Promise<TelegramTextMessageDto> {
     try {
-      const response = await this.fetch.post('sendMessage', data);
+      const response = await this.fetch.post('messages', data);
       if (!response) throw Error('Telegram Message Not Sent!');
 
       return data;
@@ -34,7 +34,7 @@ export class TelegramService {
     data: TelegramNotificationDto,
   ): Promise<TelegramNotificationDto> {
     try {
-      const response = await this.fetch.post('sendNotification', data);
+      const response = await this.fetch.post('notifications', data);
       if (!response) throw Error('Telegram Notification Not Sent!');
 
       return data;

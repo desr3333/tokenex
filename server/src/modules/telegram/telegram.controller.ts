@@ -11,28 +11,26 @@ import { TelegramService } from './telegram.service';
 export class TelegramController {
   constructor(private telegramService: TelegramService) {}
 
-  @Post('sendMessage')
+  @Post('messages')
   async sendMessage(
     @Res() res: Response,
     @Body() messageDto: TelegramTextMessageDto,
   ) {
     const result = await this.telegramService.sendMessage(messageDto);
     if (!result)
-      return res.status(400).json({ error: 'Message Not Sent To The Bot!' });
+      return res.status(400).json({ error: 'Telegram Message Not Sent!' });
 
     return res.status(200).json({ result });
   }
 
-  @Post('sendNotification')
+  @Post('notifications')
   async sendNotification(
     @Res() res: Response,
     @Body() notificationDto: TelegramNotificationDto,
   ) {
     const result = await this.telegramService.sendNotification(notificationDto);
     if (!result)
-      return res
-        .status(400)
-        .json({ error: 'Telegram Notification Not Sent To The Bot!' });
+      return res.status(400).json({ error: 'Telegram Notification Not Sent!' });
 
     return res.status(200).json({ result });
   }

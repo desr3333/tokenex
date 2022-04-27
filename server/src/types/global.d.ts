@@ -22,5 +22,8 @@ declare namespace NodeJS {
 
     TELEGRAM_BOT_TOKEN: string;
     TELEGRAM_BOT_WEBHOOK: string;
+
+    COINBASE_API: string;
+    COINBASE_EXCHANGE_API_KEY: string;
   }
 }

@@ -11,6 +11,7 @@ import { TokenModule } from '@modules/crypto-token';
 import { CoinMarketModule } from '@modules/coin-market';
 import { ExplorerModule } from '@modules/explorer';
 import { TelegramModule } from '@modules/telegram';
+import { NotificationModule } from '@modules/notification';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TelegramModule } from '@modules/telegram';
     CryptoWalletModule,
 
     TelegramModule,
+    NotificationModule,
 
     ExplorerModule,
     CoinMarketModule,
