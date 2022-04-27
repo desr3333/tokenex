@@ -65,12 +65,12 @@ const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
       bot.handleUpdate(<Update>req.body, rep.raw);
     });
 
-    app.post(`/${SECRET_PATH}/sendMessage`, (req, rep) => {
+    app.post(`/${SECRET_PATH}/messages`, (req, rep) => {
       const { chat_id, text, extra } = <TelegramTextMessageDto>req.body;
       return bot.telegram.sendMessage(chat_id, text, extra);
     });
 
-    app.post(`/${SECRET_PATH}/sendNotification`, (req, rep) => {
+    app.post(`/${SECRET_PATH}/notifications`, (req, rep) => {
       const { chat_id, type, data } = <TelegramNotificationDto>req.body;
 
       const { symbol, value, from, to, explorerLink } = data;
