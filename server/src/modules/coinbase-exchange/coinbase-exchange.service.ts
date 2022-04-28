@@ -1,50 +1,130 @@
 import axios from 'axios';
 import crypto from 'crypto';
+import {
+  CoinbaseExchangeProfileDto,
+  CoinbaseExchangeRequestDto,
+  CoinbaseExchangeRequestSignDto,
+} from './coinbase-exchange.dto';
+
+const {
+  COINBASE_API,
+  COINBASE_EXCHANGE_API,
+  COINBASE_EXCHANGE_API_KEY,
+  COINBASE_EXCHANGE_KEY,
+  COINBASE_EXCHANGE_SECRET,
+  COINBASE_EXCHANGE_PASSPHRASE,
+} = process.env;
 
 export class CoinbaseExchangeService {
-  fetch = axios.create({ baseURL: process.env.COINBASE_API });
+  private fetch = axios.create({ baseURL: `${COINBASE_EXCHANGE_API}/` });
+  private coinbase = axios.create({ baseURL: `${COINBASE_API}/` });
 
-  //  constructor() {}
+  private COINBASE_EXCHANGE_KEY = COINBASE_EXCHANGE_KEY;
+  private COINBASE_EXCHANGE_SECRET = COINBASE_EXCHANGE_SECRET;
+  private COINBASE_EXCHANGE_PASSPHRASE = COINBASE_EXCHANGE_PASSPHRASE;
 
-  // TODO
-  signMessage() {
-    const cb_access_timestamp = Date.now() / 1000; // in ms
-    const cb_access_passphrase = '...';
-    const secret = '...';
-    const requestPath = '/orders';
-    const body = JSON.stringify({
-      price: '1.0',
-      size: '1.0',
-      side: 'buy',
-      product_id: 'BTC-USD',
-    });
-    const method = 'POST';
-
-    // create the prehash string by concatenating required parts
-    const message = cb_access_timestamp + method + requestPath + body;
-
-    // decode the base64 secret
-    const key = Buffer.from(secret, 'base64');
-
-    // create a sha256 hmac with the secret
-    const hmac = crypto.createHmac('sha256', key);
-
-    // sign the require message with the hmac
-    // and finally base64 encode the result
-    const cb_access_sign = hmac.update(message).digest('base64');
+  async getServerTime(): Promise<number> {
+    try {
+      const response = await this.coinbase.get('time');
+      return response.data.data.epoch;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
-  // TODO
-  async getProfile() {
+  async signRequest({
+    path,
+    method,
+    body,
+  }: CoinbaseExchangeRequestDto): Promise<CoinbaseExchangeRequestSignDto> {
+    const timestamp = await this.getServerTime();
+    const payload = body ? JSON.stringify(body) : '';
+
+    const key = this.COINBASE_EXCHANGE_KEY;
+    const passphrase = this.COINBASE_EXCHANGE_PASSPHRASE;
+    const secret = this.COINBASE_EXCHANGE_SECRET;
+
+    const message = timestamp + method + `/${path}` + payload;
+    const hmac = crypto.createHmac('sha256', Buffer.from(secret, 'base64'));
+    const signature = hmac.update(message).digest('base64');
+
+    return {
+      key,
+      passphrase,
+      secret,
+      signature,
+      timestamp,
+    };
+  }
+
+  async request({
+    path,
+    method,
+    headers,
+    body,
+  }: CoinbaseExchangeRequestDto): Promise<any> {
     try {
-      const signedMessage = this.signMessage();
+      // Signing
+      const { key, passphrase, signature, timestamp } = await this.signRequest({
+        path,
+        method,
+        body,
+      });
 
-      console.log({ signedMessage });
-      //   const response = await this.fetch.get('/profiles');
+      // Sending
+      const response = await this.fetch.request({
+        url: path,
+        method,
+        headers: {
+          'CB-ACCESS-KEY': key,
+          'CB-ACCESS-PASSPHRASE': passphrase,
+          'CB-ACCESS-TIMESTAMP': timestamp,
+          'CB-ACCESS-SIGN': signature,
+          ...headers,
+        },
+        data: body,
+      });
 
-      //   console.log({ response });
+      // console.log({
+      //   'CB-ACCESS-KEY': key,
+      //   'CB-ACCESS-PASSPHRASE': passphrase,
+      //   'CB-ACCESS-TIMESTAMP': timestamp,
+      //   'CB-ACCESS-SIGN': signature,
+      // });
+
+      return response.data;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
+  async getProfiles(): Promise<CoinbaseExchangeProfileDto[]> {
+    try {
+      const result = await this.request({
+        path: 'profiles',
+        method: 'GET',
+      });
+
+      return result;
     } catch (e) {
       console.log(e?.response?.data);
+      return [];
+    }
+  }
+
+  async getProfile(id: string): Promise<CoinbaseExchangeProfileDto> {
+    try {
+      const result = await this.request({
+        path: `profiles/${id}`,
+        method: 'GET',
+      });
+
+      return result;
+    } catch (e) {
+      console.log(e?.response?.data);
+      return null;
     }
   }
 }
