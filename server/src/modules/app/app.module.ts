@@ -8,10 +8,11 @@ import { WalletModule } from '@modules/wallet';
 import { TelegramAccountModule } from '@modules/telegram-account';
 import { CryptoWalletModule } from '@modules/crypto-wallet';
 import { TokenModule } from '@modules/crypto-token';
-import { CoinMarketModule } from '@modules/coin-market';
+import { CoinmarketModule } from '@modules/coin-market';
 import { ExplorerModule } from '@modules/explorer';
 import { TelegramModule } from '@modules/telegram';
 import { NotificationModule } from '@modules/notification';
+import { CoinbaseModule } from '@modules/coinbase';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { NotificationModule } from '@modules/notification';
     NotificationModule,
 
     ExplorerModule,
-    CoinMarketModule,
+    CoinmarketModule,
+    CoinbaseModule,
   ],
 })
 export class AppModule {}

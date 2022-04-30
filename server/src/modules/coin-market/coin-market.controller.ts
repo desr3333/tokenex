@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import { CoinMarketService } from './coin-market.service';
+import { CoinmarketService } from './coin-market.service';
 
 @Controller('coindata')
-export class CoinMarketController {
-  constructor(private coindataService: CoinMarketService) {}
+export class CoinmarketController {
+  constructor(private coindataService: CoinmarketService) {}
 
   @Get('tickers')
   async getTickers(@Res() res: Response, @Query() query) {

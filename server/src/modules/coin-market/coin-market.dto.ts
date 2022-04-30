@@ -1,4 +1,4 @@
-export class CoinMarketTicker {
+export class CoinmarketTicker {
   id: string;
   name: string;
   symbol: string;

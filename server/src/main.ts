@@ -2,7 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from '@modules/app';
-import { CoinbaseExchangeService } from '@modules/coinbase-exchange/coinbase-exchange.service';
+import { CoinbaseService } from '@modules/coinbase';
+import { profile } from 'console';
 
 const main = async () => {
   try {
@@ -13,13 +14,8 @@ const main = async () => {
 
     app.setGlobalPrefix('api/v1');
 
-    app.listen(PORT, '0.0.0.0').then(() => {
+    app.listen(PORT, '0.0.0.0').then(async () => {
       console.log(`Server: Running (${PORT})`);
-
-      // Testing
-      const coinbase = new CoinbaseExchangeService();
-
-      coinbase.getProfiles().then((r) => console.log(r));
     });
 
     // Swagger

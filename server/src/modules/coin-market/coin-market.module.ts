@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { CoinMarketController } from './coin-market.controller';
-import { CoinMarketService } from './coin-market.service';
+import { CoinmarketController } from './coin-market.controller';
+import { CoinmarketService } from './coin-market.service';
 
 @Module({
   imports: [],
-  controllers: [CoinMarketController],
-  providers: [CoinMarketService],
-  exports: [CoinMarketService],
+  controllers: [CoinmarketController],
+  providers: [CoinmarketService],
+  exports: [CoinmarketService],
 })
-export class CoinMarketModule {}
+export class CoinmarketModule {}
