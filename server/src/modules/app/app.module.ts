@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 
 import { PrismaModule } from '@modules/prisma/prisma.module';
 import { AuthModule } from '@modules/auth/auth.module';
-
 import { AccountModule } from '@modules/account';
 import { WalletModule } from '@modules/wallet';
 import { TelegramAccountModule } from '@modules/telegram-account';
@@ -13,6 +12,7 @@ import { ExplorerModule } from '@modules/explorer';
 import { TelegramModule } from '@modules/telegram';
 import { NotificationModule } from '@modules/notification';
 import { CoinbaseModule } from '@modules/coinbase';
+import { ExchangeModule } from '@modules/exchange';
 
 @Module({
   imports: [
@@ -26,13 +26,13 @@ import { CoinbaseModule } from '@modules/coinbase';
     WalletModule,
     TokenModule,
     CryptoWalletModule,
-
-    TelegramModule,
     NotificationModule,
+    ExchangeModule,
 
     ExplorerModule,
-    CoinmarketModule,
+    TelegramModule,
     CoinbaseModule,
+    // CoinmarketModule,
   ],
 })
 export class AppModule {}
