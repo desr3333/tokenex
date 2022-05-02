@@ -1,6 +1,7 @@
 import { TelegramMiddleware } from "@types";
 import {
   accountService,
+  APIService,
   telegramAccountService,
   walletService,
 } from "@services";
@@ -9,6 +10,9 @@ import { parseCallbackQuery, Routes, selectFromArray, Token } from "@helpers";
 export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
   try {
     const chatId = ctx.chat.id;
+
+    // Pinging Servers
+    await APIService.get("ping");
 
     // Checking Telegram Account
     const _telegramAccount = await telegramAccountService.getByChatId(chatId);
@@ -32,7 +36,16 @@ export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
     const { telegramAccount } = ctx.session;
 
     const account = telegramAccount?.account;
-    if (!account) return ctx.reply(ctx.t("error:account.not_found"));
+    if (!account) {
+      const _telegramAccount = await telegramAccountService.remove(
+        telegramAccount.id
+      );
+      console.log({ _telegramAccount });
+
+      ctx.session.telegramAccount = null;
+
+      return ctx.reply(ctx.t("error:account.not_found"));
+    }
 
     // Checking Wallet
     const wallet = await walletService.getById(account.walletId);
@@ -64,7 +77,6 @@ export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
 
     next();
   } catch (e) {
-    ctx.reply("Server Error");
     console.log({ e });
   }
 };

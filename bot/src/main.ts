@@ -19,14 +19,14 @@ import { updateMiddleware } from "./middlewares";
 import { Update } from "telegraf/typings/core/types/typegram";
 import { TelegramNotificationDto, TelegramTextMessageDto } from "types";
 
-const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
+const { PORT, BOT_TOKEN, BOT_SECRET_PATH, BOT_WEBHOOK } = process.env;
 
 (async () => {
   try {
     const app = fastify();
     const bot = new TelegramBot(BOT_TOKEN);
 
-    const SECRET_PATH = bot.secretPathComponent();
+    const SECRET_PATH = BOT_SECRET_PATH;
     const WEBHOOK = `${BOT_WEBHOOK}/${SECRET_PATH}`;
 
     // Bot
@@ -70,26 +70,32 @@ const { PORT, BOT_TOKEN, BOT_WEBHOOK } = process.env;
       return bot.telegram.sendMessage(chat_id, text, extra);
     });
 
-    app.post(`/${SECRET_PATH}/notifications`, (req, rep) => {
-      const { chat_id, type, data } = <TelegramNotificationDto>req.body;
+    app.post(`/${SECRET_PATH}/notifications`, async (req, rep) => {
+      const body = <TelegramNotificationDto>req.body;
+      const { chat_id, type, payload } = body;
 
-      const { symbol, value, from, to, explorerLink } = data;
+      const message = await bot.telegram.sendMessage(
+        chat_id,
+        JSON.stringify({ type, payload })
+      );
+      if (!message) return rep.status(400).send({ result: body });
 
-      switch (type) {
-        case TelegramNotication.TRANSACTION:
-          return bot.telegram.sendMessage(
-            chat_id,
-            I18n.t("notification:wallet.transaction", {
-              symbol,
-              value,
-              from,
-              to,
-            }),
-            keyboards.wallet_transaction({ explorerLink })
-          );
-        default:
-          return;
-      }
+      // switch (type) {
+      //   case "TRANSACTION_CONFIRMED":
+      //     bot.telegram.sendMessage(chat_id, JSON.stringify(payload));
+      //   // return bot.telegram.sendMessage(
+      //   //   chat_id,
+      //   //   I18n.t("notification:wallet.transaction", {
+      //   //     symbol,
+      //   //     value,
+      //   //     from,
+      //   //     to,
+      //   //   }),
+      //   //   keyboards.wallet_transaction({ explorerLink })
+      //   // );
+      //   default:
+      //     return;
+      // }
     });
 
     app.listen({ port: PORT }).then(() => {

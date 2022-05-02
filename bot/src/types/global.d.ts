@@ -7,6 +7,7 @@ declare namespace NodeJS {
 
     PORT?: number;
     BOT_TOKEN?: string;
+    BOT_SECRET_PATH?: string;
     SUPPORT?: string;
   }
 }

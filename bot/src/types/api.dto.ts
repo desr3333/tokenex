@@ -36,7 +36,12 @@ export class TelegramTextMessageDto {
 }
 
 export class TelegramNotificationDto<T = any> {
-  type: string;
   chat_id: number;
-  data: T;
+  type: TelegramNotificationType;
+  payload: T;
 }
+
+export type TelegramNotificationType =
+  | "TRANSACTION_CONFIRMED"
+  | "TRANSACTION_CANCELED"
+  | "UPDATE";
