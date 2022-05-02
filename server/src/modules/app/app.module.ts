@@ -14,6 +14,8 @@ import { NotificationModule } from '@modules/notification';
 import { CoinbaseModule } from '@modules/coinbase';
 import { ExchangeModule } from '@modules/exchange';
 
+import { AppController } from './app.controller';
+
 @Module({
   imports: [
     // Global
@@ -34,5 +36,6 @@ import { ExchangeModule } from '@modules/exchange';
     CoinbaseModule,
     // CoinmarketModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
