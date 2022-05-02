@@ -13,17 +13,24 @@ const {
   BTC_NODE_API_KEY,
   BTC_NODE_MAINNET,
   BTC_NODE_TESTNET,
-  BTC_EXPLORER,
+  BTC_EXPLORER_MAINNET,
+  BTC_EXPLORER_TESTNET,
   BTC_NET,
+  BTC_EXPLORER_PUBLIC_MAINNET,
+  BTC_EXPLORER_PUBLIC_TESTNET,
 } = process.env;
 
 @Injectable()
 export class BitcoinService implements BlockchainServiceInterface {
   NET = bitcore.Networks[BTC_NET || 'testnet'];
-  NODE = BTC_NET === 'mainnet' ? BTC_NODE_MAINNET : BTC_NODE_TESTNET;
-  EXPLORER = BTC_EXPLORER;
   NODE_API_KEY = BTC_NODE_API_KEY;
-  GAS = 500;
+  NODE = BTC_NET === 'mainnet' ? BTC_NODE_MAINNET : BTC_NODE_TESTNET;
+  EXPLORER =
+    BTC_NET === 'mainnet' ? BTC_EXPLORER_MAINNET : BTC_EXPLORER_TESTNET;
+  EXPLORER_PUBLIC =
+    BTC_NET === 'mainnet'
+      ? BTC_EXPLORER_PUBLIC_MAINNET
+      : BTC_EXPLORER_PUBLIC_TESTNET;
 
   node = axios.create({
     baseURL: `${this.NODE}/`,
@@ -173,7 +180,6 @@ export class BitcoinService implements BlockchainServiceInterface {
         .fee(fee)
         .change(address)
         .sign(privateKey);
-
       if (!signedTx) throw Error(`Transaction Not Signed!`);
 
       const signedhex = signedTx.serialize();
@@ -247,7 +253,7 @@ export class BitcoinService implements BlockchainServiceInterface {
   calculateGas(value: number) {
     try {
       const satoshis = this.toSatoshis(value);
-      const result = satoshis * 0.025;
+      const result = Math.floor(satoshis * 0.05);
       return result;
     } catch (e) {
       console.log({ e });
@@ -255,6 +261,6 @@ export class BitcoinService implements BlockchainServiceInterface {
   }
 
   generateExplorerLink(tx: string) {
-    return `${this.EXPLORER}/tx/${tx}`;
+    return `${this.EXPLORER_PUBLIC}/tx/${tx}`;
   }
 }

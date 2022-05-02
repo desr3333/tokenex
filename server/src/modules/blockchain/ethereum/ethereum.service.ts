@@ -3,6 +3,7 @@ import {
   CryptoWalletTransactionDto,
 } from '@modules/crypto-wallet';
 import { Injectable } from '@nestjs/common';
+import { throws } from 'assert';
 import axios from 'axios';
 import Web3 from 'web3';
 import { TokenServiceInterface } from '../../crypto-token';
@@ -14,6 +15,10 @@ const {
   ETH_NET,
   ETH_NODE_MAINNET,
   ETH_NODE_TESTNET,
+  ETH_EXPLORER_MAINNET,
+  ETH_EXPLORER_TESTNET,
+  ETH_EXPLORER_PUBLIC_MAINNET,
+  ETH_EXPLORER_PUBLIC_TESTNET,
 } = process.env;
 
 @Injectable()
@@ -23,10 +28,16 @@ export class EthereumService implements TokenServiceInterface {
   symbol: string;
 
   NET = ETH_NET;
-  NODE = ETH_NET === 'mainnet' ? ETH_NODE_MAINNET : ETH_NODE_TESTNET;
-  EXPLORER = ETH_EXPLORER;
   NODE_API_KEY = ETH_NODE_API_KEY;
-  GAS = 21000;
+  NODE = ETH_NET === 'mainnet' ? ETH_NODE_MAINNET : ETH_NODE_TESTNET;
+  EXPLORER =
+    ETH_NET === 'mainnet' ? ETH_EXPLORER_MAINNET : ETH_EXPLORER_TESTNET;
+  EXPLORER_PUBLIC =
+    ETH_NET === 'mainnet'
+      ? ETH_EXPLORER_PUBLIC_MAINNET
+      : ETH_EXPLORER_PUBLIC_TESTNET;
+
+  GAS = 35000;
 
   explorer = axios.create({
     baseURL: ETH_EXPLORER,
@@ -73,36 +84,40 @@ export class EthereumService implements TokenServiceInterface {
 
   async getGasPrice(): Promise<number> {
     try {
-      const result = await this.web3.eth.getGasPrice();
-      return Number(result);
+      const price = await this.web3.eth.getGasPrice();
+      const result = Number((Number(price) / 1000000000).toFixed(2));
+
+      return result;
     } catch (e) {
       return null;
     }
   }
 
   async sendTransaction({
+    privateKey,
     value,
     from,
     to,
-    privateKey,
+    gas,
   }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
     try {
       const { web3 } = this;
 
-      const gas = this.calculateGas(value);
       const nonce = await web3.eth.getTransactionCount(from, 'latest');
 
-      const transaction = {
-        value: web3.utils.toWei(value.toString()),
+      // Calculating
+      const calculatedTx = await this.calculateTx({
+        value,
         from,
         to,
         nonce,
-        gas,
-      };
+      });
+
+      console.log({ calculatedTx });
 
       // Signing
       const signedTx = await web3.eth.accounts.signTransaction(
-        transaction,
+        calculatedTx,
         privateKey,
       );
       if (!signedTx) throw Error(`Transaction Not Signed!`);
@@ -133,21 +148,19 @@ export class EthereumService implements TokenServiceInterface {
     }
   }
 
-  async calculateTx({
-    value,
-    from,
-    to,
-  }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
+  async calculateTx(
+    data: ETHRawTransactionDto,
+  ): Promise<CryptoWalletTransactionDto> {
     try {
-      const gas = this.calculateGas(value);
-      const gasETH = Number(this.web3.utils.fromWei(gas.toString()));
-
-      const output = value + gasETH;
+      const value = Number(this.web3.utils.toWei(data.value.toString()));
+      const gas = this.calculateGas();
+      const output =
+        Number(this.web3.utils.fromWei(value.toString())) +
+        Number(this.web3.utils.fromWei(gas.toString()));
 
       const result = {
+        ...data,
         value,
-        from,
-        to,
         gas,
         output,
       };
@@ -159,16 +172,15 @@ export class EthereumService implements TokenServiceInterface {
     }
   }
 
-  calculateGas(value: number) {
+  calculateGas(): number {
     try {
-      const result = this.GAS;
-      return result;
+      return this.GAS;
     } catch (e) {
       console.log({ e });
     }
   }
 
   generateExplorerLink(tx: string) {
-    return `${this.EXPLORER}/tx/${tx}`;
+    return `${this.EXPLORER_PUBLIC}/tx/${tx}`;
   }
 }

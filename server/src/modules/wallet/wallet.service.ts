@@ -38,10 +38,10 @@ export class WalletService {
         include: { cryptoWallets: true },
       });
 
-      // Updating Balances
-      wallet?.cryptoWallets?.map(({ symbol, address }) =>
-        this.cryptoWalletService.updateBalance({ symbol, address }),
-      );
+      // Refreshing Balances
+      wallet?.cryptoWallets?.map(({ symbol, address }) => {
+        this.cryptoWalletService.updateBalance({ symbol, address });
+      });
 
       return wallet;
     } catch (e) {

@@ -35,24 +35,12 @@ export class UpdateCryptoWalletDto {
 }
 
 export class CryptoWalletTransactionDto {
-  @ApiProperty()
   from: string;
-
-  @ApiProperty()
   to: string;
-
-  @ApiProperty()
   value: number;
-
-  @ApiProperty()
   tx?: string;
-
-  @ApiProperty()
   explorerLink?: string;
-
-  @ApiProperty()
   gas?: number;
-
   output?: number;
 }
 

@@ -41,7 +41,7 @@ export class CryptoWalletService {
     where?: Prisma.CryptoWalletWhereUniqueInput,
   ): Promise<CryptoWallet> {
     try {
-      const result = await this.prisma.cryptoWallet.findFirst({
+      const result = await this.prisma.cryptoWallet.findUnique({
         where,
         include: { token: true },
       });
@@ -54,12 +54,10 @@ export class CryptoWalletService {
       if (result.balance !== balance) {
         await this.update(where, { balance });
 
-        const result = await this.prisma.cryptoWallet.findFirst({
+        return this.prisma.cryptoWallet.findUnique({
           where,
           include: { token: true },
         });
-
-        return result;
       }
 
       return result;
@@ -202,7 +200,7 @@ export class CryptoWalletService {
 
       // Checking Balance
       const isBalanceSufficient = wallet.balance >= value;
-      if (!isBalanceSufficient) throw Error(`Wallet Has Insufficient Balance!`);
+      if (!isBalanceSufficient) throw Error(`Wallet Has Insufficient Funds!`);
 
       // Sending Transaction
       const { symbol, privateKey } = wallet;

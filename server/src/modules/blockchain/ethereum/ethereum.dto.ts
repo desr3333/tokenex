@@ -13,7 +13,11 @@ export class ETHTransactionDto {
 
 export class ETHRawTransactionDto {
   value: number;
-  from?: string;
+  from: string;
   to: string;
   privateKey?: string;
+  gas?: number;
+  nonce?: number;
+  maxFeePerGas?: number;
+  maxPriorityFeePerGas?: number;
 }
