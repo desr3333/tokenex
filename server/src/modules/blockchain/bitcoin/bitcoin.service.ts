@@ -9,25 +9,30 @@ import bitcore, { Address, Transaction } from 'bitcore-lib';
 import { BlockchainServiceInterface } from '../blockchain.dto';
 import { BTCTransactionDto, BTCWalletDto } from './bitcoin.dto';
 
+const {
+  BTC_NODE_API_KEY,
+  BTC_NODE_MAINNET,
+  BTC_NODE_TESTNET,
+  BTC_EXPLORER,
+  BTC_NET,
+} = process.env;
+
 @Injectable()
 export class BitcoinService implements BlockchainServiceInterface {
-  NODE_API_KEY = process.env.BTC_NODE_API_KEY;
-  NODE_PROVIDER = process.env.BTC_NODE_PROVIDER;
-  EXPLORER = process.env.BTC_EXPLORER;
-  NETWORK = bitcore.Networks.testnet;
-
-  TESTNET_EXPLORER = 'https://www.blockchain.com/btc-testnet';
+  NET = bitcore.Networks[BTC_NET || 'testnet'];
+  NODE = BTC_NET === 'mainnet' ? BTC_NODE_MAINNET : BTC_NODE_TESTNET;
+  EXPLORER = BTC_EXPLORER;
+  NODE_API_KEY = BTC_NODE_API_KEY;
   GAS = 500;
 
-  explorer = axios.create({
-    baseURL: this.EXPLORER,
+  node = axios.create({
+    baseURL: `${this.NODE}/`,
     headers: { 'api-key': this.NODE_API_KEY },
   });
 
-  node = axios.create({
-    headers: {
-      'api-key': this.NODE_API_KEY,
-    },
+  explorer = axios.create({
+    baseURL: `${this.EXPLORER}/`,
+    headers: { 'api-key': this.NODE_API_KEY },
   });
 
   toSatoshis(btc: number) {
@@ -39,7 +44,7 @@ export class BitcoinService implements BlockchainServiceInterface {
   }
 
   async create(): Promise<CryptoWalletKeyPair> {
-    const pk = new bitcore.PrivateKey(null, this.NETWORK);
+    const pk = new bitcore.PrivateKey(null, this.NET);
 
     const privateKey = pk.toString();
     const address = pk.toAddress().toString();
@@ -50,9 +55,7 @@ export class BitcoinService implements BlockchainServiceInterface {
 
   async getAddress(address: string): Promise<BTCWalletDto> {
     try {
-      const response = await this.node.get(
-        `${this.EXPLORER}/address/${address}`,
-      );
+      const response = await this.explorer.get(`address/${address}`);
       if (!response) throw Error('BTC Balance Not Fetched!');
 
       const { balance, txs, txids, totalReceived, totalSent } = response.data;
@@ -91,7 +94,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     satoshis: number;
   }): Promise<Transaction.UnspentOutput[]> {
     try {
-      const response = await this.node.get(`${this.EXPLORER}/utxo/${address}`);
+      const response = await this.explorer.get(`utxo/${address}`);
       const utxos = response.data;
 
       const selectMinUtxo = (
@@ -176,7 +179,7 @@ export class BitcoinService implements BlockchainServiceInterface {
       const signedhex = signedTx.serialize();
 
       // Sending
-      const sentTx = await this.node.post(this.NODE_PROVIDER, {
+      const sentTx = await this.node.post('', {
         API_key: this.NODE_API_KEY,
         jsonrpc: '2.0',
         id: 'test',
@@ -252,6 +255,6 @@ export class BitcoinService implements BlockchainServiceInterface {
   }
 
   generateExplorerLink(tx: string) {
-    return `${this.TESTNET_EXPLORER}/tx/${tx}`;
+    return `${this.EXPLORER}/tx/${tx}`;
   }
 }

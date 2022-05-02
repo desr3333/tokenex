@@ -1,8 +1,10 @@
 import { TelegramService } from '@modules/telegram';
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { NotificationDto, TelegramNotificationDto } from './notification.dto';
 import { NotificationService } from './notification.service';
 
+@ApiTags('Notifications')
 @Controller('notifications')
 export class NotificationController {
   constructor(private notificationService: NotificationService) {}

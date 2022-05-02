@@ -5,10 +5,6 @@ import { PrismaService } from '@modules/prisma';
 import { CryptoWalletService } from '@modules/crypto-wallet';
 import { Token } from '@types';
 
-// import { ETHWalletService } from '../crypto-wallet/eth-wallet';
-// import { BTCWalletService } from '../crypto-wallet/btc-wallet';
-// import { USDTWalletService } from '../crypto-wallet/usdt-wallet';
-
 @Injectable()
 export class WalletService {
   constructor(
@@ -55,17 +51,8 @@ export class WalletService {
 
   async create(data?: Prisma.WalletUncheckedCreateInput): Promise<Wallet> {
     try {
-      return this.prisma.wallet.create({ data: data || {} });
-    } catch (e) {
-      console.log({ e });
-      return null;
-    }
-  }
-
-  async setup(data?: Prisma.WalletUncheckedCreateInput) {
-    try {
       // Creating Wallet
-      const wallet = await this.create(data);
+      const wallet = await this.prisma.wallet.create({ data: data || {} });
       if (!wallet) throw Error('Wallet Not Created!');
 
       const walletId = wallet.id;
@@ -73,7 +60,6 @@ export class WalletService {
       // Creating Crypto Wallets
       this.cryptoWalletService.create({ symbol: Token.BTC, walletId });
       this.cryptoWalletService.create({ symbol: Token.ETH, walletId });
-      this.cryptoWalletService.create({ symbol: Token.USDT, walletId });
 
       return wallet;
     } catch (e) {

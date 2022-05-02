@@ -24,12 +24,12 @@ export class ERC20Service implements OnModuleInit {
   public totalSupply: number;
 
   constructor(params: ERC20ServiceParams) {
-    const { ETH_NODE_API_KEY, ETH_NODE_PROVIDER } = process.env;
+    const { ETH_NODE_API_KEY, ETH_NODE_TESTNET } = process.env;
 
     const contractAddress = params?.contractAddress || '';
     const contractABI = params?.abi || (ERC20_ABI as AbiItem[]);
 
-    this.web3 = new Web3(`${ETH_NODE_PROVIDER}/${ETH_NODE_API_KEY}`);
+    this.web3 = new Web3(`${ETH_NODE_TESTNET}/${ETH_NODE_API_KEY}`);
     this.contract = new this.web3.eth.Contract(contractABI, contractAddress);
     this.contractAddress = contractAddress;
   }

@@ -64,12 +64,12 @@ export class CoinbaseService {
     };
   }
 
-  async request({
+  async request<T = any>({
     path,
     method,
     headers,
     body,
-  }: CoinbaseRequestDto): Promise<any> {
+  }: CoinbaseRequestDto): Promise<T> {
     try {
       // Signing
       const { key, passphrase, signature, timestamp } = await this.signRequest({
@@ -155,6 +155,23 @@ export class CoinbaseService {
         method: 'GET',
       });
 
+      return result;
+    } catch (e) {
+      console.log(e?.response?.data);
+      return null;
+    }
+  }
+
+  async getAccountByToken(
+    token: 'BTC' | 'ETH' | 'USDT',
+  ): Promise<CoinbaseAccountDto> {
+    try {
+      const data = await this.request<CoinbaseAccountDto[]>({
+        path: `accounts`,
+        method: 'GET',
+      });
+
+      const result = data?.filter(({ currency }) => currency === token)?.[0];
       return result;
     } catch (e) {
       console.log(e?.response?.data);

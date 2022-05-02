@@ -8,16 +8,25 @@ import Web3 from 'web3';
 import { TokenServiceInterface } from '../../crypto-token';
 import { ETHRawTransactionDto } from './ethereum.dto';
 
-const { ETH_NODE_API_KEY, ETH_EXPLORER } = process.env;
+const {
+  ETH_NODE_API_KEY,
+  ETH_EXPLORER,
+  ETH_NET,
+  ETH_NODE_MAINNET,
+  ETH_NODE_TESTNET,
+} = process.env;
 
 @Injectable()
 export class EthereumService implements TokenServiceInterface {
-  public web3: Web3;
-  public name: string;
-  public symbol: string;
-  public defaultGas = 21000;
+  web3: Web3;
+  name: string;
+  symbol: string;
 
+  NET = ETH_NET;
+  NODE = ETH_NET === 'mainnet' ? ETH_NODE_MAINNET : ETH_NODE_TESTNET;
   EXPLORER = ETH_EXPLORER;
+  NODE_API_KEY = ETH_NODE_API_KEY;
+  GAS = 21000;
 
   explorer = axios.create({
     baseURL: ETH_EXPLORER,
@@ -25,9 +34,11 @@ export class EthereumService implements TokenServiceInterface {
   });
 
   constructor() {
-    const { ETH_NODE_PROVIDER } = process.env;
+    const provider = new Web3.providers.HttpProvider(this.NODE, {
+      headers: [{ name: 'api-key', value: this.NODE_API_KEY }],
+    });
 
-    this.web3 = new Web3(`${ETH_NODE_PROVIDER}/${ETH_NODE_API_KEY}`);
+    this.web3 = new Web3(provider);
     this.name = 'Ethereum';
     this.symbol = 'ETH';
   }
@@ -150,7 +161,7 @@ export class EthereumService implements TokenServiceInterface {
 
   calculateGas(value: number) {
     try {
-      const result = this.defaultGas;
+      const result = this.GAS;
       return result;
     } catch (e) {
       console.log({ e });

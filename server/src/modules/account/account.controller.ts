@@ -27,7 +27,7 @@ export class AccountController {
   ) {}
 
   @Get()
-  async getAll(): Promise<any> {
+  async getAll() {
     const result = await this.accountService.query({});
     return { result };
   }
@@ -38,7 +38,7 @@ export class AccountController {
     required: true,
     type: 'integer',
   })
-  async getByKey(@Param() params): Promise<any> {
+  async getByKey(@Param() params) {
     const id = Number(params.id);
 
     const result = await this.accountService.findOne({ id });
@@ -48,18 +48,9 @@ export class AccountController {
   }
 
   @Post()
-  async create(
-    @Res() res: Response,
-    @Body() createDto: CreateAccountDto,
-  ): Promise<any> {
-    // // Creating Wallet + Crypto Wallets
-    const wallet = await this.walletService.setup();
-    if (!wallet) return res.status(400).json({ error: `Wallet Not Created!` });
-
+  async create(@Res() res: Response, @Body() createDto: CreateAccountDto) {
     // Creating Account
-    const account = await this.accountService.create({
-      ...createDto,
-    });
+    const account = await this.accountService.create(createDto);
     if (!account)
       return res.status(400).json({ error: `Account Not Created!` });
 
@@ -72,10 +63,7 @@ export class AccountController {
     required: true,
     type: 'integer',
   })
-  async update(
-    @Param() params,
-    @Body() updateDto: UpdateAccountDto,
-  ): Promise<any> {
+  async update(@Param() params, @Body() updateDto: UpdateAccountDto) {
     const id = Number(params.id);
 
     // Checking Account
@@ -93,7 +81,7 @@ export class AccountController {
     required: true,
     type: 'integer',
   })
-  async delete(@Param() params): Promise<any> {
+  async delete(@Param() params) {
     const id = Number(params.id);
 
     // Checking Account

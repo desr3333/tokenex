@@ -27,9 +27,9 @@ export class CryptoWalletService {
     return [];
   }
 
-  async getAll() {
+  async getAll(where?: Prisma.CryptoWalletWhereInput) {
     try {
-      const result = this.prisma.cryptoWallet.findMany();
+      const result = this.prisma.cryptoWallet.findMany({ where });
       return result;
     } catch (e) {
       console.log({ e });
@@ -45,6 +45,7 @@ export class CryptoWalletService {
         where,
         include: { token: true },
       });
+      if (!result) throw Error('Crypto Wallet Not Found!');
 
       const { address, symbol } = result;
       const balance = await this.getBalance({ address, symbol });

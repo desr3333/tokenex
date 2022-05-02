@@ -93,28 +93,17 @@ export class TelegramAccountController {
   ): Promise<any> {
     const { chatId } = createDto;
 
-    // // Checking Telegram Account
-    // const existedTelegramAccount = await this.telegramAccountService.findOne({
-    //   chatId,
-    // });
-    // if (existedTelegramAccount)
-    //   return res
-    //     .status(400)
-    //     .json({ error: `Telegram Account Already Exists!` });
-
     // Creating Telegram Account
-    const createdTelegramAccount = await this.telegramAccountService.create(
-      createDto,
-    );
-    if (!createdTelegramAccount)
+    const telegramAccount = await this.telegramAccountService.create(createDto);
+    if (!telegramAccount)
       return res.status(400).json({ error: `Telegram Account Not Created!` });
 
     // Creating Account
-    const createdAccount = await this.accountService.create({
-      telegramAccountId: createdTelegramAccount.id,
-      telegramAccountChatId: createdTelegramAccount.chatId,
+    const account = await this.accountService.create({
+      telegramAccountId: telegramAccount.id,
+      telegramAccountChatId: telegramAccount.chatId,
     });
-    if (!createdAccount)
+    if (!account)
       return res.status(400).json({ error: 'Account Not Created!' });
 
     // Updating Telegram Account
