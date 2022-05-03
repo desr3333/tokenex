@@ -1,3 +1,4 @@
+import { TokenSymbol } from '@modules/coin-market';
 import axios from 'axios';
 import crypto from 'crypto';
 import {
@@ -28,6 +29,9 @@ export class CoinbaseService {
   private COINBASE_EXCHANGE_KEY = COINBASE_EXCHANGE_KEY;
   private COINBASE_EXCHANGE_SECRET = COINBASE_EXCHANGE_SECRET;
   private COINBASE_EXCHANGE_PASSPHRASE = COINBASE_EXCHANGE_PASSPHRASE;
+
+  COINBASE_BTC_ADDRESS = 'mrfM9n3cSKyZ27wB6ov8V4FYKZ8QKwhRcK';
+  COINBASE_ETH_ADDRESS = '0xD66fE26C24AA90F31eB1b1d5FD05Cd05De77Fd07';
 
   async getServerTime(): Promise<number> {
     try {
@@ -162,9 +166,7 @@ export class CoinbaseService {
     }
   }
 
-  async getAccountByToken(
-    token: 'BTC' | 'ETH' | 'USDT',
-  ): Promise<CoinbaseAccountDto> {
+  async getAccountByToken(token: TokenSymbol): Promise<CoinbaseAccountDto> {
     try {
       const data = await this.request<CoinbaseAccountDto[]>({
         path: `accounts`,
@@ -173,6 +175,30 @@ export class CoinbaseService {
 
       const result = data?.filter(({ currency }) => currency === token)?.[0];
       return result;
+    } catch (e) {
+      console.log(e?.response?.data);
+      return null;
+    }
+  }
+
+  getAddressByToken(token: TokenSymbol): string {
+    try {
+      const {
+        COINBASE_EXCHANGE_BTC_ADDRESS,
+        COINBASE_EXCHANGE_ETH_ADDRESS,
+        COINBASE_EXCHANGE_USDT_ADDRESS,
+      } = process.env;
+
+      switch (token) {
+        case 'BTC':
+          return COINBASE_EXCHANGE_BTC_ADDRESS;
+        case 'ETH':
+          return COINBASE_EXCHANGE_ETH_ADDRESS;
+        case 'USDT':
+          return COINBASE_EXCHANGE_USDT_ADDRESS;
+        default:
+          return null;
+      }
     } catch (e) {
       console.log(e?.response?.data);
       return null;

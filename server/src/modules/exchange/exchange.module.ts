@@ -5,9 +5,10 @@ import { CryptoWalletModule } from '@modules/crypto-wallet';
 
 import { ExchangeController } from './exchange.controller';
 import { ExchangeService } from './exchange.service';
+import { CoinmarketModule } from '@modules/coin-market';
 
 @Module({
-  imports: [CoinbaseModule, CryptoWalletModule],
+  imports: [CoinbaseModule, CoinmarketModule, CryptoWalletModule],
   controllers: [ExchangeController],
   providers: [ExchangeService],
   exports: [ExchangeService],

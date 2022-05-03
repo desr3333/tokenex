@@ -30,7 +30,7 @@ export class CoinbaseAccountDto {
   balance: string;
   available: boolean;
   hold: boolean;
-  profile_id: Date;
+  profile_id: string;
   trading_enabled: boolean;
 }
 

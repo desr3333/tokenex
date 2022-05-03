@@ -41,6 +41,7 @@ model Wallet {
     cryptoWallets CryptoWallet[]
     createdAt     DateTime?
     updatedAt     DateTime?
+    swaps         Swap[]
 }
 
 model CryptoWallet {
@@ -100,4 +101,17 @@ model TransactionFee {
     transaction Transaction?
     createdAt   DateTime?
     updatedAt   DateTime?
+}
+
+model Swap {
+    id          Int    @id @default(autoincrement())
+    tokenA      String
+    tokenB      String
+    from        String
+    to          String
+    value       Int
+    wallet      Wallet @relation(fields: [walletId], references: [id])
+    walletId    Int
+    createdAt   String
+    confirmedAt String
 }

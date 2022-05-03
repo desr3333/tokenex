@@ -15,25 +15,12 @@ export class ExchangeController {
 
   @Post()
   async createOrder(@Res() res: Response, @Body() body: ExchangeRequestDto) {
-    const { tokenA, from, to } = body;
-
-    // Checking Wallets
-    const walletA = await this.cryptoWalletService.findOne({ address: from });
-    const walletB = await this.cryptoWalletService.findOne({ address: to });
-
-    // Checking Exchange Wallet
-    const exchangeWallet = await this.exchangeService.getCoinbaseAccount({
-      token: tokenA,
-    });
-
-    console.log({ exchangeWallet });
-
-    if (walletA?.walletId !== walletB?.walletId)
-      return res.status(400).json({
-        error: 'You Can Exchange Funds Only Between Your Own Wallets!',
-      });
-
-    const result = await this.exchangeService.createOrder(body);
-    return res.status(200).json({ result });
+    try {
+      const result = await this.exchangeService.createOrder(body);
+      return res.status(200).json({ result });
+    } catch (e) {
+      console.log({ e });
+      return res.status(400).json({ error: e });
+    }
   }
 }

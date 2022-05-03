@@ -32,6 +32,8 @@ export class BitcoinService implements BlockchainServiceInterface {
       ? BTC_EXPLORER_PUBLIC_MAINNET
       : BTC_EXPLORER_PUBLIC_TESTNET;
 
+  FEE = 0.02;
+
   node = axios.create({
     baseURL: `${this.NODE}/`,
     headers: { 'api-key': this.NODE_API_KEY },
@@ -156,33 +158,44 @@ export class BitcoinService implements BlockchainServiceInterface {
     }
   }
 
-  async sendTransaction({
-    value,
-    from,
-    to,
-    privateKey,
-  }: BTCTransactionDto): Promise<CryptoWalletTransactionDto> {
+  async sendTransaction(
+    data: BTCTransactionDto,
+  ): Promise<CryptoWalletTransactionDto> {
     try {
+      const { from, to, privateKey } = data;
+
       const wallet = await this.getAddress(from);
       if (!wallet) return null;
 
-      const address = from;
-      const satoshis = this.toSatoshis(value);
-      const fee = this.calculateGas(value);
-      const amount = satoshis;
-      const gas = this.toBTC(fee);
+      // Calculating
+      const calculatedTx = await this.calculateTx({
+        from,
+        to,
+        value: data.value,
+      });
 
-      const utxo = await this.getUtxo({ address, satoshis });
+      const { value, fee, gas, serviceFee, input, output } = calculatedTx;
 
+      const utxo = await this.getUtxo({
+        address: from,
+        satoshis: calculatedTx.value,
+      });
+
+      console.log({ calculatedTx });
+
+      // Signing
       const signedTx = new bitcore.Transaction()
         .from(utxo)
-        .to(to, amount)
-        .fee(fee)
-        .change(address)
+        .to(to, value)
+        .to(to, this.toSatoshis(serviceFee))
+        .fee(gas)
+        .change(from)
         .sign(privateKey);
       if (!signedTx) throw Error(`Transaction Not Signed!`);
 
       const signedhex = signedTx.serialize();
+
+      console.log({ signedTx });
 
       // Sending
       const sentTx = await this.node.post('', {
@@ -197,11 +210,15 @@ export class BitcoinService implements BlockchainServiceInterface {
       const explorerLink = this.generateExplorerLink(tx);
 
       const result = {
+        value,
         from,
         to,
         tx,
         gas,
-        value: this.toBTC(amount),
+        fee,
+        serviceFee,
+        input,
+        output,
         explorerLink,
       };
 
@@ -212,24 +229,27 @@ export class BitcoinService implements BlockchainServiceInterface {
     }
   }
 
-  async calculateTx({
-    value,
-    from,
-    to,
-  }: BTCTransactionDto): Promise<CryptoWalletTransactionDto> {
+  async calculateTx(
+    data: BTCTransactionDto,
+  ): Promise<CryptoWalletTransactionDto> {
     try {
-      const balance = await this.getBalance(from);
-      const satoshis = this.toSatoshis(value);
-      const gas = await this.calculateGas(value);
+      const { from, to } = data;
 
-      const input = this.toSatoshis(balance);
-      const output = this.toBTC(satoshis + gas);
+      const value = this.toSatoshis(data.value);
+      const gas = this.calculateGas(data.value);
+      const serviceFee = this.toFixed(data.value * this.FEE, 9);
+      const fee = this.toBTC(gas);
+      const input = this.toFixed(data.value + fee + serviceFee, 9);
+      const output = this.toFixed(data.value, 9);
 
       const result = {
         value,
         from,
         to,
         gas,
+        fee,
+        serviceFee,
+        input,
         output,
       };
 
@@ -258,6 +278,10 @@ export class BitcoinService implements BlockchainServiceInterface {
     } catch (e) {
       console.log({ e });
     }
+  }
+
+  toFixed(number: number, toFixed = 0): number {
+    return Number(number.toFixed(toFixed));
   }
 
   generateExplorerLink(tx: string) {

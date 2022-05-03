@@ -11,13 +11,8 @@ export class UpdateWalletDto {
 }
 
 export class WalletTransferDto {
-  @ApiProperty()
   from?: string;
-
-  @ApiProperty()
   to?: string;
-
-  @ApiProperty()
   value?: number;
 }
 

@@ -38,6 +38,7 @@ export class EthereumService implements TokenServiceInterface {
       : ETH_EXPLORER_PUBLIC_TESTNET;
 
   GAS = 35000;
+  FEE = 0.02;
 
   explorer = axios.create({
     baseURL: ETH_EXPLORER,
@@ -93,37 +94,31 @@ export class EthereumService implements TokenServiceInterface {
     }
   }
 
-  async sendTransaction({
-    privateKey,
-    value,
-    from,
-    to,
-    gas,
-  }: ETHRawTransactionDto): Promise<CryptoWalletTransactionDto> {
+  async sendTransaction(
+    data: ETHRawTransactionDto,
+  ): Promise<CryptoWalletTransactionDto> {
     try {
-      const { web3 } = this;
-
-      const nonce = await web3.eth.getTransactionCount(from, 'latest');
+      const { from, to, privateKey } = data;
 
       // Calculating
       const calculatedTx = await this.calculateTx({
-        value,
+        value: data.value,
         from,
         to,
-        nonce,
       });
 
-      console.log({ calculatedTx });
+      const nonce = await this.web3.eth.getTransactionCount(from, 'latest');
+      const { value, gas, fee, serviceFee, input, output } = calculatedTx;
 
       // Signing
-      const signedTx = await web3.eth.accounts.signTransaction(
-        calculatedTx,
+      const signedTx = await this.web3.eth.accounts.signTransaction(
+        { value, from, to, gas, nonce },
         privateKey,
       );
       if (!signedTx) throw Error(`Transaction Not Signed!`);
 
       // Sending
-      const sentTx = await web3.eth.sendSignedTransaction(
+      const sentTx = await this.web3.eth.sendSignedTransaction(
         signedTx.rawTransaction,
       );
       if (!sentTx)
@@ -134,11 +129,15 @@ export class EthereumService implements TokenServiceInterface {
       const explorerLink = this.generateExplorerLink(tx);
 
       const result = {
+        value,
         from,
         to,
-        value: Number(value),
-        gas,
         tx,
+        gas,
+        fee,
+        serviceFee,
+        input,
+        output,
         explorerLink,
       };
 
@@ -152,16 +151,23 @@ export class EthereumService implements TokenServiceInterface {
     data: ETHRawTransactionDto,
   ): Promise<CryptoWalletTransactionDto> {
     try {
+      const { from, to } = data;
+
       const value = Number(this.web3.utils.toWei(data.value.toString()));
       const gas = this.calculateGas();
-      const output =
-        Number(this.web3.utils.fromWei(value.toString())) +
-        Number(this.web3.utils.fromWei(gas.toString()));
+      const serviceFee = this.toFixed(data.value * this.FEE, 9);
+      const fee = this.toFixed(serviceFee + this.fromGwei(gas), 9);
+      const input = this.toFixed(data.value + fee + serviceFee, 9);
+      const output = this.toFixed(data.value, 9);
 
       const result = {
-        ...data,
         value,
+        from,
+        to,
         gas,
+        fee,
+        serviceFee,
+        input,
         output,
       };
 
@@ -182,5 +188,13 @@ export class EthereumService implements TokenServiceInterface {
 
   generateExplorerLink(tx: string) {
     return `${this.EXPLORER_PUBLIC}/tx/${tx}`;
+  }
+
+  toFixed(number: number, toFixed = 0): number {
+    return Number(number.toFixed(toFixed));
+  }
+
+  fromGwei(gwei: number) {
+    return Number((gwei / 1000000000).toFixed(9));
   }
 }

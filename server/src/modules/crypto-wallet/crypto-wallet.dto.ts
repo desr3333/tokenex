@@ -39,19 +39,18 @@ export class CryptoWalletTransactionDto {
   to: string;
   value: number;
   tx?: string;
-  explorerLink?: string;
+  nonce?: number;
   gas?: number;
+  explorerLink?: string;
+  fee?: number;
+  serviceFee?: number;
+  input?: number;
   output?: number;
 }
 
 export class CryptoWalletTransferDto {
-  @ApiProperty()
   from: string;
-
-  @ApiProperty()
   to: string;
-
-  @ApiProperty()
   value: number;
 }
 

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
-import { CoinmarketTicker } from './coin-market.dto';
+import {
+  CoinmarketConvertRequestDto,
+  CoinmarketTickerDto,
+} from './coin-market.dto';
 
 const { COINDATA_API, COINDATA_API_KEY } = process.env;
 
@@ -16,7 +19,7 @@ export class CoinmarketService {
     });
   }
 
-  async getTickers(symbols: string[]): Promise<CoinmarketTicker[]> {
+  async getTickers(symbols: string[]): Promise<CoinmarketTickerDto[]> {
     try {
       if (!symbols.length) return [];
 
@@ -26,7 +29,7 @@ export class CoinmarketService {
 
       const data = response.data.data;
 
-      const result: CoinmarketTicker[] = symbols?.map((symbol) => {
+      const result: CoinmarketTickerDto[] = symbols?.map((symbol) => {
         const ticker = data[symbol];
 
         const { id, name } = ticker;
@@ -51,7 +54,7 @@ export class CoinmarketService {
     }
   }
 
-  async getTicker(symbol: string): Promise<CoinmarketTicker> {
+  async getTicker(symbol: string): Promise<CoinmarketTickerDto> {
     try {
       if (!symbol) throw Error(`Ticker ${symbol} Not Found!`);
 
@@ -80,6 +83,36 @@ export class CoinmarketService {
       return result;
     } catch (e) {
       console.log({ e });
+    }
+  }
+
+  async getRate(symbol: string): Promise<number> {
+    try {
+      const ticker = await this.getTicker(symbol);
+      return ticker.price;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
+  async convert({
+    tokenA,
+    tokenB,
+    value,
+  }: CoinmarketConvertRequestDto): Promise<number> {
+    try {
+      const response = await this.fetch.get(
+        `tools/price-conversion?amount=${value}&symbol=${tokenA}&convert=${tokenB}`,
+      );
+
+      const data = response?.data?.data?.[0];
+      if (!data) throw Error(`${tokenA}-${tokenB} Conversion Failed!`);
+
+      const result = this.round(data.quote?.[tokenB]?.price, 6);
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return 0;
     }
   }
 

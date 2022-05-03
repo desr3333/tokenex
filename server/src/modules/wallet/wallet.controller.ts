@@ -11,7 +11,10 @@ import {
 import { Response } from 'express';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
-import { CryptoWalletService } from '@modules/crypto-wallet';
+import {
+  CryptoWalletService,
+  CryptoWalletTransferDto,
+} from '@modules/crypto-wallet';
 
 import { WalletService } from './wallet.service';
 import {
@@ -99,6 +102,17 @@ export class WalletController {
     // Deleting Wallet
     const result = await this.walletService.delete({ id });
     if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
+
+    return res.status(200).json({ result });
+  }
+
+  @Post('calculateTx')
+  async calculateTx(
+    @Res() res: Response,
+    @Body() transferDto: CryptoWalletTransferDto,
+  ) {
+    const result = await this.cryptoWalletService.calculateTx(transferDto);
+    if (!result) return res.status(404).json({ error: `Calculation Failed!` });
 
     return res.status(200).json({ result });
   }
