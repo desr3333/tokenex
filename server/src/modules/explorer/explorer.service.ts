@@ -57,18 +57,12 @@ export class ExplorerService implements ExplorerServiceInterface {
     try {
       switch (blockchain) {
         case 'bitcoin':
-          // return this.bitcoinExplorerService.getTransaction(tx);
+          // return this.bitcoinExplorerService.watchAddress(address,(payload) => {},);
           return;
         case 'ethereum':
           return this.ethereumExplorerService.watchAddress(
             address,
-            (payload) => {
-              this.notificationService.sendTelegramNotification({
-                chat_id: 193459222,
-                type: 'TRANSACTION_CONFIRMED',
-                payload: JSON.stringify(payload),
-              });
-            },
+            (payload) => {},
           );
         default:
           return null;
