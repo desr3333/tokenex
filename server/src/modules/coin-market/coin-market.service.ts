@@ -36,11 +36,11 @@ export class CoinmarketService {
           id,
           name,
           symbol,
-          price: quote?.price || 0,
-          volume_change_24h: quote?.volume_change_24h || 0,
-          percent_change_24h: quote?.percent_change_24h || 0,
-          market_cap: quote?.market_cap || 0,
-          market_cap_dominance: quote?.market_cap_dominance || 0,
+          price: this.round(quote?.price, 2) || 0,
+          volume_change_24h: this.round(quote?.volume_change_24h, 4) || 0,
+          percent_change_24h: this.round(quote?.percent_change_24h, 4) || 0,
+          market_cap: this.round(quote?.market_cap) || 0,
+          market_cap_dominance: this.round(quote?.market_cap_dominance, 2) || 0,
           last_updated: quote?.last_updated || null,
         };
       });
@@ -69,11 +69,11 @@ export class CoinmarketService {
         id,
         name,
         symbol,
-        price: quote?.price || 0,
-        volume_change_24h: quote?.volume_change_24h || 0,
-        percent_change_24h: quote?.percent_change_24h || 0,
-        market_cap: quote?.market_cap || 0,
-        market_cap_dominance: quote?.market_cap_dominance || 0,
+        price: this.round(quote?.price, 2) || 0,
+        volume_change_24h: this.round(quote?.volume_change_24h, 4) || 0,
+        percent_change_24h: this.round(quote?.percent_change_24h, 4) || 0,
+        market_cap: this.round(quote?.market_cap) || 0,
+        market_cap_dominance: this.round(quote?.market_cap_dominance, 2) || 0,
         last_updated: quote?.last_updated || null,
       };
 
@@ -81,5 +81,9 @@ export class CoinmarketService {
     } catch (e) {
       console.log({ e });
     }
+  }
+
+  round(number: number, toFixed = 0): number {
+    return Number(number.toFixed(toFixed));
   }
 }

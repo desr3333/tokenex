@@ -1,17 +1,20 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { CoinmarketService } from './coin-market.service';
 
-@Controller('coindata')
+@ApiTags('CoinMarket')
+@Controller('coinmarket')
 export class CoinmarketController {
   constructor(private coindataService: CoinmarketService) {}
 
+  @ApiQuery({ name: 'symbol', type: 'string' })
   @Get('tickers')
   async getTickers(@Res() res: Response, @Query() query) {
     const { symbol } = query;
 
-    const symbols: string[] = symbol.split(',');
+    const symbols: string[] = symbol?.split(',');
 
     const result = await this.coindataService.getTickers(symbols);
     if (!result)
@@ -20,6 +23,7 @@ export class CoinmarketController {
     return res.status(200).json({ result });
   }
 
+  @ApiParam({ name: 'symbol', type: 'string' })
   @Get('tickers/:symbol')
   async getTicker(@Res() res: Response, @Param() param) {
     const { symbol } = param;

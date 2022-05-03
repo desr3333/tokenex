@@ -34,7 +34,7 @@ import { AppController } from './app.controller';
     ExplorerModule,
     TelegramModule,
     CoinbaseModule,
-    // CoinmarketModule,
+    CoinmarketModule,
   ],
   controllers: [AppController],
 })
