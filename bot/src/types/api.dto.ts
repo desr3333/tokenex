@@ -1,6 +1,8 @@
 import { TelegramNotication } from "helpers";
 import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
 
+export type TokenSymbol = "BTC" | "ETH" | "USDT";
+
 export class WalletDto {
   id: number;
   account: any;
@@ -13,8 +15,24 @@ export class TransactionDto {
   from?: string;
   to?: string;
   value?: number;
-  cryptoWallet?: CryptoWalletDto;
+  tx?: string;
+  nonce?: number;
+  gas?: number;
   explorerLink?: string;
+  fee?: number;
+  serviceFee?: number;
+  input?: number;
+  output?: number;
+  cryptoWallet?: CryptoWalletDto;
+}
+
+export class ExchangeDto {
+  tokenA: string;
+  tokenB: string;
+  from: string;
+  to: string;
+  value: number;
+  walletId?: number;
 }
 
 export class CryptoWalletDto {

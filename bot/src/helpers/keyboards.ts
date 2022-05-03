@@ -175,6 +175,12 @@ export const wallet_main = () =>
         callback_data: Routes.EXCHANGE,
       },
     ],
+    [
+      {
+        text: I18n.t("button:deposit_with_card"),
+        callback_data: "-",
+      },
+    ],
     [buttons.back(Routes.START)],
   ]);
 
@@ -257,3 +263,61 @@ export const back = (backScene?: string) =>
 
 export const cancel = (backScene?: string) =>
   Markup.inlineKeyboard([[buttons.cancel(backScene)]]);
+
+export const wallet_exchange_wallet_from = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: Token.BTC,
+        callback_data: Routes.EXCHANGE_WALLET_FROM__SELECT(Token.BTC),
+      },
+      {
+        text: Token.ETH,
+        callback_data: Routes.EXCHANGE_WALLET_FROM__SELECT(Token.ETH),
+      },
+      // {
+      //   text: Token.USDT,
+      //   callback_data: Routes.DEPOSIT_WALLET__SELECT(Token.USDT),
+      // },
+    ],
+    [buttons.back(Routes.WALLET_START)],
+  ]);
+
+export const wallet_exchange_wallet_to = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: Token.BTC,
+        callback_data: Routes.EXCHANGE_WALLET_TO__SELECT(Token.BTC),
+      },
+      {
+        text: Token.ETH,
+        callback_data: Routes.EXCHANGE_WALLET_TO__SELECT(Token.ETH),
+      },
+    ],
+    [buttons.back(Routes.WALLET_START)],
+  ]);
+
+export const wallet_exchange_amount = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: I18n.t("button:cancel"),
+        callback_data: Routes.EXCHANGE__CANCEL,
+      },
+    ],
+  ]);
+
+export const wallet_exchange_confirm = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: I18n.t("button:cancel"),
+        callback_data: Routes.EXCHANGE__CANCEL,
+      },
+      {
+        text: I18n.t("button:confirm"),
+        callback_data: Routes.EXCHANGE__CONFIRM,
+      },
+    ],
+  ]);

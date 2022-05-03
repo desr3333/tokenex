@@ -1,6 +1,6 @@
 import { i18n } from "i18next";
 import { Context, Middleware, MiddlewareFn, Scenes } from "telegraf";
-import { TransactionDto, WalletDto } from "./api.dto";
+import { ExchangeDto, TransactionDto, WalletDto } from "./api.dto";
 
 export interface TelegramContext extends Context {
   session: TelegramSession;
@@ -16,6 +16,7 @@ export interface TelegramSession
 
   wallet: WalletDto;
   transaction: TransactionDto;
+  exchange: ExchangeDto;
 
   tokens: any[];
 

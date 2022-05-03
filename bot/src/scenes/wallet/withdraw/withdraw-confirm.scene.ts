@@ -5,13 +5,16 @@ import { walletService } from "@services";
 export const scene = new Scene(Routes.WITHDRAW_CONFIRM);
 
 scene.enter(async (ctx) => {
-  const { from, to, value, cryptoWallet } = ctx.session.transaction;
+  const { from, to, input, output, fee, cryptoWallet } =
+    ctx.session.transaction;
 
   const vars = {
     from,
     to,
-    value,
+    input,
+    output,
     symbol: cryptoWallet?.symbol,
+    fee,
   };
 
   if (!ctx.message)
@@ -28,11 +31,15 @@ scene.enter(async (ctx) => {
 
 scene.on("callback_query", async (ctx) => {
   const data = parseCallbackQuery(ctx.callbackQuery);
-  const { from, to, value } = ctx.session.transaction;
+  const { from, to, input, output } = ctx.session.transaction;
 
   switch (data) {
     case Routes.WITHDRAW__CONFIRM:
-      const transaction = await walletService.withdraw({ from, to, value });
+      const transaction = await walletService.withdraw({
+        from,
+        to,
+        value: output,
+      });
       if (!transaction) return ctx.scene.enter(Routes.WITHDRAW_FAILED);
 
       ctx.session.transaction = transaction;

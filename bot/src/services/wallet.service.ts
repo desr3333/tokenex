@@ -46,6 +46,20 @@ export const remove = async (id: number) => {
   }
 };
 
+export const calculateTx = async (
+  transactionDto: TransactionDto
+): Promise<TransactionDto> => {
+  try {
+    const response = await APIService.post(
+      `wallets/calculateTx`,
+      transactionDto
+    );
+    return response.data?.result;
+  } catch (e) {
+    console.log(e.response?.data);
+  }
+};
+
 export const withdraw = async (withdrawDto: TransactionDto) => {
   try {
     const response = await APIService.post(`wallets/withdraw`, withdrawDto);

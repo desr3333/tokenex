@@ -47,10 +47,10 @@
           "select": "⬆️ Withdraw\n\nSelect a wallet from which you want to withdraw."
         },
 
-        "confirm": "⬆️ Withdraw\n\nValue: {{value}} {{symbol}}\nTo: {{to}}\n\nConfirm the transaction, please.",
+        "confirm": "⬆️ Withdraw\n\nTo: {{to}}\nValue: {{output}} {{symbol}}\nFee: {{fee}} {{symbol}}\n--------\nTotal: {{input}} {{symbol}}\n\nConfirm the transaction, please.",
+        "transaction": "⬆️ Withdraw\n\nTo: {{to}}\nValue: {{output}} {{symbol}}\nFee: {{fee}} {{symbol}}\n--------\nTotal: {{input}} {{symbol}}\n\nYou can check the transaction at the link below.",
         "fulfilled": "⬆️ Withdraw\n\nWithdrawal Request #12345 has been fulfilled!",
-        "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!",
-        "transaction": "⬆️ Withdraw\n\nValue: {{value}} {{symbol}}\nTo: {{to}}\nStatus: {{status}}\n\nYou can check the transaction at the link below."
+        "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!"
       }
     }
   },
@@ -68,6 +68,7 @@
     "deposit": "⬇️ Deposit",
     "withdraw": "⬆️ Withdraw",
     "exchange": "♻️ Exchange",
+    "deposit_with_card": "💳️ Deposit with a card",
     "support": "💬 Support",
     "stats": "📊 Stats",
 

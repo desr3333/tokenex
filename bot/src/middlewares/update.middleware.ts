@@ -18,7 +18,7 @@ export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
     const _telegramAccount = await telegramAccountService.getByChatId(chatId);
     ctx.session.telegramAccount = _telegramAccount;
 
-    // // Creating Telegram Account
+    // Creating Telegram Account
     if (!_telegramAccount) {
       await ctx.reply("⌛️ Creating Account ..");
 

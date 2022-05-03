@@ -1,5 +1,6 @@
 import { Scene } from "@core";
 import { Routes, Token, keyboards, selectFromArray } from "@helpers";
+import { walletService } from "@services";
 
 export const scene = new Scene(Routes.WITHDRAW_AMOUNT);
 
@@ -21,10 +22,10 @@ scene.enter(async (ctx) => {
   );
 });
 
-scene.on("text", (ctx) => {
+scene.on("text", async (ctx) => {
   const { wallet, transaction } = ctx.session;
-
-  const symbol = transaction?.cryptoWallet?.symbol;
+  const { symbol } = transaction.cryptoWallet;
+  const { from } = transaction;
 
   // Checking Value
   const value = Number(ctx.message.text);
@@ -34,6 +35,8 @@ scene.on("text", (ctx) => {
       keyboards.cancel(Routes.WALLET_START)
     );
 
+  console.log({ transaction });
+
   // Checking Wallet
   const cryptoWallet = selectFromArray(wallet.cryptoWallets, { symbol });
   if (!cryptoWallet)
@@ -42,9 +45,15 @@ scene.on("text", (ctx) => {
       keyboards.cancel(Routes.WALLET_START)
     );
 
-  // Checking Balance
-  const isBalanceSufficient = cryptoWallet?.balance >= value || false;
-  if (!isBalanceSufficient)
+  // Calculating Transaction
+  const calculatedTx = await walletService.calculateTx({ from, value });
+  const { input } = calculatedTx;
+
+  console.log({ calculatedTx });
+
+  // Checking Funds
+  const fundsAvailable = cryptoWallet?.balance >= input || false;
+  if (!fundsAvailable)
     return ctx.reply(
       ctx.t("error:wallet.insufficient_balance"),
       keyboards.back(Routes.WALLET_START)
@@ -53,8 +62,8 @@ scene.on("text", (ctx) => {
   // Updating Session
   ctx.session.transaction = {
     ...ctx.session.transaction,
+    ...calculatedTx,
     cryptoWallet,
-    value,
   };
 
   return ctx.scene.enter(Routes.WITHDRAW_ADDRESS);
