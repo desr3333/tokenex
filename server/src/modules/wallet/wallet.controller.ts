@@ -109,9 +109,9 @@ export class WalletController {
   @Post('calculateTx')
   async calculateTx(
     @Res() res: Response,
-    @Body() transferDto: CryptoWalletTransferDto,
+    @Body() transactionDto: CryptoWalletTransferDto,
   ) {
-    const result = await this.cryptoWalletService.calculateTx(transferDto);
+    const result = await this.cryptoWalletService.calculateTx(transactionDto);
     if (!result) return res.status(404).json({ error: `Calculation Failed!` });
 
     return res.status(200).json({ result });
@@ -121,17 +121,7 @@ export class WalletController {
   async withdraw(@Res() res: Response, @Body() withdrawDto: WalletWithdrawDto) {
     const { from, to, value } = withdrawDto;
 
-    // Checking Wallet
-    const cryptoWallet = await this.cryptoWalletService.findOne({
-      address: from,
-    });
-    if (!cryptoWallet)
-      return res
-        .status(404)
-        .json({ error: `Crypto Wallet ${from} Not Found!` });
-
-    // Sending Transaction
-    const result = await this.cryptoWalletService.transfer({ from, to, value });
+    const result = await this.walletService.transfer({ from, to, value });
     if (!result) return res.status(400).json({ error: `Withdrawal Failed!` });
 
     return res.status(200).json({ result });

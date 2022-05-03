@@ -1,17 +1,17 @@
-import { BTCModule, BitcoinService } from '@modules/blockchain/bitcoin';
-import { ETHModule, EthereumService } from '@modules/blockchain/ethereum';
 import { Module } from '@nestjs/common';
 
-import { BitcoinExplorerController, BitcoinExplorerService } from './bitcoin';
-import {
-  EthereumExplorerController,
-  EthereumExplorerService,
-} from './ethereum';
+import { NotificationModule } from '@modules/notification';
+
+import { BitcoinExplorerModule } from './bitcoin';
+import { EthereumExplorerModule } from './ethereum';
+
+import { ExplorerController } from './explorer.controller';
+import { ExplorerService } from './explorer.service';
 
 @Module({
-  imports: [BTCModule, ETHModule],
-  controllers: [BitcoinExplorerController, EthereumExplorerController],
-  providers: [BitcoinExplorerService, EthereumExplorerService],
-  exports: [],
+  imports: [NotificationModule, EthereumExplorerModule, BitcoinExplorerModule],
+  controllers: [ExplorerController],
+  providers: [ExplorerService],
+  exports: [ExplorerService],
 })
 export class ExplorerModule {}

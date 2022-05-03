@@ -1,3 +1,9 @@
+export class ExplorerRequestDto {
+  blockchain: 'bitcoin' | 'ethereum';
+  address?: string;
+  tx?: string;
+}
+
 export class ExplorerTransactionDto {
   txid: string;
   from: string;
@@ -8,9 +14,8 @@ export class ExplorerTransactionDto {
   confirmations: number;
 }
 
-export class BTCTransactionDto extends ExplorerTransactionDto {}
-
-export class ETHTransactionDto extends ExplorerTransactionDto {
+export class BitcoinTransactionDto extends ExplorerTransactionDto {}
+export class EthereumTransactionDto extends ExplorerTransactionDto {
   nonce: number;
   gas: number;
   gasUsed: number;

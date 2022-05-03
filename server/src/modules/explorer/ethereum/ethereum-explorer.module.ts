@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
 import { ETHModule } from '@modules/blockchain/ethereum';
+import { NotificationModule } from '@modules/notification';
 
-import { EthereumExplorerController } from './ethereum-explorer.controller';
 import { EthereumExplorerService } from './ethereum-explorer.service';
 
 @Module({
-  imports: [ETHModule],
-  controllers: [EthereumExplorerController],
+  imports: [ETHModule, NotificationModule],
+  controllers: [],
   providers: [EthereumExplorerService],
   exports: [EthereumExplorerService],
 })

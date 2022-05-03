@@ -158,6 +158,35 @@ export class BitcoinService implements BlockchainServiceInterface {
     }
   }
 
+  async signTransaction(
+    transactionDto: CryptoWalletTransactionDto,
+    privateKey: string,
+  ) {
+    try {
+      const { value, from, to, gas, serviceFee } = transactionDto;
+
+      const utxo = await this.getUtxo({
+        address: from,
+        satoshis: value,
+      });
+
+      const signedTx = new bitcore.Transaction()
+        .from(utxo)
+        .to(to, value)
+        .to(to, this.toSatoshis(serviceFee))
+        .fee(gas)
+        .change(from)
+        .sign(privateKey);
+
+      console.log({ signedTx });
+
+      return signedTx.serialize();
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
   async sendTransaction(
     data: BTCTransactionDto,
   ): Promise<CryptoWalletTransactionDto> {
@@ -173,28 +202,12 @@ export class BitcoinService implements BlockchainServiceInterface {
         to,
         value: data.value,
       });
+      console.log({ calculatedTx });
 
       const { value, fee, gas, serviceFee, input, output } = calculatedTx;
 
-      const utxo = await this.getUtxo({
-        address: from,
-        satoshis: calculatedTx.value,
-      });
-
-      console.log({ calculatedTx });
-
       // Signing
-      const signedTx = new bitcore.Transaction()
-        .from(utxo)
-        .to(to, value)
-        .to(to, this.toSatoshis(serviceFee))
-        .fee(gas)
-        .change(from)
-        .sign(privateKey);
-      if (!signedTx) throw Error(`Transaction Not Signed!`);
-
-      const signedhex = signedTx.serialize();
-
+      const signedTx = await this.signTransaction(calculatedTx, privateKey);
       console.log({ signedTx });
 
       // Sending
@@ -203,7 +216,7 @@ export class BitcoinService implements BlockchainServiceInterface {
         jsonrpc: '2.0',
         id: 'test',
         method: 'sendrawtransaction',
-        params: [signedhex],
+        params: [signedTx],
       });
 
       const tx = sentTx.data.result;

@@ -36,7 +36,6 @@ model TelegramAccount {
 
 model Wallet {
     id            Int            @id @default(autoincrement())
-    //  uuid          String         @unique
     account       Account?
     cryptoWallets CryptoWallet[]
     createdAt     DateTime?

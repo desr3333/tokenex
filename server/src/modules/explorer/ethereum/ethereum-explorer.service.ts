@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 import { EthereumService } from '@modules/blockchain/ethereum';
+import { NotificationService } from '@modules/notification';
+
 import { ETHTransactionDto } from './ethereum-explorer.dto';
 import { ExplorerServiceInterface } from '../explorer.dto';
 
-export const { NOWNODES_API_KEY, BTC_EXPLORER, ETH_EXPLORER } = process.env;
+export const {
+  ETH_NET,
+  ETH_EXPLORER_MAINNET,
+  ETH_EXPLORER_TESTNET,
+  ETH_NODE_API_KEY,
+} = process.env;
 
 @Injectable()
 export class EthereumExplorerService implements ExplorerServiceInterface {
-  private fetch: AxiosInstance;
+  constructor(private ethereumService: EthereumService) {}
 
-  constructor(private EthereumService: EthereumService) {
-    this.fetch = axios.create({
-      baseURL: `${ETH_EXPLORER}/`,
-      headers: {
-        'api-key': NOWNODES_API_KEY,
-      },
-    });
-  }
+  EXPLORER =
+    ETH_NET === 'mainnet' ? ETH_EXPLORER_MAINNET : ETH_EXPLORER_TESTNET;
+
+  fetch = axios.create({
+    baseURL: `${this.EXPLORER}/`,
+    headers: {
+      'api-key': ETH_NODE_API_KEY,
+    },
+  });
 
   async getAddress(address: string) {
     try {
@@ -61,19 +69,23 @@ export class EthereumExplorerService implements ExplorerServiceInterface {
     }
   }
 
-  async watchAddress(address: string): Promise<string> {
+  async watchAddress(
+    address: string,
+    callback?: (data: any) => void,
+  ): Promise<string> {
     try {
-      const { web3 } = this.EthereumService;
+      const { web3 } = this.ethereumService;
 
-      setInterval(async () => {
+      console.log('Started watching..');
+
+      const interval = setInterval(async () => {
         // Checking Block
         const blockNumber = await web3.eth.getBlockNumber();
         const block = await web3.eth.getBlock(blockNumber);
-
         const isBlockValid = block && block.transactions;
         if (!isBlockValid) return;
 
-        console.log({ blockNumber, address });
+        console.log({ timestamp: Date.now(), blockNumber, address });
 
         // Checking Transactions
         if (block.transactions?.length >= 0) {
@@ -82,9 +94,13 @@ export class EthereumExplorerService implements ExplorerServiceInterface {
             if (transaction?.to !== address) return;
 
             console.log({ transaction });
+
+            if (callback) callback(transaction);
+
+            clearInterval(interval);
           });
         }
-      }, 5000);
+      }, 10000);
     } catch (e) {
       console.log({ e });
       return null;

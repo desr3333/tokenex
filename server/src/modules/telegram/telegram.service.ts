@@ -3,6 +3,7 @@ import {
   TelegramNotificationDto,
 } from '@modules/notification';
 import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import axios, { AxiosInstance } from 'axios';
 
 import { TelegramTextMessageDto } from './telegram.dto';
@@ -17,6 +18,7 @@ export class TelegramService {
     this.fetch = axios.create({ baseURL: `${TELEGRAM_BOT_WEBHOOK}/` });
   }
 
+  @OnEvent('telegram.message', { async: true })
   async sendMessage(
     data: TelegramTextMessageDto,
   ): Promise<TelegramTextMessageDto> {
@@ -31,6 +33,7 @@ export class TelegramService {
     }
   }
 
+  @OnEvent('telegram.notification', { async: true })
   async sendNotification(
     data: TelegramNotificationDto,
   ): Promise<TelegramNotificationDto> {

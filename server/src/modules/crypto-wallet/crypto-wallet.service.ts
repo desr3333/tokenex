@@ -14,13 +14,16 @@ import {
 
 import { BitcoinService } from '@modules/blockchain/bitcoin';
 import { EthereumService } from '@modules/blockchain/ethereum';
+import { NotificationService } from '@modules/notification';
+import { TelegramAccountService } from '@modules/telegram-account';
 
 @Injectable()
 export class CryptoWalletService {
   constructor(
     private prisma: PrismaService,
-    private BitcoinService: BitcoinService,
-    private EthereumService: EthereumService,
+    private notificationService: NotificationService,
+    private bitcoinService: BitcoinService,
+    private ethereumService: EthereumService,
   ) {}
 
   async query() {
@@ -39,11 +42,12 @@ export class CryptoWalletService {
 
   async findOne(
     where?: Prisma.CryptoWalletWhereUniqueInput,
+    include?: Prisma.CryptoWalletInclude,
   ): Promise<CryptoWallet> {
     try {
       const result = await this.prisma.cryptoWallet.findUnique({
         where,
-        include: { token: true },
+        include: { token: true, ...include },
       });
       if (!result) throw Error('Crypto Wallet Not Found!');
 
@@ -74,10 +78,10 @@ export class CryptoWalletService {
 
       switch (symbol) {
         case Token.BTC:
-          keyPair = await this.BitcoinService.create();
+          keyPair = await this.bitcoinService.create();
           break;
         case Token.ETH:
-          keyPair = await this.EthereumService.create();
+          keyPair = await this.ethereumService.create();
           break;
         case Token.USDT:
           // keyPair = await this.USDTService.create();
@@ -139,13 +143,13 @@ export class CryptoWalletService {
 
       switch (symbol) {
         case Token.BTC:
-          balance = await this.BitcoinService.getBalance(address);
+          balance = await this.bitcoinService.getBalance(address);
           break;
         case Token.ETH:
-          balance = await this.EthereumService.getBalance(address);
+          balance = await this.ethereumService.getBalance(address);
           break;
         case Token.USDT:
-          balance = await this.EthereumService.getBalance(address);
+          balance = await this.ethereumService.getBalance(address);
           break;
         default:
           throw Error('Incorrect Symbol!');
@@ -169,13 +173,13 @@ export class CryptoWalletService {
       // Fetching Balance
       switch (symbol) {
         case Token.BTC:
-          balance = await this.BitcoinService.getBalance(address);
+          balance = await this.bitcoinService.getBalance(address);
           break;
         case Token.ETH:
-          balance = await this.EthereumService.getBalance(address);
+          balance = await this.ethereumService.getBalance(address);
           break;
         case Token.USDT:
-          balance = await this.EthereumService.getBalance(address);
+          balance = await this.ethereumService.getBalance(address);
           break;
         default:
           throw Error('Balance Update Error!');
@@ -188,7 +192,10 @@ export class CryptoWalletService {
     }
   }
 
-  async transfer(transferdto: CryptoWalletTransferDto) {
+  async transfer(
+    transferdto: CryptoWalletTransferDto,
+    callback?: (data: any) => void,
+  ) {
     try {
       const { from, to, value } = transferdto;
 
@@ -207,28 +214,32 @@ export class CryptoWalletService {
 
       switch (symbol) {
         case Token.BTC:
-          transaction = await this.BitcoinService.sendTransaction({
-            value,
-            from,
-            to,
-            privateKey,
-          });
+          this.bitcoinService
+            .sendTransaction({
+              value,
+              from,
+              to,
+              privateKey,
+            })
+            .then(callback);
           break;
         case Token.ETH:
-          transaction = await this.EthereumService.sendTransaction({
-            value,
-            from,
-            to,
-            privateKey,
-          });
+          this.ethereumService
+            .sendTransaction({
+              value,
+              from,
+              to,
+              privateKey,
+            })
+            .then(callback);
           break;
         case Token.USDT:
-          // transaction = await this.USDTService.sendTransaction({
+          // this.USDTService.sendTransaction({
           //   value,
           //   from,
           //   to,
           //   privateKey,
-          // });
+          // }).then(callback);
           break;
         default:
           throw Error('Transfer Error!');
@@ -253,14 +264,14 @@ export class CryptoWalletService {
       // Calculating Transaction
       switch (cryptoWallet.symbol) {
         case Token.BTC:
-          transaction = await this.BitcoinService.calculateTx({
+          transaction = await this.bitcoinService.calculateTx({
             value,
             from,
             to,
           });
           break;
         case Token.ETH:
-          transaction = await this.EthereumService.calculateTx({
+          transaction = await this.ethereumService.calculateTx({
             value,
             from,
             to,

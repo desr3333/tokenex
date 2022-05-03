@@ -2,14 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Wallet } from '@prisma/client';
 
 import { PrismaService } from '@modules/prisma';
-import { CryptoWalletService } from '@modules/crypto-wallet';
+import {
+  CryptoWalletService,
+  CryptoWalletTransferDto,
+} from '@modules/crypto-wallet';
 import { Token } from '@types';
+import { WalletWithdrawDto } from './wallet.dto';
+import { NotificationService } from '@modules/notification';
 
 @Injectable()
 export class WalletService {
   constructor(
     private prisma: PrismaService,
     private cryptoWalletService: CryptoWalletService,
+    private notificationService: NotificationService,
   ) {}
 
   async query(params: {
@@ -30,12 +36,15 @@ export class WalletService {
     });
   }
 
-  async findOne(where?: Prisma.WalletWhereUniqueInput): Promise<Wallet> {
+  async findOne(
+    where?: Prisma.WalletWhereUniqueInput,
+    include?: Prisma.WalletInclude,
+  ) {
     try {
       // Fetching
       const wallet = await this.prisma.wallet.findUnique({
         where,
-        include: { cryptoWallets: true },
+        include: { cryptoWallets: true, account: true },
       });
 
       // Refreshing Balances
@@ -60,6 +69,7 @@ export class WalletService {
       // Creating Crypto Wallets
       this.cryptoWalletService.create({ symbol: Token.BTC, walletId });
       this.cryptoWalletService.create({ symbol: Token.ETH, walletId });
+      // this.cryptoWalletService.create({ symbol: Token.USDT, walletId });
 
       return wallet;
     } catch (e) {
@@ -82,5 +92,42 @@ export class WalletService {
     return this.prisma.wallet.delete({
       where,
     });
+  }
+
+  async transfer(data: CryptoWalletTransferDto) {
+    try {
+      const { from } = data;
+
+      const result = await this.cryptoWalletService.transfer(
+        data,
+        async (data) => {
+          const cryptoWallet = await this.cryptoWalletService.findOne({
+            address: from,
+          });
+
+          const wallet = await this.prisma.wallet.findUnique({
+            where: { id: cryptoWallet.walletId },
+            include: {
+              account: {
+                include: {
+                  telegramAccount: true,
+                },
+              },
+            },
+          });
+
+          const telegramAccount = wallet.account.telegramAccount;
+
+          this.notificationService.sendTelegramNotification({
+            chat_id: telegramAccount.chatId,
+            type: 'TRANSACTION_CONFIRMED',
+            payload: JSON.stringify(data),
+          });
+        },
+      );
+      return result;
+    } catch (e) {
+      console.log({ e });
+    }
   }
 }

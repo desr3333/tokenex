@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from '@modules/app';
-import { ExchangeService } from '@modules/exchange';
 
 const main = async () => {
   try {

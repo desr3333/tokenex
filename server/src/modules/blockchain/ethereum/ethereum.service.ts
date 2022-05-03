@@ -94,6 +94,29 @@ export class EthereumService implements TokenServiceInterface {
     }
   }
 
+  async signTransaction(
+    transactionDto: CryptoWalletTransactionDto,
+    privateKey: string,
+  ): Promise<string> {
+    try {
+      const { from, to, value, gas, fee, serviceFee, input, output } =
+        transactionDto;
+      const nonce = await this.web3.eth.getTransactionCount(from, 'latest');
+
+      // Signing
+      const signedTx = await this.web3.eth.accounts.signTransaction(
+        { value, from, to, gas, nonce },
+        privateKey,
+      );
+      if (!signedTx) throw Error(`Transaction Not Signed!`);
+
+      return signedTx.rawTransaction;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
   async sendTransaction(
     data: ETHRawTransactionDto,
   ): Promise<CryptoWalletTransactionDto> {
@@ -106,23 +129,14 @@ export class EthereumService implements TokenServiceInterface {
         from,
         to,
       });
-
-      const nonce = await this.web3.eth.getTransactionCount(from, 'latest');
       const { value, gas, fee, serviceFee, input, output } = calculatedTx;
 
       // Signing
-      const signedTx = await this.web3.eth.accounts.signTransaction(
-        { value, from, to, gas, nonce },
-        privateKey,
-      );
-      if (!signedTx) throw Error(`Transaction Not Signed!`);
+      const signedTx = await this.signTransaction(calculatedTx, privateKey);
 
       // Sending
-      const sentTx = await this.web3.eth.sendSignedTransaction(
-        signedTx.rawTransaction,
-      );
-      if (!sentTx)
-        throw Error(`Transaction #${signedTx.transactionHash} Not Sent!`);
+      const sentTx = await this.web3.eth.sendSignedTransaction(signedTx);
+      if (!sentTx) throw Error(`Transaction Not Sent!`);
 
       const { transactionHash: tx } = sentTx;
 

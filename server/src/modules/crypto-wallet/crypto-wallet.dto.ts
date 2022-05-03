@@ -1,36 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export class CreateCryptoWalletDto {
-  @ApiProperty()
   address?: string;
-
-  @ApiProperty()
   symbol: string;
-
-  @ApiProperty({ default: 0 })
   balance?: number;
-
-  @ApiProperty()
   walletId: number;
-
-  @ApiProperty()
   tokenId?: number;
 }
 
 export class UpdateCryptoWalletDto {
-  @ApiProperty()
   address?: string;
-
-  @ApiProperty()
   symbol?: string;
-
-  @ApiProperty()
   balance?: number;
-
-  @ApiProperty()
   walletId?: number;
-
-  @ApiProperty()
   tokenId?: number;
 }
 
@@ -38,6 +18,7 @@ export class CryptoWalletTransactionDto {
   from: string;
   to: string;
   value: number;
+  privateKey?: string;
   tx?: string;
   nonce?: number;
   gas?: number;

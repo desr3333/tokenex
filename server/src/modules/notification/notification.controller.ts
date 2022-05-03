@@ -10,10 +10,10 @@ export class NotificationController {
   constructor(private notificationService: NotificationService) {}
 
   @Post('telegram')
-  async sendNotification(@Res() res, @Body() dto: TelegramNotificationDto) {
+  async sendNotification(@Res() res, @Body() data: TelegramNotificationDto) {
     try {
       const result = await this.notificationService.sendTelegramNotification(
-        dto,
+        data,
       );
       if (!result)
         return res

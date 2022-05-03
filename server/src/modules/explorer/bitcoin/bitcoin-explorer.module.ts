@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
 import { BTCModule } from '@modules/blockchain/bitcoin';
+import { NotificationModule } from '@modules/notification';
 
-import { BitcoinExplorerController } from './bitcoin-explorer.controller';
 import { BitcoinExplorerService } from './bitcoin-explorer.service';
 
 @Module({
-  imports: [BTCModule],
-  controllers: [BitcoinExplorerController],
+  imports: [BTCModule, NotificationModule],
+  controllers: [],
   providers: [BitcoinExplorerService],
   exports: [BitcoinExplorerService],
 })

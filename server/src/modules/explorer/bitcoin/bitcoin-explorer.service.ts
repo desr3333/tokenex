@@ -1,23 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 import { BitcoinService } from '@modules/blockchain/bitcoin';
+
 import { BTCTransactionDto } from './bitcoin-explorer.dto';
 
-export const { NOWNODES_API_KEY, BTC_EXPLORER, ETH_EXPLORER } = process.env;
+export const {
+  BTC_NODE_API_KEY,
+  BTC_EXPLORER_MAINNET,
+  BTC_EXPLORER_TESTNET,
+  BTC_NET,
+} = process.env;
 
 @Injectable()
 export class BitcoinExplorerService {
-  private fetch: AxiosInstance;
+  constructor(private bitcoinService: BitcoinService) {}
 
-  constructor(private BitcoinService: BitcoinService) {
-    this.fetch = axios.create({
-      baseURL: `${BTC_EXPLORER}/`,
-      headers: {
-        'api-key': NOWNODES_API_KEY,
-      },
-    });
-  }
+  EXPLORER =
+    BTC_NET === 'mainnet' ? BTC_EXPLORER_MAINNET : BTC_EXPLORER_TESTNET;
+
+  fetch = axios.create({
+    baseURL: `${this.EXPLORER}/`,
+    headers: {
+      'api-key': BTC_NODE_API_KEY,
+    },
+  });
 
   async getAddress(address: string) {
     try {
