@@ -21,10 +21,12 @@ export class ExchangeService {
 
   async calculateTx(data: ExchangeRequestDto): Promise<ExchangeRequestDto> {
     try {
-      const { tokenB, to } = data;
+      const { tokenA, tokenB, to } = data;
 
       const calculatedTx = await this.cryptoWalletService.calculateTx(data);
+
       const withdrawalFee = await this.coinbaseService.getWithdrawalFee({
+        input_currency: tokenA,
         currency: tokenB,
         crypto_address: to,
       });
@@ -33,10 +35,14 @@ export class ExchangeService {
 
       const result = {
         ...data,
-        fee: fee + withdrawalFee,
+        fee: this.coinmarketService.round(fee + withdrawalFee, 9),
         serviceFee,
-        input: input + withdrawalFee,
-        output,
+        input: this.coinmarketService.round(input + withdrawalFee, 9),
+        output: await this.coinmarketService.convert({
+          tokenA,
+          tokenB,
+          value: output,
+        }),
       };
 
       return result;

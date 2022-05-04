@@ -10,14 +10,10 @@ const { COINDATA_API, COINDATA_API_KEY } = process.env;
 
 @Injectable()
 export class CoinmarketService {
-  private fetch;
-
-  constructor() {
-    this.fetch = axios.create({
-      baseURL: `${COINDATA_API}/`,
-      headers: { 'X-CMC_PRO_API_KEY': COINDATA_API_KEY },
-    });
-  }
+  fetch = axios.create({
+    baseURL: `${COINDATA_API}/`,
+    headers: { 'X-CMC_PRO_API_KEY': COINDATA_API_KEY },
+  });
 
   async getTickers(symbols: string[]): Promise<CoinmarketTickerDto[]> {
     try {

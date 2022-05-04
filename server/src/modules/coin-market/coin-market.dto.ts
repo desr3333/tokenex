@@ -10,7 +10,7 @@ export class CoinmarketTickerDto {
   last_updated: Date;
 }
 
-export type TokenSymbol = 'BTC' | 'ETH' | 'USDT';
+export type TokenSymbol = 'BTC' | 'ETH' | 'USDT' | string;
 
 export class CoinmarketConvertRequestDto {
   tokenA: TokenSymbol;

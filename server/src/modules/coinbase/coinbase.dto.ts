@@ -93,6 +93,7 @@ export class CoinbaseWithdrawToAddressDto {
 }
 
 export class CoinbaseWithdrawalFeeDto {
+  input_currency: string;
   currency: string;
   crypto_address: string;
 }

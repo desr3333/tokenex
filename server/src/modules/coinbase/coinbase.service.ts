@@ -1,4 +1,5 @@
-import { TokenSymbol } from '@modules/coin-market';
+import { CoinmarketService, TokenSymbol } from '@modules/coin-market';
+import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import crypto from 'crypto';
 import {
@@ -23,13 +24,16 @@ const {
   COINBASE_EXCHANGE_PASSPHRASE,
 } = process.env;
 
+@Injectable()
 export class CoinbaseService {
-  private fetch = axios.create({ baseURL: `${COINBASE_EXCHANGE_API}/` });
-  private coinbase = axios.create({ baseURL: `${COINBASE_API}/` });
+  constructor(private coinmarketService: CoinmarketService) {}
 
-  private COINBASE_EXCHANGE_KEY = COINBASE_EXCHANGE_KEY;
-  private COINBASE_EXCHANGE_SECRET = COINBASE_EXCHANGE_SECRET;
-  private COINBASE_EXCHANGE_PASSPHRASE = COINBASE_EXCHANGE_PASSPHRASE;
+  fetch = axios.create({ baseURL: `${COINBASE_EXCHANGE_API}/` });
+  coinbase = axios.create({ baseURL: `${COINBASE_API}/` });
+
+  COINBASE_EXCHANGE_KEY = COINBASE_EXCHANGE_KEY;
+  COINBASE_EXCHANGE_SECRET = COINBASE_EXCHANGE_SECRET;
+  COINBASE_EXCHANGE_PASSPHRASE = COINBASE_EXCHANGE_PASSPHRASE;
 
   async getServerTime(): Promise<number> {
     try {
@@ -345,16 +349,26 @@ export class CoinbaseService {
     withdrawDto: CoinbaseWithdrawalFeeDto,
   ): Promise<number> {
     try {
-      const { currency, crypto_address } = withdrawDto;
+      const { currency, input_currency, crypto_address } = withdrawDto;
 
-      const result = await this.request({
+      const withdrawal = await this.request({
         path: `withdrawals/fee-estimate?currency=${currency}&crypto_address=${crypto_address}`,
         method: 'GET',
         body: withdrawDto,
       });
 
-      return result.fee;
+      if (!input_currency) return withdrawal.fee;
+
+      const result = await this.coinmarketService.convert({
+        tokenA: currency,
+        tokenB: input_currency,
+        value: withdrawal.fee,
+      });
+
+      return result;
     } catch (e) {
+      console.log({ e });
+
       console.log(e?.response?.data);
       return null;
     }

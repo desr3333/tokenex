@@ -1,9 +1,10 @@
+import { CoinmarketModule } from '@modules/coin-market';
 import { Module } from '@nestjs/common';
 
 import { CoinbaseService } from './coinbase.service';
 
 @Module({
-  imports: [],
+  imports: [CoinmarketModule],
   controllers: [],
   providers: [CoinbaseService],
   exports: [CoinbaseService],
