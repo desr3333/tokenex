@@ -96,35 +96,7 @@ export class WalletService {
 
   async transfer(data: CryptoWalletTransferDto) {
     try {
-      const { from } = data;
-
-      const result = await this.cryptoWalletService.transfer(
-        data,
-        async (data) => {
-          const cryptoWallet = await this.cryptoWalletService.findOne({
-            address: from,
-          });
-
-          const wallet = await this.prisma.wallet.findUnique({
-            where: { id: cryptoWallet.walletId },
-            include: {
-              account: {
-                include: {
-                  telegramAccount: true,
-                },
-              },
-            },
-          });
-
-          const telegramAccount = wallet.account.telegramAccount;
-
-          this.notificationService.sendTelegramNotification({
-            chat_id: telegramAccount.chatId,
-            type: 'TRANSACTION_CONFIRMED',
-            payload: JSON.stringify(data),
-          });
-        },
-      );
+      const result = await this.cryptoWalletService.transfer(data);
       return result;
     } catch (e) {
       console.log({ e });

@@ -99,8 +99,7 @@ export class EthereumService implements TokenServiceInterface {
     privateKey: string,
   ): Promise<string> {
     try {
-      const { from, to, value, gas, fee, serviceFee, input, output } =
-        transactionDto;
+      const { from, to, value, gas } = transactionDto;
       const nonce = await this.web3.eth.getTransactionCount(from, 'latest');
 
       // Signing

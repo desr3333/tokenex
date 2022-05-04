@@ -163,7 +163,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     privateKey: string,
   ) {
     try {
-      const { value, from, to, gas, serviceFee } = transactionDto;
+      const { value, from, to, gas } = transactionDto;
 
       const utxo = await this.getUtxo({
         address: from,
@@ -173,14 +173,12 @@ export class BitcoinService implements BlockchainServiceInterface {
       const signedTx = new bitcore.Transaction()
         .from(utxo)
         .to(to, value)
-        .to(to, this.toSatoshis(serviceFee))
+        // .to(to, this.toSatoshis(serviceFee))
         .fee(gas)
         .change(from)
         .sign(privateKey);
 
-      console.log({ signedTx });
-
-      return signedTx.serialize();
+      return signedTx.toString();
     } catch (e) {
       console.log({ e });
       return null;
@@ -202,6 +200,7 @@ export class BitcoinService implements BlockchainServiceInterface {
         to,
         value: data.value,
       });
+
       console.log({ calculatedTx });
 
       const { value, fee, gas, serviceFee, input, output } = calculatedTx;
@@ -214,7 +213,6 @@ export class BitcoinService implements BlockchainServiceInterface {
       const sentTx = await this.node.post('', {
         API_key: this.NODE_API_KEY,
         jsonrpc: '2.0',
-        id: 'test',
         method: 'sendrawtransaction',
         params: [signedTx],
       });
@@ -252,7 +250,7 @@ export class BitcoinService implements BlockchainServiceInterface {
       const gas = this.calculateGas(data.value);
       const serviceFee = this.toFixed(data.value * this.FEE, 9);
       const fee = this.toBTC(gas);
-      const input = this.toFixed(data.value + fee + serviceFee, 9);
+      const input = this.toFixed(data.value + fee, 9); // + serviceFee
       const output = this.toFixed(data.value, 9);
 
       const result = {
@@ -286,7 +284,7 @@ export class BitcoinService implements BlockchainServiceInterface {
   calculateGas(value: number) {
     try {
       const satoshis = this.toSatoshis(value);
-      const result = Math.floor(satoshis * 0.05);
+      const result = Math.floor(satoshis * 0.08);
       return result;
     } catch (e) {
       console.log({ e });

@@ -12,6 +12,7 @@ import {
   CoinbaseProductId,
   CoinbaseDepositFromCoinbaseAccountDto,
   CoinbaseWithdrawToAddressDto,
+  CoinbaseWithdrawalFeeDto,
 } from './coinbase.dto';
 
 const {
@@ -29,9 +30,6 @@ export class CoinbaseService {
   private COINBASE_EXCHANGE_KEY = COINBASE_EXCHANGE_KEY;
   private COINBASE_EXCHANGE_SECRET = COINBASE_EXCHANGE_SECRET;
   private COINBASE_EXCHANGE_PASSPHRASE = COINBASE_EXCHANGE_PASSPHRASE;
-
-  COINBASE_BTC_ADDRESS = 'mrfM9n3cSKyZ27wB6ov8V4FYKZ8QKwhRcK';
-  COINBASE_ETH_ADDRESS = '0xD66fE26C24AA90F31eB1b1d5FD05Cd05De77Fd07';
 
   async getServerTime(): Promise<number> {
     try {
@@ -138,12 +136,15 @@ export class CoinbaseService {
     }
   }
 
-  async getAccounts(): Promise<CoinbaseAccountDto[]> {
+  async getAccounts(tokens?: TokenSymbol[]): Promise<CoinbaseAccountDto[]> {
     try {
       const result = await this.request({
         path: 'accounts',
         method: 'GET',
       });
+
+      if (tokens.length)
+        return result?.filter((i) => tokens.includes(i?.currency));
 
       return result;
     } catch (e) {
@@ -334,6 +335,25 @@ export class CoinbaseService {
       });
 
       return result;
+    } catch (e) {
+      console.log(e?.response?.data);
+      return null;
+    }
+  }
+
+  async getWithdrawalFee(
+    withdrawDto: CoinbaseWithdrawalFeeDto,
+  ): Promise<number> {
+    try {
+      const { currency, crypto_address } = withdrawDto;
+
+      const result = await this.request({
+        path: `withdrawals/fee-estimate?currency=${currency}&crypto_address=${crypto_address}`,
+        method: 'GET',
+        body: withdrawDto,
+      });
+
+      return result.fee;
     } catch (e) {
       console.log(e?.response?.data);
       return null;

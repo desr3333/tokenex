@@ -23,4 +23,15 @@ export class ExchangeController {
       return res.status(400).json({ error: e });
     }
   }
+
+  @Post('calculate')
+  async calculateOrder(@Res() res: Response, @Body() body: ExchangeRequestDto) {
+    try {
+      const result = await this.exchangeService.calculateTx(body);
+      return res.status(200).json({ result });
+    } catch (e) {
+      console.log({ e });
+      return res.status(400).json({ error: e });
+    }
+  }
 }

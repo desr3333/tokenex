@@ -65,7 +65,8 @@ export type CoinbaseProductId =
   | 'ETH-USDT'
   | 'ETH-BTC'
   | 'USDT-BTC'
-  | 'USDT-ETH';
+  | 'USDT-ETH'
+  | string;
 
 export class CoinbaseProductDto {
   id: string;
@@ -87,6 +88,11 @@ export class CoinbaseDepositFromCoinbaseAccountDto {
 export class CoinbaseWithdrawToAddressDto {
   profile_id: string;
   amount: string;
+  currency: string;
+  crypto_address: string;
+}
+
+export class CoinbaseWithdrawalFeeDto {
   currency: string;
   crypto_address: string;
 }

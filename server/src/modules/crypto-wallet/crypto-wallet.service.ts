@@ -214,24 +214,20 @@ export class CryptoWalletService {
 
       switch (symbol) {
         case Token.BTC:
-          this.bitcoinService
-            .sendTransaction({
-              value,
-              from,
-              to,
-              privateKey,
-            })
-            .then(callback);
+          transaction = await this.bitcoinService.sendTransaction({
+            value,
+            from,
+            to,
+            privateKey,
+          });
           break;
         case Token.ETH:
-          this.ethereumService
-            .sendTransaction({
-              value,
-              from,
-              to,
-              privateKey,
-            })
-            .then(callback);
+          transaction = await this.ethereumService.sendTransaction({
+            value,
+            from,
+            to,
+            privateKey,
+          });
           break;
         case Token.USDT:
           // this.USDTService.sendTransaction({
@@ -244,6 +240,8 @@ export class CryptoWalletService {
         default:
           throw Error('Transfer Error!');
       }
+
+      if (callback) callback(transaction);
 
       return transaction;
     } catch (e) {

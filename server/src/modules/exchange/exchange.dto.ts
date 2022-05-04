@@ -7,6 +7,14 @@ export class ExchangeRequestDto {
   to: string;
   value: number;
   walletId?: number;
+  profile_id?: string;
+
+  gas?: number;
+  fee?: number;
+  serviceFee?: number;
+  input?: number;
+  output?: number;
+  explorerLink?: string;
 }
 
 export type ExchangeToken = 'BTC' | 'ETH' | 'USDT';

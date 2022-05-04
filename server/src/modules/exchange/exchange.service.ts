@@ -19,6 +19,32 @@ export class ExchangeService {
     private cryptoWalletService: CryptoWalletService,
   ) {}
 
+  async calculateTx(data: ExchangeRequestDto): Promise<ExchangeRequestDto> {
+    try {
+      const { tokenB, to } = data;
+
+      const calculatedTx = await this.cryptoWalletService.calculateTx(data);
+      const withdrawalFee = await this.coinbaseService.getWithdrawalFee({
+        currency: tokenB,
+        crypto_address: to,
+      });
+
+      const { input, output, fee, serviceFee } = calculatedTx;
+
+      const result = {
+        ...data,
+        fee: fee + withdrawalFee,
+        serviceFee,
+        input: input + withdrawalFee,
+        output,
+      };
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+    }
+  }
+
   async createOrder(data: ExchangeRequestDto) {
     try {
       const { from, to, value, tokenA, tokenB } = data;
@@ -30,101 +56,89 @@ export class ExchangeService {
       const coinbaseAddress = this.coinbaseService.getAddressByToken(tokenA);
       const { profile_id } = coinbaseAccount;
 
-      // Testing Coinbase
-      // const coinbase = {
-      //   BTC: await this.coinbaseService.getAccountByToken('BTC'),
-      //   ETH: await this.coinbaseService.getAccountByToken('ETH'),
-      //   USDT: await this.coinbaseService.getAccountByToken('USDT'),
-      // };
+      const calculatedOrder = await this.calculateTx({
+        ...data,
+        profile_id,
+      });
 
-      // const exchange = await this.coinbaseService.createOrder({
+      console.log({ profile_id, coinbaseAddress, data });
+
+      return calculatedOrder;
+
+      // const withdrawalFee = await this.coinbaseService.getWithdrawalFee({
+      //   profile_id,
+      //   amount: `${value}`,
+      //   currency: tokenB,
+      //   crypto_address: '0xC1e05A901aCe94Be38797671cA859411666a0325',
+      // });
+
+      // console.log({ withdrawalFee });
+
+      // Testing
+      // const withd = await this.coinbaseService.withdrawToAddress({
+      //   profile_id,
+      //   currency: 'ETH',
+      //   crypto_address: '0xC1e05A901aCe94Be38797671cA859411666a0325',
+      //   amount: '0.0025',
+      // });
+
+      // console.log({ withd });
+
+      // const exchan = await this.coinbaseService.createOrder({
       //   profile_id,
       //   product_id: 'ETH-BTC',
-      //   side: 'sell',
+      //   side: 'buy',
       //   type: 'market',
-      //   size: '0.00025',
+      //   size: `0.0025`,
       // });
 
-      // console.log({ exchange });
+      // console.log({ exchan });
 
-      console.log(await this.coinbaseService.getAccountByToken('BTC'));
+      // const funds = await this.coinbaseService.getAccounts([
+      //   'BTC',
+      //   'ETH',
+      //   'USDT',
+      // ]);
 
-      // const withdraw = await this.coinbaseService.withdrawToAddress({
-      //   profile_id,
-      //   amount: '0.0001',
-      //   currency: 'BTC',
-      //   crypto_address: '17qce5k1P61wwdGrMYFJSrriNwG8cE9HVf',
-      // });
+      // console.log({ funds });
+      return;
 
-      // console.log({ withdraw });
-
-      // Checking Crypto Wallets
-      // const walletA = await this.cryptoWalletService.findOne({ address: from });
-      // const walletB = await this.cryptoWalletService.findOne({ address: to });
-      // if (walletA?.walletId !== walletB?.walletId)
-      //   throw Error('You Can Only Exchange Funds Between Your Own Wallets!');
+      // return;
 
       // Coinbase: Deposit
-      // const deposit = {
-      //   from: walletA.address,
-      //   to: coinbaseAddress,
-      // };
-      // const deposit = await this.cryptoWalletService.transfer({
-      //   from: walletB.address,
-      //   to: coinbase.
-      //   value,
-      // });
+      const deposit = await this.cryptoWalletService.transfer({
+        from,
+        to: coinbaseAddress,
+        value,
+      });
+      if (!deposit) throw Error('Exchange: Deposit Failed!');
 
       // Coinbase: Exchange
-      // const size =
-      //   tokenA !== 'BTC'
-      //     ? await this.coinmarketService.convert({
-      //         tokenA,
-      //         tokenB: 'BTC',
-      //         value,
-      //       })
-      //     : value;
+      const exchange = await this.coinbaseService.createOrder({
+        profile_id,
+        product_id: `${tokenB}-${tokenA}`,
+        side: 'buy',
+        type: 'market',
+        size: `${deposit.output}`,
+      });
+      if (!exchange) throw Error('Exchange: Exchange Failed!');
 
-      // const exchange = {
-      //   profile_id,
-      //   product_id: `${tokenA}-${tokenB}`,
-      //   side: 'sell',
-      //   type: 'market',
-      //   size,
-      // };
+      console.log({ exchange });
 
-      // const exchange = await this.coinbaseService.createOrder({
-      // profile_id,
-      // product_id: `${tokenA}-${tokenB}`,
-      // side: 'sell',
-      // type: 'market',
-      // size: value.toString(),
-      // });
+      return;
 
       // Coinbase: Withdraw
-      // const withdrawal = {
-      // profile_id,
-      // amount: value,
-      // currency: tokenB,
-      // crypto_address: walletB.address,
-      // };
-      // const withdrawal = await this.coinbaseService.withdrawToAddress({
-      //   profile_id,
-      //   amount: string;
-      //   currency: string;
-      //   crypto_address: string; });
+      const withdrawal = await this.coinbaseService.withdrawToAddress({
+        profile_id,
+        amount: '0.0001',
+        currency: 'BTC',
+        crypto_address: '17qce5k1P61wwdGrMYFJSrriNwG8cE9HVf',
+      });
+      if (!withdrawal) throw Error('Exchange: Withdrawal Failed!');
 
-      // console.log({
-      //   data,
-      //   deposit,
-      //   exchange,
-      //   withdrawal,
-      //   coinbaseAccount,
-      // });
+      console.log({ withdrawal });
 
-      const result = {};
-
-      return result;
+      return withdrawal;
     } catch (e) {
       console.log({ e });
       return e;
