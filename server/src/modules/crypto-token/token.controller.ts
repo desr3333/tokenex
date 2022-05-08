@@ -34,7 +34,7 @@ export class TokenController {
     type: 'integer',
   })
   async getByKey(@Res() res: Response, @Param() params) {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     const result = await this.tokenService.findOne({ id });
     if (!result)
@@ -67,7 +67,7 @@ export class TokenController {
     @Param() params,
     @Body() updateDto: UpdateTokenDto,
   ) {
-    const id = Number(params.id);
+    const { id } = params.id;
     const { symbol } = updateDto;
 
     const result = await this.tokenService.update({ id }, updateDto);
@@ -84,7 +84,7 @@ export class TokenController {
     type: 'integer',
   })
   async delete(@Res() res: Response, @Param() params): Promise<any> {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     const result = await this.tokenService.delete({ id });
     if (!result) return res.status(400).json({ error: `Token Not Deleted!` });

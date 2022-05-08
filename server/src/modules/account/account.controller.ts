@@ -39,7 +39,7 @@ export class AccountController {
     type: 'integer',
   })
   async getByKey(@Param() params) {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     const result = await this.accountService.findOne({ id });
     if (!result) return { error: `Account #${id} Not Found!` };
@@ -64,7 +64,7 @@ export class AccountController {
     type: 'integer',
   })
   async update(@Param() params, @Body() updateDto: UpdateAccountDto) {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Account
     const existedAccount = await this.accountService.findOne({ id });
@@ -82,7 +82,7 @@ export class AccountController {
     type: 'integer',
   })
   async delete(@Param() params) {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Account
     const existedAccount = await this.accountService.findOne({ id });

@@ -2,16 +2,16 @@ export class CreateCryptoWalletDto {
   address?: string;
   symbol: string;
   balance?: number;
-  walletId: number;
-  tokenId?: number;
+  walletId: string;
+  tokenId?: string;
 }
 
 export class UpdateCryptoWalletDto {
   address?: string;
   symbol?: string;
   balance?: number;
-  walletId?: number;
-  tokenId?: number;
+  walletId?: string;
+  tokenId?: string;
 }
 
 export class CryptoWalletDto {

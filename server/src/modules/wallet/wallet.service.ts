@@ -36,10 +36,7 @@ export class WalletService {
     });
   }
 
-  async findOne(
-    where?: Prisma.WalletWhereUniqueInput,
-    include?: Prisma.WalletInclude,
-  ) {
+  async findOne(where?: Prisma.WalletWhereUniqueInput) {
     try {
       // Fetching
       const wallet = await this.prisma.wallet.findUnique({

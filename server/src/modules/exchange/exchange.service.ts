@@ -24,6 +24,7 @@ export class ExchangeService {
       const { tokenA, tokenB, to } = data;
 
       const calculatedTx = await this.cryptoWalletService.calculateTx(data);
+      if (!calculatedTx) throw Error('Transaction Not Calculated!');
 
       const withdrawalFee = await this.coinbaseService.getWithdrawalFee({
         input_currency: tokenA,
@@ -94,13 +95,13 @@ export class ExchangeService {
 
       // console.log({ exchan });
 
-      // const funds = await this.coinbaseService.getAccounts([
-      //   'BTC',
-      //   'ETH',
-      //   'USDT',
-      // ]);
+      const funds = await this.coinbaseService.getAccounts([
+        'BTC',
+        'ETH',
+        'USDT',
+      ]);
 
-      // console.log({ funds });
+      console.log({ funds });
 
       return;
 

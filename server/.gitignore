@@ -5,8 +5,7 @@
 *.zip
 
 /prisma/migrations
-/prisma/*.db
-/prisma/*.env
+
 
 # Logs
 logs

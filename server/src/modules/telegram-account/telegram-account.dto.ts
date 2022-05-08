@@ -26,7 +26,7 @@ export class CreateTelegramAccountDto {
 
 export class UpdateTelegramAccountDto {
   @ApiProperty()
-  chatId?: number;
+  chatId: number;
 
   @ApiProperty()
   username?: string;

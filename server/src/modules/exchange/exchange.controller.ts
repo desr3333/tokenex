@@ -28,6 +28,7 @@ export class ExchangeController {
   async calculateOrder(@Res() res: Response, @Body() body: ExchangeRequestDto) {
     try {
       const result = await this.exchangeService.calculateTx(body);
+      if (!result) return res.status(400).json({ error: 'Exchange Failed!' });
       return res.status(200).json({ result });
     } catch (e) {
       console.log({ e });

@@ -3,114 +3,107 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Account {
-    id                    Int              @id @default(autoincrement())
-    //  uuid              String           @default(uuid()) // @db.Uuid
+    id                    String           @id @default(uuid()) @db.Uuid
     email                 String?
     password              String?
     role                  String?          @default("user")
-    banned                Boolean?         @default(false)
+    isBlocked             Boolean?         @default(false)
     wallet                Wallet?          @relation(fields: [walletId], references: [id])
-    walletId              Int?             @unique
+    walletId              String?          @unique @db.Uuid
     telegramAccount       TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
-    telegramAccountId     Int?             @unique
+    telegramAccountId     String?          @unique @db.Uuid
     telegramAccountChatId Int?
     createdAt             DateTime?
-    updatedAt             DateTime?
+    updatedAt             DateTime?        @default(dbgenerated("now()"))
 }
 
 model TelegramAccount {
-    id        Int       @id @default(autoincrement())
-    chatId    Int       @unique
+    id        String   @id @default(uuid()) @db.Uuid
+    chatId    Int      @unique
     username  String?
     firstName String?
-    banned    Boolean?  @default(false)
+    language  String?  @default("en")
     account   Account?
-    createdAt DateTime?
-    updatedAt DateTime?
 }
 
 model Wallet {
-    id            Int            @id @default(autoincrement())
+    id            String            @id @default(uuid()) @db.Uuid
     account       Account?
     cryptoWallets CryptoWallet[]
+    exchanges     ExchangeRequest[]
     createdAt     DateTime?
-    updatedAt     DateTime?
-    swaps         Swap[]
+    updatedAt     DateTime?         @default(dbgenerated("now()"))
 }
 
 model CryptoWallet {
-    id           Int           @id @default(autoincrement())
-    //  uuid          String         @unique
+    id           String        @id @default(uuid()) @db.Uuid
     address      String        @unique
     privateKey   String
     balance      Float?        @default(0)
     symbol       String?
     wallet       Wallet        @relation(fields: [walletId], references: [id])
-    walletId     Int
+    walletId     String        @db.Uuid
     token        Token?        @relation(fields: [tokenId], references: [id])
-    tokenId      Int?
+    tokenId      String?       @db.Uuid
     transactions Transaction[]
     createdAt    DateTime?
-    updatedAt    DateTime?
+    updatedAt    DateTime?     @default(dbgenerated("now()"))
 }
 
 model Token {
-    id              Int            @id @default(autoincrement())
-    //  uuid          String         @unique
+    id              String         @id @default(uuid()) @db.Uuid
     symbol          String
     contractAddress String?
-    feeAddress      String
-    transactionFee  Float?         @default(0.0)
-    withdrawFee     Float?         @default(0.0)
-    depositFee      Float?         @default(0.0)
-    raindropFee     Float?         @default(0.0)
     cryptoWallets   CryptoWallet[]
+    transactionFee  Float?         @default(0)
+    withdrawalFee   Float?         @default(0)
+    exchangeFee     Float?         @default(0)
+    raindropFee     Float?         @default(0)
+    feeAddress      String?
     createdAt       DateTime?
-    updatedAt       DateTime?
+    updatedAt       DateTime?      @default(dbgenerated("now()"))
 }
 
 model Transaction {
-    id               Int             @id @default(autoincrement())
-    //  uuid          String         @unique
-    type             String?         @default("TRANSACTION")
-    value            Int
-    from             String
-    to               String
-    hash             String
-    gasUsed          Float?
-    explorerLink     String?
-    cryptoWallet     CryptoWallet?   @relation(fields: [cryptoWalletId], references: [id])
-    cryptoWalletId   Int?
-    transactionFee   TransactionFee? @relation(fields: [transactionFeeId], references: [id])
-    transactionFeeId Int             @unique
-    createdAt        DateTime?
-    updatedAt        DateTime?
+    id             String        @id @default(uuid()) @db.Uuid
+    status         String?       @default("pending")
+    value          Int
+    from           String
+    to             String
+    hash           String?
+    fee            Float?        @default(0)
+    serviceFee     ServiceFee?   @relation(fields: [serviceFeeId], references: [id])
+    serviceFeeId   String?       @unique @db.Uuid
+    cryptoWallet   CryptoWallet? @relation(fields: [cryptoWalletId], references: [id])
+    cryptoWalletId String?       @db.Uuid
+    explorerLink   String?
+    createdAt      DateTime?
+    updatedAt      DateTime?     @default(dbgenerated("now()"))
 }
 
-model TransactionFee {
-    id          Int          @id @default(autoincrement())
-    //  uuid          String         @unique
+model ServiceFee {
+    id          String       @id @default(uuid()) @db.Uuid
     status      String?
     value       Int          @default(0)
     transaction Transaction?
     createdAt   DateTime?
-    updatedAt   DateTime?
+    updatedAt   DateTime?    @default(dbgenerated("now()"))
 }
 
-model Swap {
-    id          Int    @id @default(autoincrement())
-    tokenA      String
-    tokenB      String
-    from        String
-    to          String
-    value       Int
-    wallet      Wallet @relation(fields: [walletId], references: [id])
-    walletId    Int
-    createdAt   String
-    confirmedAt String
+model ExchangeRequest {
+    id        Int       @id @default(autoincrement())
+    tokenA    String
+    tokenB    String
+    value     Int
+    from      String
+    to        String
+    wallet    Wallet    @relation(fields: [walletId], references: [id])
+    walletId  String    @db.Uuid
+    createdAt DateTime?
+    updatedAt DateTime? @default(dbgenerated("now()"))
 }

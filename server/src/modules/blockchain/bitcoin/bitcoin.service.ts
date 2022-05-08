@@ -32,7 +32,7 @@ export class BitcoinService implements BlockchainServiceInterface {
       ? BTC_EXPLORER_PUBLIC_MAINNET
       : BTC_EXPLORER_PUBLIC_TESTNET;
 
-  SERVICE_FEE = 0.02; // %
+  SERVICE_FEE = 0.2; // %
   FEE_PER_BYTE = 10;
 
   node = axios.create({
@@ -173,7 +173,7 @@ export class BitcoinService implements BlockchainServiceInterface {
       const signedTx = new bitcore.Transaction()
         .from(utxo)
         .to(to, value)
-        // .to(to, this.toSatoshis(serviceFee))
+        .to(from, this.toSatoshis(serviceFee))
         .fee(gas)
         .change(from)
         .sign(privateKey);
@@ -248,7 +248,9 @@ export class BitcoinService implements BlockchainServiceInterface {
       const value = this.toSatoshis(data.value);
       const utxo = await this.getUtxo({ address: from, satoshis: value });
       const gas = this.calculateFee({ inputs: utxo.length, outputs: 3 });
-      const fee = this.toBTC(gas);
+      const serviceFeeSatoshis = value * this.SERVICE_FEE;
+      const serviceFee = this.toBTC(value * this.SERVICE_FEE);
+      const fee = this.toBTC(gas + serviceFeeSatoshis);
       const input = this.toFixed(data.value + fee, 9);
       const output = this.toFixed(data.value, 9);
 
@@ -259,6 +261,7 @@ export class BitcoinService implements BlockchainServiceInterface {
         to,
         gas,
         fee,
+        serviceFee,
         input,
         output,
       };

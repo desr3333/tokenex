@@ -6,7 +6,7 @@ export class ExchangeRequestDto {
   from: string;
   to: string;
   value: number;
-  walletId?: number;
+  walletId?: string;
   profile_id?: string;
 
   gas?: number;
@@ -30,7 +30,7 @@ export class ExchangeOrderDto {
   from: string;
   to: string;
   value: number;
-  walletId?: number;
+  walletId?: string;
   createdAt?: Date;
   confirmedAt?: Date;
 }

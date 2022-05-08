@@ -38,13 +38,8 @@ export class WalletController {
   }
 
   @Get(':id')
-  @ApiParam({
-    name: 'id',
-    required: true,
-    type: 'integer',
-  })
-  async getByKey(@Res() res: Response, @Param() params) {
-    const id = Number(params.id);
+  async findOne(@Res() res: Response, @Param() params) {
+    const { id } = params;
 
     const result = await this.walletService.findOne({ id });
     if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
@@ -71,7 +66,7 @@ export class WalletController {
     @Param() params,
     @Body() updateDto: UpdateWalletDto,
   ) {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Wallet
     const existedWallet = await this.walletService.findOne({ id });
@@ -92,7 +87,7 @@ export class WalletController {
     type: 'integer',
   })
   async delete(@Res() res: Response, @Param() params): Promise<any> {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Wallet
     const existedWallet = await this.walletService.findOne({ id });

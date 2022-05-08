@@ -75,7 +75,7 @@ export class TelegramAccountController {
     type: 'integer',
   })
   async getByKey(@Res() res: Response, @Param() params): Promise<any> {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     const result = await this.telegramAccountService.findOne({ id });
     if (!result)
@@ -125,7 +125,7 @@ export class TelegramAccountController {
     @Param() params,
     @Body() updateDto: UpdateTelegramAccountDto,
   ): Promise<any> {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Account
     const existedAccount = await this.telegramAccountService.findOne({ id });
@@ -147,7 +147,7 @@ export class TelegramAccountController {
     type: 'integer',
   })
   async delete(@Res() res: Response, @Param() params): Promise<any> {
-    const id = Number(params.id);
+    const { id } = params.id;
 
     // Checking Account
     const existedAccount = await this.telegramAccountService.findOne({ id });
