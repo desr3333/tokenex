@@ -6,8 +6,9 @@ import { Injectable } from '@nestjs/common';
 import { throws } from 'assert';
 import axios from 'axios';
 import Web3 from 'web3';
-import { TokenServiceInterface } from '../../crypto-token';
-import { ETHRawTransactionDto } from './ethereum.dto';
+import { BlockchainServiceInterface } from '../blockchain.dto';
+
+import { EthereumTransactionConfigDto } from './ethereum.dto';
 
 const {
   ETH_NODE_API_KEY,
@@ -22,7 +23,7 @@ const {
 } = process.env;
 
 @Injectable()
-export class EthereumService implements TokenServiceInterface {
+export class EthereumService implements BlockchainServiceInterface {
   web3: Web3;
   name: string;
   symbol: string;
@@ -37,8 +38,8 @@ export class EthereumService implements TokenServiceInterface {
       ? ETH_EXPLORER_PUBLIC_MAINNET
       : ETH_EXPLORER_PUBLIC_TESTNET;
 
-  GAS = 35000;
-  FEE = 0.02;
+  SERVICE_FEE = 0.02; // %
+  TRANSACTION_FEE = 0.00005; // 35000
 
   explorer = axios.create({
     baseURL: ETH_EXPLORER,
@@ -117,7 +118,7 @@ export class EthereumService implements TokenServiceInterface {
   }
 
   async sendTransaction(
-    data: ETHRawTransactionDto,
+    data: EthereumTransactionConfigDto,
   ): Promise<CryptoWalletTransactionDto> {
     try {
       const { from, to, privateKey } = data;
@@ -161,25 +162,25 @@ export class EthereumService implements TokenServiceInterface {
   }
 
   async calculateTx(
-    data: ETHRawTransactionDto,
+    transaction: EthereumTransactionConfigDto,
   ): Promise<CryptoWalletTransactionDto> {
     try {
-      const { from, to } = data;
+      const { from, to, chain } = transaction;
+      const tx = transaction;
 
-      const value = Number(this.web3.utils.toWei(data.value.toString()));
-      const gas = this.calculateGas();
-      const serviceFee = this.toFixed(data.value * this.FEE, 9);
-      const fee = this.toFixed(serviceFee + this.fromGwei(gas), 9);
-      const input = this.toFixed(data.value + fee + serviceFee, 9);
-      const output = this.toFixed(data.value, 9);
+      const value = Number(this.web3.utils.toWei(tx.value.toString()));
+      const gas = await this.calculateFee({ ...transaction, value });
+      const fee = this.fromGwei(gas);
+      const input = this.toFixed(tx.value + fee, 9);
+      const output = this.toFixed(tx.value, 9);
 
       const result = {
+        chain,
         value,
         from,
         to,
         gas,
         fee,
-        serviceFee,
         input,
         output,
       };
@@ -191,9 +192,15 @@ export class EthereumService implements TokenServiceInterface {
     }
   }
 
-  calculateGas(): number {
+  async calculateFee(
+    transaction: EthereumTransactionConfigDto,
+  ): Promise<number> {
     try {
-      return this.GAS;
+      const gas = Number(await this.web3.eth.estimateGas(transaction));
+      const gasPrice = Number(await this.web3.eth.getGasPrice());
+      const result = this.toGwei(gas * gasPrice);
+
+      return result;
     } catch (e) {
       console.log({ e });
     }
@@ -207,7 +214,11 @@ export class EthereumService implements TokenServiceInterface {
     return Number(number.toFixed(toFixed));
   }
 
-  fromGwei(gwei: number) {
+  toGwei(wei: number): number {
+    return Number((wei / 1000000000).toFixed(0));
+  }
+
+  fromGwei(gwei: number): number {
     return Number((gwei / 1000000000).toFixed(9));
   }
 }

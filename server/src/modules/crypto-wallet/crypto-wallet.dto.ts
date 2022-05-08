@@ -14,11 +14,17 @@ export class UpdateCryptoWalletDto {
   tokenId?: number;
 }
 
+export class CryptoWalletDto {
+  address: string;
+  balance: number;
+}
+
 export class CryptoWalletTransactionDto {
   from: string;
   to: string;
   value: number;
   privateKey?: string;
+  chain?: string;
   tx?: string;
   nonce?: number;
   gas?: number;

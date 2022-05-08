@@ -53,7 +53,7 @@ export class ExchangeService {
 
   async createOrder(data: ExchangeRequestDto) {
     try {
-      const { from, to, value, tokenA, tokenB } = data;
+      const { from, to, tokenA, tokenB } = data;
 
       // Checking Exchange Wallet
       const coinbaseAccount = await this.coinbaseService.getAccountByToken(
@@ -66,29 +66,23 @@ export class ExchangeService {
         ...data,
         profile_id,
       });
+      const { value, input, output } = calculatedOrder;
 
       console.log({ profile_id, coinbaseAddress, data });
+      console.log({ calculatedOrder });
 
-      return calculatedOrder;
-
-      // const withdrawalFee = await this.coinbaseService.getWithdrawalFee({
-      //   profile_id,
-      //   amount: `${value}`,
-      //   currency: tokenB,
-      //   crypto_address: '0xC1e05A901aCe94Be38797671cA859411666a0325',
-      // });
-
-      // console.log({ withdrawalFee });
-
+      // return calculatedOrder;
       // Testing
       // const withd = await this.coinbaseService.withdrawToAddress({
       //   profile_id,
-      //   currency: 'ETH',
-      //   crypto_address: '0xC1e05A901aCe94Be38797671cA859411666a0325',
-      //   amount: '0.0025',
+      //   currency: 'BTC',
+      //   crypto_address: '',
+      //   amount: '0.00055',
       // });
 
       // console.log({ withd });
+
+      // return;
 
       // const exchan = await this.coinbaseService.createOrder({
       //   profile_id,
@@ -107,9 +101,8 @@ export class ExchangeService {
       // ]);
 
       // console.log({ funds });
-      return;
 
-      // return;
+      return;
 
       // Coinbase: Deposit
       const deposit = await this.cryptoWalletService.transfer({
@@ -119,26 +112,28 @@ export class ExchangeService {
       });
       if (!deposit) throw Error('Exchange: Deposit Failed!');
 
+      console.log({ deposit });
+
+      return;
+
       // Coinbase: Exchange
       const exchange = await this.coinbaseService.createOrder({
         profile_id,
         product_id: `${tokenB}-${tokenA}`,
         side: 'buy',
         type: 'market',
-        size: `${deposit.output}`,
+        size: `${value}`,
       });
       if (!exchange) throw Error('Exchange: Exchange Failed!');
 
       console.log({ exchange });
 
-      return;
-
       // Coinbase: Withdraw
       const withdrawal = await this.coinbaseService.withdrawToAddress({
         profile_id,
-        amount: '0.0001',
-        currency: 'BTC',
-        crypto_address: '17qce5k1P61wwdGrMYFJSrriNwG8cE9HVf',
+        amount: `${output}`,
+        currency: tokenB,
+        crypto_address: to,
       });
       if (!withdrawal) throw Error('Exchange: Withdrawal Failed!');
 

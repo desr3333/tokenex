@@ -106,23 +106,24 @@ export class WalletController {
     return res.status(200).json({ result });
   }
 
-  @Post('calculateTx')
-  async calculateTx(
-    @Res() res: Response,
-    @Body() transactionDto: CryptoWalletTransferDto,
-  ) {
-    const result = await this.cryptoWalletService.calculateTx(transactionDto);
-    if (!result) return res.status(404).json({ error: `Calculation Failed!` });
-
-    return res.status(200).json({ result });
-  }
-
   @Post('withdraw')
   async withdraw(@Res() res: Response, @Body() withdrawDto: WalletWithdrawDto) {
     const { from, to, value } = withdrawDto;
 
     const result = await this.walletService.transfer({ from, to, value });
     if (!result) return res.status(400).json({ error: `Withdrawal Failed!` });
+
+    return res.status(200).json({ result });
+  }
+
+  @Post('calculateTx')
+  async calculateTx(
+    @Res() res: Response,
+    @Body() transactionDto: CryptoWalletTransferDto,
+  ) {
+    const result = await this.cryptoWalletService.calculateTx(transactionDto);
+    if (!result)
+      return res.status(404).json({ error: `Transaction Not Calculated!` });
 
     return res.status(200).json({ result });
   }

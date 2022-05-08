@@ -1,9 +1,13 @@
-export class ETHTransactionDto {
+import {
+  CryptoWalletDto,
+  CryptoWalletTransactionDto,
+} from '@modules/crypto-wallet';
+
+export class EthereumWalletDto extends CryptoWalletDto {}
+
+export class EthereumTransactionDto extends CryptoWalletTransactionDto {
   txid: string;
   nonce: number;
-  from: string;
-  to: string;
-  value: number;
   blockHash: string;
   blockHeight: number;
   confirmations: number;
@@ -11,13 +15,18 @@ export class ETHTransactionDto {
   gasUsed: number;
 }
 
-export class ETHRawTransactionDto {
-  value: number;
-  from: string;
-  to: string;
+export class EthereumTransactionConfigDto {
   privateKey?: string;
+  from?: string;
+  to?: string;
+  value?: number;
   gas?: number;
-  nonce?: number;
-  maxFeePerGas?: number;
+  gasPrice?: number;
   maxPriorityFeePerGas?: number;
+  maxFeePerGas?: number;
+  data?: string;
+  nonce?: number;
+  chainId?: number;
+  chain?: string;
+  hardfork?: string;
 }

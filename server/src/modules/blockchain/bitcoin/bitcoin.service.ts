@@ -7,7 +7,7 @@ import axios from 'axios';
 import bitcore, { Address, Transaction } from 'bitcore-lib';
 
 import { BlockchainServiceInterface } from '../blockchain.dto';
-import { BTCTransactionDto, BTCWalletDto } from './bitcoin.dto';
+import { BitcoinTransactionDto, BitcoinWalletDto } from './bitcoin.dto';
 
 const {
   BTC_NODE_API_KEY,
@@ -32,7 +32,8 @@ export class BitcoinService implements BlockchainServiceInterface {
       ? BTC_EXPLORER_PUBLIC_MAINNET
       : BTC_EXPLORER_PUBLIC_TESTNET;
 
-  FEE = 0.02;
+  SERVICE_FEE = 0.02; // %
+  FEE_PER_BYTE = 10;
 
   node = axios.create({
     baseURL: `${this.NODE}/`,
@@ -62,7 +63,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     return result;
   }
 
-  async getAddress(address: string): Promise<BTCWalletDto> {
+  async getAddress(address: string): Promise<BitcoinWalletDto> {
     try {
       const response = await this.explorer.get(`address/${address}`);
       if (!response) throw Error('BTC Balance Not Fetched!');
@@ -119,19 +120,18 @@ export class BitcoinService implements BlockchainServiceInterface {
       };
 
       const utxo = utxos?.map(
-        (e) =>
+        ({ txid: txId, vout: outputIndex, value: satoshis }) =>
           new bitcore.Transaction.UnspentOutput({
-            txId: e.txid,
-            outputIndex: e.vout,
+            txId,
+            outputIndex,
             address,
             script: bitcore.Script.buildPublicKeyHashOut(
               new bitcore.Address(address),
             ).toString(),
-            satoshis: Number(e.value),
+            satoshis: Number(satoshis),
           }),
       );
 
-      // const result = selectMinUtxo(unspents, satoshis);
       return utxo;
     } catch (e) {
       console.log({ e });
@@ -163,7 +163,7 @@ export class BitcoinService implements BlockchainServiceInterface {
     privateKey: string,
   ) {
     try {
-      const { value, from, to, gas } = transactionDto;
+      const { value, from, to, gas, serviceFee } = transactionDto;
 
       const utxo = await this.getUtxo({
         address: from,
@@ -186,7 +186,7 @@ export class BitcoinService implements BlockchainServiceInterface {
   }
 
   async sendTransaction(
-    data: BTCTransactionDto,
+    data: CryptoWalletTransactionDto,
   ): Promise<CryptoWalletTransactionDto> {
     try {
       const { from, to, privateKey } = data;
@@ -200,7 +200,6 @@ export class BitcoinService implements BlockchainServiceInterface {
         to,
         value: data.value,
       });
-
       console.log({ calculatedTx });
 
       const { value, fee, gas, serviceFee, input, output } = calculatedTx;
@@ -241,25 +240,25 @@ export class BitcoinService implements BlockchainServiceInterface {
   }
 
   async calculateTx(
-    data: BTCTransactionDto,
+    data: BitcoinTransactionDto,
   ): Promise<CryptoWalletTransactionDto> {
     try {
-      const { from, to } = data;
+      const { from, to, chain } = data;
 
       const value = this.toSatoshis(data.value);
-      const gas = this.calculateGas(data.value);
-      const serviceFee = this.toFixed(data.value * this.FEE, 9);
+      const utxo = await this.getUtxo({ address: from, satoshis: value });
+      const gas = this.calculateFee({ inputs: utxo.length, outputs: 3 });
       const fee = this.toBTC(gas);
-      const input = this.toFixed(data.value + fee, 9); // + serviceFee
+      const input = this.toFixed(data.value + fee, 9);
       const output = this.toFixed(data.value, 9);
 
       const result = {
+        chain,
         value,
         from,
         to,
         gas,
         fee,
-        serviceFee,
         input,
         output,
       };
@@ -271,20 +270,23 @@ export class BitcoinService implements BlockchainServiceInterface {
     }
   }
 
-  async getLatestBlock() {
+  calculateFee({ inputs, outputs }: { inputs: number; outputs: number }) {
     try {
-      const response = await this.explorer.get('block/703052');
-      const result = response?.data?.height;
+      // bytes = inputs * 180 + outputs * 34 + 10
+
+      const bytes = inputs * 180 + outputs * 34 + 10;
+      const result = bytes * this.FEE_PER_BYTE;
+
       return result;
     } catch (e) {
       console.log({ e });
     }
   }
 
-  calculateGas(value: number) {
+  async getLatestBlock() {
     try {
-      const satoshis = this.toSatoshis(value);
-      const result = Math.floor(satoshis * 0.08);
+      const response = await this.explorer.get('block/703052');
+      const result = response?.data?.height;
       return result;
     } catch (e) {
       console.log({ e });

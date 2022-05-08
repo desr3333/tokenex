@@ -9,7 +9,7 @@ RUN npm i
 RUN npm run build
 
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD [ "npm", "run", "start:prod" ]
 

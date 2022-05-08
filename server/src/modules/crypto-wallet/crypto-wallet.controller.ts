@@ -101,13 +101,13 @@ export class CryptoWalletController {
     } catch (e) {}
   }
 
-  @Post('calculateTx')
-  async calculateTx(
-    @Res() res: Response,
-    @Body() transactionDto: CryptoWalletTransferDto,
-  ) {
-    const result = await this.cryptoWalletService.calculateTx(transactionDto);
-    if (!result) return res.status(400).json({ error: 'Calculation Failed!' });
-    return res.status(200).json({ result });
-  }
+  // @Post('calculateTx')
+  // async calculateTx(
+  //   @Res() res: Response,
+  //   @Body() transactionDto: CryptoWalletTransferDto,
+  // ) {
+  //   const result = await this.cryptoWalletService.calculateTx(transactionDto);
+  //   if (!result) return res.status(400).json({ error: 'Calculation Failed!' });
+  //   return res.status(200).json({ result });
+  // }
 }

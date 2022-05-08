@@ -4,7 +4,7 @@ import axios from 'axios';
 import { EthereumService } from '@modules/blockchain/ethereum';
 import { NotificationService } from '@modules/notification';
 
-import { ETHTransactionDto } from './ethereum-explorer.dto';
+import { EthereumTransactionDto } from './ethereum-explorer.dto';
 import { ExplorerServiceInterface } from '../explorer.dto';
 
 export const {
@@ -38,7 +38,7 @@ export class EthereumExplorerService implements ExplorerServiceInterface {
     }
   }
 
-  async getTransaction(tx: string): Promise<ETHTransactionDto> {
+  async getTransaction(tx: string): Promise<EthereumTransactionDto> {
     try {
       const response = await this.fetch(`tx/${tx}`);
       const data = response.data;
@@ -49,7 +49,7 @@ export class EthereumExplorerService implements ExplorerServiceInterface {
       const from = data?.vin?.[0]?.addresses?.[0];
       const to = data?.vout?.[0]?.addresses?.[0];
 
-      const result: ETHTransactionDto = {
+      const result: EthereumTransactionDto = {
         txid,
         from,
         to,

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import { BitcoinService } from '@modules/blockchain/bitcoin';
 
-import { BTCTransactionDto } from './bitcoin-explorer.dto';
+import { BitcoinTransactionDto } from './bitcoin-explorer.dto';
 
 export const {
   BTC_NODE_API_KEY,
@@ -36,7 +36,7 @@ export class BitcoinExplorerService {
     }
   }
 
-  async getTransaction(tx: string): Promise<BTCTransactionDto> {
+  async getTransaction(tx: string): Promise<BitcoinTransactionDto> {
     try {
       const response = await this.fetch.get(`tx/${tx}`);
       const data = response.data;
@@ -48,7 +48,7 @@ export class BitcoinExplorerService {
       const from = data?.vin?.[0]?.addresses?.[0];
       const to = data?.vout?.[0]?.addresses?.[0];
 
-      const result: BTCTransactionDto = {
+      const result: BitcoinTransactionDto = {
         txid,
         from,
         to,

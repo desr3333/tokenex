@@ -194,6 +194,7 @@ export class CryptoWalletService {
 
   async transfer(
     transferdto: CryptoWalletTransferDto,
+
     callback?: (data: any) => void,
   ) {
     try {
@@ -263,6 +264,7 @@ export class CryptoWalletService {
       switch (cryptoWallet.symbol) {
         case Token.BTC:
           transaction = await this.bitcoinService.calculateTx({
+            chain: 'BTC',
             value,
             from,
             to,
@@ -270,6 +272,7 @@ export class CryptoWalletService {
           break;
         case Token.ETH:
           transaction = await this.ethereumService.calculateTx({
+            chain: 'ETH',
             value,
             from,
             to,
