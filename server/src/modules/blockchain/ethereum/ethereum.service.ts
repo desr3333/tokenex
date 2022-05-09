@@ -138,15 +138,15 @@ export class EthereumService implements BlockchainServiceInterface {
       const sentTx = await this.web3.eth.sendSignedTransaction(signedTx);
       if (!sentTx) throw Error(`Transaction Not Sent!`);
 
-      const { transactionHash: tx } = sentTx;
+      const { transactionHash: hash } = sentTx;
 
-      const explorerLink = this.generateExplorerLink(tx);
+      const explorerLink = this.generateExplorerLink(hash);
 
       const result = {
         value,
         from,
         to,
-        tx,
+        hash,
         gas,
         fee,
         serviceFee,

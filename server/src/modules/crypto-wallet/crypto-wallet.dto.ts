@@ -1,7 +1,5 @@
 export class CreateCryptoWalletDto {
-  address?: string;
   symbol: string;
-  balance?: number;
   walletId: string;
   tokenId?: string;
 }
@@ -25,7 +23,7 @@ export class CryptoWalletTransactionDto {
   value: number;
   privateKey?: string;
   chain?: string;
-  tx?: string;
+  hash?: string;
   nonce?: number;
   gas?: number;
   explorerLink?: string;

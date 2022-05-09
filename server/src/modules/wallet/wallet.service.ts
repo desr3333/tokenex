@@ -18,30 +18,23 @@ export class WalletService {
     private notificationService: NotificationService,
   ) {}
 
-  async query(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.WalletWhereUniqueInput;
-    where?: Prisma.WalletWhereInput;
-    orderBy?: Prisma.WalletOrderByWithRelationInput;
-  }): Promise<Wallet[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-
-    return this.prisma.wallet.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+  async find(params: Prisma.WalletFindManyArgs): Promise<Wallet[]> {
+    try {
+      return this.prisma.wallet.findMany(params);
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
   }
 
-  async findOne(where?: Prisma.WalletWhereUniqueInput) {
+  async findOne(params?: Prisma.WalletFindUniqueArgs) {
     try {
-      // Fetching
       const wallet = await this.prisma.wallet.findUnique({
-        where,
-        include: { cryptoWallets: true, account: true },
+        ...params,
+        include: {
+          account: true,
+          cryptoWallets: true,
+        },
       });
 
       // Refreshing Balances
@@ -55,18 +48,22 @@ export class WalletService {
     }
   }
 
-  async create(data?: Prisma.WalletUncheckedCreateInput): Promise<Wallet> {
+  async create(data: Prisma.WalletCreateInput): Promise<Wallet> {
     try {
       // Creating Wallet
-      const wallet = await this.prisma.wallet.create({ data: data || {} });
+      const wallet = await this.prisma.wallet.create({
+        data: {
+          ...data,
+          createdAt: new Date(),
+        },
+      });
       if (!wallet) throw Error('Wallet Not Created!');
 
       const walletId = wallet.id;
 
-      // Creating Crypto Wallets
+      // Crypto Wallets
       this.cryptoWalletService.create({ symbol: Token.BTC, walletId });
       this.cryptoWalletService.create({ symbol: Token.ETH, walletId });
-      // this.cryptoWalletService.create({ symbol: Token.USDT, walletId });
 
       return wallet;
     } catch (e) {
@@ -75,28 +72,30 @@ export class WalletService {
     }
   }
 
-  async update(
-    where: Prisma.WalletWhereUniqueInput,
-    data: Prisma.WalletUpdateInput,
-  ): Promise<Wallet> {
-    return this.prisma.wallet.update({
-      data,
-      where,
-    });
+  async update(params: Prisma.WalletUpdateArgs): Promise<Wallet> {
+    try {
+      return this.prisma.wallet.update(params);
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
-  async delete(where: Prisma.WalletWhereUniqueInput): Promise<Wallet> {
-    return this.prisma.wallet.delete({
-      where,
-    });
+  async delete(params: Prisma.WalletDeleteArgs): Promise<Wallet> {
+    try {
+      return this.prisma.wallet.delete(params);
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
   async transfer(data: CryptoWalletTransferDto) {
     try {
-      const result = await this.cryptoWalletService.transfer(data);
-      return result;
+      return this.cryptoWalletService.transfer(data);
     } catch (e) {
       console.log({ e });
+      return null;
     }
   }
 }

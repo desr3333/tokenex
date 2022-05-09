@@ -1,4 +1,4 @@
 export class TelegramAuthRequestDto {
-  chatId?: number;
+  id?: number;
   botToken?: string;
 }

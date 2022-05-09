@@ -32,8 +32,8 @@ export class WalletController {
   ) {}
 
   @Get()
-  async getAll(@Res() res: Response): Promise<any> {
-    const result = await this.walletService.query({});
+  async getAll(@Res() res: Response) {
+    const result = await this.walletService.find({});
     return res.status(200).json({ result });
   }
 
@@ -41,15 +41,15 @@ export class WalletController {
   async findOne(@Res() res: Response, @Param() params) {
     const { id } = params;
 
-    const result = await this.walletService.findOne({ id });
+    const result = await this.walletService.findOne({ where: { id } });
     if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
 
     return res.status(200).json({ result });
   }
 
   @Post()
-  async create(@Res() res: Response, @Body() createDto: CreateWalletDto) {
-    const result = await this.walletService.create(createDto);
+  async create(@Res() res: Response, @Body() data: CreateWalletDto) {
+    const result = await this.walletService.create(data);
     if (!result) return res.status(400).json({ error: `Wallet Not Created!` });
 
     return res.status(201).json({ result });
@@ -64,17 +64,17 @@ export class WalletController {
   async update(
     @Res() res: Response,
     @Param() params,
-    @Body() updateDto: UpdateWalletDto,
+    @Body() data: UpdateWalletDto,
   ) {
     const { id } = params.id;
 
     // Checking Wallet
-    const existedWallet = await this.walletService.findOne({ id });
+    const existedWallet = await this.walletService.findOne({ where: { id } });
     if (!existedWallet)
       return res.status(404).json({ error: 'Wallet Not Updated!' });
 
     // Updating Wallet
-    const result = await this.walletService.update({ id }, updateDto);
+    const result = await this.walletService.update({ where: { id }, data });
     if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
 
     return res.status(200).json({ result });
@@ -86,16 +86,16 @@ export class WalletController {
     required: true,
     type: 'integer',
   })
-  async delete(@Res() res: Response, @Param() params): Promise<any> {
+  async delete(@Res() res: Response, @Param() params) {
     const { id } = params.id;
 
     // Checking Wallet
-    const existedWallet = await this.walletService.findOne({ id });
+    const existedWallet = await this.walletService.findOne({ where: { id } });
     if (!existedWallet)
       return res.status(404).json({ error: 'Wallet Not Updated!' });
 
     // Deleting Wallet
-    const result = await this.walletService.delete({ id });
+    const result = await this.walletService.delete({ where: { id } });
     if (!result) return res.status(400).json({ error: 'Wallet Not Updated!' });
 
     return res.status(200).json({ result });

@@ -83,7 +83,7 @@ export class TokenController {
     required: true,
     type: 'integer',
   })
-  async delete(@Res() res: Response, @Param() params): Promise<any> {
+  async delete(@Res() res: Response, @Param() params) {
     const { id } = params.id;
 
     const result = await this.tokenService.delete({ id });

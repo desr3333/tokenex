@@ -7,61 +7,60 @@ import { PrismaService } from '@modules/prisma';
 export class TelegramAccountService {
   constructor(private prisma: PrismaService) {}
 
-  async query(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.TelegramAccountWhereUniqueInput;
-    where?: Prisma.TelegramAccountWhereInput;
-    orderBy?: Prisma.TelegramAccountOrderByWithRelationInput;
-  }): Promise<TelegramAccount[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-
-    return this.prisma.telegramAccount.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+  async find(
+    params: Prisma.TelegramAccountFindManyArgs,
+  ): Promise<TelegramAccount[]> {
+    try {
+      return this.prisma.telegramAccount.findMany(params);
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
   }
 
   async findOne(
-    where?: Prisma.TelegramAccountWhereUniqueInput,
+    params: Prisma.TelegramAccountFindUniqueArgs,
   ): Promise<TelegramAccount> {
     try {
-      const result = await this.prisma.telegramAccount.findUnique({
-        where,
-        include: { account: true },
-      });
-
+      const result = await this.prisma.telegramAccount.findUnique(params);
       return result;
     } catch (e) {
       console.log({ e });
+      return null;
     }
   }
 
   async create(
-    data: Prisma.TelegramAccountUncheckedCreateInput,
+    data: Prisma.TelegramAccountCreateInput,
   ): Promise<TelegramAccount> {
-    return this.prisma.telegramAccount.create({
-      data,
-    });
+    try {
+      const result = await this.prisma.telegramAccount.create({ data });
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 
   async update(
-    where: Prisma.TelegramAccountWhereUniqueInput,
-    data: Prisma.TelegramAccountUpdateInput,
+    params: Prisma.TelegramAccountUpdateArgs,
   ): Promise<TelegramAccount> {
-    return this.prisma.telegramAccount.update({
-      data,
-      where,
-    });
+    try {
+      return this.prisma.telegramAccount.update(params);
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
+
   async delete(
-    where: Prisma.TelegramAccountWhereUniqueInput,
+    params: Prisma.TelegramAccountDeleteArgs,
   ): Promise<TelegramAccount> {
-    return this.prisma.telegramAccount.delete({
-      where,
-    });
+    try {
+      return this.prisma.telegramAccount.delete(params);
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 }

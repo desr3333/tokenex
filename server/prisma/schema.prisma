@@ -13,18 +13,17 @@ model Account {
     password              String?
     role                  String?          @default("user")
     isBlocked             Boolean?         @default(false)
-    wallet                Wallet?          @relation(fields: [walletId], references: [id])
-    walletId              String?          @unique @db.Uuid
+    wallet                Wallet           @relation(fields: [walletId], references: [id])
+    walletId              String           @unique @db.Uuid
     telegramAccount       TelegramAccount? @relation(fields: [telegramAccountId], references: [id])
-    telegramAccountId     String?          @unique @db.Uuid
+    telegramAccountId     Int?             @unique
     telegramAccountChatId Int?
     createdAt             DateTime?
     updatedAt             DateTime?        @default(dbgenerated("now()"))
 }
 
 model TelegramAccount {
-    id        String   @id @default(uuid()) @db.Uuid
-    chatId    Int      @unique
+    id        Int      @id @unique
     username  String?
     firstName String?
     language  String?  @default("en")
@@ -91,8 +90,6 @@ model ServiceFee {
     status      String?
     value       Int          @default(0)
     transaction Transaction?
-    createdAt   DateTime?
-    updatedAt   DateTime?    @default(dbgenerated("now()"))
 }
 
 model ExchangeRequest {

@@ -1,15 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class QueryTelegramAccountDto {
-  @ApiProperty()
-  where: {
-    chatId?: number;
-  };
+  id: number;
 }
 
 export class CreateTelegramAccountDto {
-  @ApiProperty({ default: Date.now() })
-  chatId: number;
+  id: number;
 
   @ApiProperty({ default: `TelegramAccount#${Date.now()}` })
   username?: string;

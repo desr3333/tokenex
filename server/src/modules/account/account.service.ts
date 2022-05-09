@@ -11,62 +11,54 @@ export class AccountService {
     private walletService: WalletService,
   ) {}
 
-  async query(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.AccountWhereUniqueInput;
-    where?: Prisma.AccountWhereInput;
-    orderBy?: Prisma.AccountOrderByWithRelationInput;
-  }): Promise<Account[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-
-    return this.prisma.account.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-  }
-
-  async findOne(where?: Prisma.AccountWhereUniqueInput): Promise<Account> {
-    return this.prisma.account.findUnique({
-      where,
-      include: { wallet: true, telegramAccount: true },
-    });
-  }
-
-  async create(data: Prisma.AccountUncheckedCreateInput): Promise<Account> {
+  async find(params: Prisma.AccountFindManyArgs): Promise<Account[]> {
     try {
-      // Creating Wallet
-      const wallet = await this.walletService.create();
-      if (!wallet) throw Error('Wallet Not Created!');
+      return this.prisma.account.findMany(params);
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  }
 
-      // Creating Account
-      const account = this.prisma.account.create({
-        data: { ...data, walletId: wallet.id },
-      });
-      if (!account) throw Error('Account Not Created!');
-
-      return account;
+  async findOne(params: Prisma.AccountFindUniqueArgs): Promise<Account> {
+    try {
+      return this.prisma.account.findUnique(params);
     } catch (e) {
       console.log({ e });
       return null;
     }
   }
 
-  async update(
-    where: Prisma.AccountWhereUniqueInput,
-    data: Prisma.AccountUncheckedUpdateInput,
-  ): Promise<Account> {
-    return this.prisma.account.update({
-      data,
-      where,
-    });
+  async create(data: Prisma.AccountUncheckedCreateInput): Promise<Account> {
+    try {
+      const result = this.prisma.account.create({ data });
+      if (!result) throw Error('Account Not Created!');
+
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
-  async delete(where: Prisma.AccountWhereUniqueInput): Promise<Account> {
-    return this.prisma.account.delete({
-      where,
-    });
+
+  async update(params: Prisma.AccountUpdateArgs): Promise<Account> {
+    try {
+      const result = await this.prisma.account.update(params);
+      if (!result) throw Error(`Account Not Updated!`);
+      return result;
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
+  }
+
+  async delete(params: Prisma.AccountDeleteArgs): Promise<Account> {
+    try {
+      const result = await this.prisma.account.delete(params);
+      if (!result) throw Error(`Account Not Removed!`);
+    } catch (e) {
+      console.log({ e });
+      return null;
+    }
   }
 }

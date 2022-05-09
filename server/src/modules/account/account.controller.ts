@@ -28,7 +28,7 @@ export class AccountController {
 
   @Get()
   async getAll() {
-    const result = await this.accountService.query({});
+    const result = await this.accountService.find({});
     return { result };
   }
 
@@ -41,16 +41,15 @@ export class AccountController {
   async getByKey(@Param() params) {
     const { id } = params.id;
 
-    const result = await this.accountService.findOne({ id });
+    const result = await this.accountService.findOne({ where: { id } });
     if (!result) return { error: `Account #${id} Not Found!` };
 
     return { result };
   }
 
   @Post()
-  async create(@Res() res: Response, @Body() createDto: CreateAccountDto) {
-    // Creating Account
-    const account = await this.accountService.create(createDto);
+  async create(@Res() res: Response, @Body() data: CreateAccountDto) {
+    const account = await this.accountService.create(data);
     if (!account)
       return res.status(400).json({ error: `Account Not Created!` });
 
@@ -67,11 +66,14 @@ export class AccountController {
     const { id } = params.id;
 
     // Checking Account
-    const existedAccount = await this.accountService.findOne({ id });
+    const existedAccount = await this.accountService.findOne({ where: { id } });
     if (!existedAccount) return { error: `Account #${id} Not Found!` };
 
     // Updating Account
-    const result = await this.accountService.update({ id }, updateDto);
+    const result = await this.accountService.update({
+      where: { id },
+      data: updateDto,
+    });
     return { result };
   }
 
@@ -85,11 +87,11 @@ export class AccountController {
     const { id } = params.id;
 
     // Checking Account
-    const existedAccount = await this.accountService.findOne({ id });
+    const existedAccount = await this.accountService.findOne({ where: { id } });
     if (!existedAccount) return { error: `Account #${id} Not Found!` };
 
     // Deleting Account
-    const result = await this.accountService.delete({ id });
+    const result = await this.accountService.delete({ where: { id } });
     return { result };
   }
 }

@@ -216,14 +216,14 @@ export class BitcoinService implements BlockchainServiceInterface {
         params: [signedTx],
       });
 
-      const tx = sentTx.data.result;
-      const explorerLink = this.generateExplorerLink(tx);
+      const hash = sentTx.data.result;
+      const explorerLink = this.generateExplorerLink(hash);
 
       const result = {
         value,
         from,
         to,
-        tx,
+        hash,
         gas,
         fee,
         serviceFee,

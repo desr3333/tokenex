@@ -20,10 +20,9 @@ export class AuthService {
     return true;
   }
 
-  async validateAccount({ chatId }: TelegramAuthRequestDto): Promise<boolean> {
-    // Checking Account
+  async validateAccount({ id }: TelegramAuthRequestDto): Promise<boolean> {
     const existedAccount = await this.telegramAccountService.findOne({
-      chatId,
+      where: { id },
     });
 
     console.log({ existedAccount });
@@ -35,11 +34,11 @@ export class AuthService {
 
   // TODO
   async authenticate({
-    chatId,
+    id,
     botToken,
   }: TelegramAuthRequestDto): Promise<boolean> {
     const isBotValid = this.validateBot({ botToken });
-    const isAccountValid = await this.validateAccount({ chatId });
+    const isAccountValid = await this.validateAccount({ id });
     const isAuthenticated = (isBotValid && isAccountValid) || false;
 
     console.log({ isBotValid, isAccountValid });

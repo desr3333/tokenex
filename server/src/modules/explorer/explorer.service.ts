@@ -62,7 +62,9 @@ export class ExplorerService implements ExplorerServiceInterface {
         case 'ethereum':
           return this.ethereumExplorerService.watchAddress(
             address,
-            (payload) => {},
+            (payload) => {
+              console.log('Transaction Found!');
+            },
           );
         default:
           return null;

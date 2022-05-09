@@ -5,13 +5,13 @@ export class CreateAccountDto {
   role?: string;
 
   @ApiProperty({ default: false })
-  banned?: boolean;
+  isBlocked?: boolean;
 
   @ApiProperty({ default: null })
-  walletId?: string;
+  walletId: string;
 
   @ApiProperty({ default: null })
-  telegramAccountId?: string;
+  telegramAccountId?: number;
 
   @ApiProperty({ default: new Date() })
   createdAt?: Date;
@@ -31,7 +31,7 @@ export class UpdateAccountDto {
   walletId?: string;
 
   @ApiProperty({ default: null })
-  telegramAccountId?: string;
+  telegramAccountId?: number;
 
   @ApiProperty({ default: new Date() })
   updatedAt?: Date;

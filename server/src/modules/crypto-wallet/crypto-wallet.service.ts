@@ -16,12 +16,14 @@ import { BitcoinService } from '@modules/blockchain/bitcoin';
 import { EthereumService } from '@modules/blockchain/ethereum';
 import { NotificationService } from '@modules/notification';
 import { TelegramAccountService } from '@modules/telegram-account';
+import { TransactionService } from '@modules/transaction';
 
 @Injectable()
 export class CryptoWalletService {
   constructor(
     private prisma: PrismaService,
     private notificationService: NotificationService,
+    private transactionService: TransactionService,
     private bitcoinService: BitcoinService,
     private ethereumService: EthereumService,
   ) {}
@@ -70,9 +72,9 @@ export class CryptoWalletService {
     }
   }
 
-  async create(createDto: CreateCryptoWalletDto) {
+  async create(data: CreateCryptoWalletDto) {
     try {
-      const symbol = createDto.symbol?.toUpperCase();
+      const symbol = data.symbol?.toUpperCase();
 
       let keyPair: CryptoWalletKeyPair;
 
@@ -90,12 +92,12 @@ export class CryptoWalletService {
           throw Error('Incorrect Symbol!');
       }
 
-      const data = {
-        ...createDto,
-        ...keyPair,
-      };
-
-      const result = await this.prisma.cryptoWallet.create({ data });
+      const result = await this.prisma.cryptoWallet.create({
+        data: {
+          ...data,
+          ...keyPair,
+        },
+      });
       if (!result) throw Error(`${symbol} Crypto Wallet Not Created!`);
 
       return result;
@@ -194,7 +196,6 @@ export class CryptoWalletService {
 
   async transfer(
     transferdto: CryptoWalletTransferDto,
-
     callback?: (data: any) => void,
   ) {
     try {
@@ -210,9 +211,17 @@ export class CryptoWalletService {
       const isBalanceSufficient = wallet.balance >= value;
       if (!isBalanceSufficient) throw Error(`Wallet Has Insufficient Funds!`);
 
-      // Sending Transaction
       const { symbol, privateKey } = wallet;
 
+      // Creating Transaction
+      const _transaction = await this.transactionService.create({
+        from,
+        to,
+        value,
+      });
+      if (!_transaction) throw Error('Transfer Error!');
+
+      // Sending Transaction
       switch (symbol) {
         case Token.BTC:
           transaction = await this.bitcoinService.sendTransaction({
@@ -242,6 +251,13 @@ export class CryptoWalletService {
           throw Error('Transfer Error!');
       }
 
+      // Updating Transaction
+      this.transactionService.update({
+        where: { id: _transaction.id },
+        data: { hash: transaction.hash },
+      });
+
+      // Executing Callback
       if (callback) callback(transaction);
 
       return transaction;
