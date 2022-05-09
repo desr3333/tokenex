@@ -6,12 +6,12 @@ export const scene = new Scene(Routes.EXCHANGE_WALLET_FROM);
 scene.enter((ctx) => {
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.t("scene:wallet.exchange.from"),
+      ctx.t("scene:wallet.exchange.wallet_from"),
       keyboards.wallet_exchange_wallet_from()
     );
 
   return ctx.reply(
-    ctx.t("scene:wallet.exchange.from"),
+    ctx.t("scene:wallet.exchange.wallet_from"),
     keyboards.wallet_exchange_wallet_from()
   );
 });
@@ -31,6 +31,7 @@ scene.on("callback_query", (ctx) => {
       ...ctx.session.exchange,
       tokenA: symbol,
       from: cryptoWallet?.address,
+      cryptoWallet,
     };
 
     return ctx.scene.enter(Routes.EXCHANGE_WALLET_TO);

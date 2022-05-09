@@ -1,11 +1,11 @@
 import { APIService } from "@services";
 
-export const getByChatId = async (chatId: number) => {
+export const getById = async (chatId: number) => {
   try {
-    const response = await APIService.get(`telegram-accounts/@${chatId}`);
+    const response = await APIService.get(`telegram-accounts/${chatId}`);
     return response.data?.result;
   } catch (e) {
-    // console.log(e.response?.data);
+    console.log(e.response?.data);
     return null;
   }
 };

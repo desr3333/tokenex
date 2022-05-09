@@ -1,6 +1,7 @@
 {
   "scene": {
     "start": "v0.4.21\n\nUse the @{{bot_username}} bot as your regular cryptocurrency wallet. The wallet is linked to your Telegram account.\n\nBuy, send, receive, and exchange cryptocurrencies",
+    "loading": "⏳️ Loading..\n\nPlease wait 🙂",
 
     "account": {
       "start": "🔒️ Account\n\nID: {{id}}\nName: {{first_name}}",
@@ -46,11 +47,19 @@
         "wallet": {
           "select": "⬆️ Withdraw\n\nSelect a wallet from which you want to withdraw."
         },
-
         "confirm": "⬆️ Withdraw\n\nTo: {{to}}\nValue: {{output}} {{symbol}}\nFee: {{fee}} {{symbol}}\n--------\nTotal: {{input}} {{symbol}}\n\nConfirm the transaction, please.",
-        "transaction": "⬆️ Withdraw\n\nTo: {{to}}\nValue: {{output}} {{symbol}}\nFee: {{fee}} {{symbol}}\n--------\nTotal: {{input}} {{symbol}}\n\nYou can check the transaction at the link below.",
+        "transaction": "⬆️ Withdraw\n\nTo: {{to}}\nValue: {{output}} {{symbol}}\nFee: {{fee}} {{symbol}}\n--------\nTotal: {{input}} {{symbol}}\n\nYou can check the transaction at the link below. 👇️",
         "fulfilled": "⬆️ Withdraw\n\nWithdrawal Request #12345 has been fulfilled!",
         "failed": "⬆️ Withdraw\n\nWithdrawal request #12345 has been failed!"
+      },
+
+      "exchange": {
+        "wallet_from": "♻️ Exchange\n\nSelect the wallet you want to exchange FROM:",
+        "wallet_to": "♻️ Exchange\n\nSelect the wallet you want to exchange TO:",
+        "amount": "♻️ Exchange ({{order.tokenA}}/{{order.tokenB}})\n\nBalance: {{wallet.balance}} {{wallet.symbol}}\n\nType the amount of {{order.tokenA}}:",
+        "confirm": "♻️ Exchange ({{order.tokenA}}/{{order.tokenB}})\n\nReceive: {{order.output}} {{order.tokenB}}\nFee: {{order.fee}} {{order.tokenA}}\n--------\nPay: {{order.value}} {{order.tokenA}}\n\nConfirm the order, please.",
+        "order": "♻️ Exchange\n\nPair: {{order.tokenA}}/{{order.tokenB}}\nReceive: {{order.output}} {{order.tokenB}}\nFee: {{order.fee}} {{order.tokenA}}\n--------\nPay: {{order.value}} {{order.tokenA}}\n\nYou can check the transaction at the link below. 👇️",
+        "error": "♻️ Exchange\nOoops, Error!"
       }
     }
   },
@@ -71,6 +80,7 @@
     "deposit_with_card": "💳️ Deposit with a card",
     "support": "💬 Support",
     "stats": "📊 Stats",
+    "loading": "⏳️ Loading..",
 
     "back": "↩️ Back",
     "back_to_wallet": "↩️ Back To Wallet",

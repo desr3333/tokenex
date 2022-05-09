@@ -30,6 +30,8 @@ export const stage = new Stage([
   wallet.exchange.walletto.scene,
   wallet.exchange.amount.scene,
   wallet.exchange.confirm.scene,
+  wallet.exchange.order.scene,
+  wallet.exchange.failed.scene,
 
   account.start.scene,
   account.settings.start.scene,

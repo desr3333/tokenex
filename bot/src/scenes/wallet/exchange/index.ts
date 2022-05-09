@@ -3,3 +3,5 @@ export * as walletfrom from "./exchange-wallet-from.scene";
 export * as walletto from "./exchange-wallet-to.scene";
 export * as amount from "./exchange-amount.scene";
 export * as confirm from "./exchange-confirm.scene";
+export * as order from "./exchange-order.scene";
+export * as failed from "./exchange-failed.scene";

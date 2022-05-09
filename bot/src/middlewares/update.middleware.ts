@@ -9,22 +9,27 @@ import { parseCallbackQuery, Routes, selectFromArray, Token } from "@helpers";
 
 export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
   try {
-    const chatId = ctx.chat.id;
+    const id = ctx.chat.id;
 
-    // Pinging Servers
-    await APIService.get("ping");
+    // Checking Server
+    const server = await APIService.get("ping");
+    if (!server) return ctx.reply("error:server_error");
 
     // Checking Telegram Account
-    const _telegramAccount = await telegramAccountService.getByChatId(chatId);
+    const _telegramAccount = await telegramAccountService.getById(id);
     ctx.session.telegramAccount = _telegramAccount;
 
     // Creating Telegram Account
     if (!_telegramAccount) {
       await ctx.reply("⌛️ Creating Account ..");
 
-      const telegramAccount = await telegramAccountService.create({ chatId });
-      if (!telegramAccount)
+      const createdTelegramAccount = await telegramAccountService.create({
+        id,
+      });
+      if (!createdTelegramAccount)
         return ctx.reply(ctx.t("error:account.not_created"));
+
+      const telegramAccount = await telegramAccountService.getById(id);
 
       ctx.session.telegramAccount = telegramAccount;
       ctx.session.account = telegramAccount.account;
@@ -33,15 +38,10 @@ export const updateMiddleware: TelegramMiddleware = async (ctx, next) => {
     }
 
     // Checking Account
-    const { telegramAccount } = ctx.session;
-
-    const account = telegramAccount?.account;
+    const account = ctx.session.telegramAccount?.account;
+    const telegramAccount = ctx.session.telegramAccount;
     if (!account) {
-      const _telegramAccount = await telegramAccountService.remove(
-        telegramAccount.id
-      );
-      console.log({ _telegramAccount });
-
+      await telegramAccountService.remove(ctx.session.telegramAccount);
       ctx.session.telegramAccount = null;
 
       return ctx.reply(ctx.t("error:account.not_found"));

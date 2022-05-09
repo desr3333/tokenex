@@ -3,7 +3,7 @@ import { Markup } from "telegraf";
 import { I18n } from "@core";
 import { Routes, buttons } from "@helpers";
 import { Token } from "./enums";
-import { TransactionDto } from "types";
+import { TransactionDto, WalletDto } from "types";
 
 const { SUPPORT } = process.env;
 
@@ -175,12 +175,12 @@ export const wallet_main = () =>
         callback_data: Routes.EXCHANGE,
       },
     ],
-    [
-      {
-        text: I18n.t("button:deposit_with_card"),
-        callback_data: "-",
-      },
-    ],
+    // [
+    //   {
+    //     text: I18n.t("button:deposit_with_card"),
+    //     callback_data: Routes.START,
+    //   },
+    // ],
     [buttons.back(Routes.START)],
   ]);
 
@@ -257,13 +257,6 @@ export const wallet_withdraw_confirm = () =>
 export const wallet_withdraw_cancel = () =>
   Markup.inlineKeyboard([[buttons.cancel(Routes.WITHDRAW_START)]]);
 
-// Generic Keyboards
-export const back = (backScene?: string) =>
-  Markup.inlineKeyboard([[buttons.back(backScene)]]);
-
-export const cancel = (backScene?: string) =>
-  Markup.inlineKeyboard([[buttons.cancel(backScene)]]);
-
 export const wallet_exchange_wallet_from = () =>
   Markup.inlineKeyboard([
     [
@@ -283,7 +276,7 @@ export const wallet_exchange_wallet_from = () =>
     [buttons.back(Routes.WALLET_START)],
   ]);
 
-export const wallet_exchange_wallet_to = () =>
+export const wallet_exchange_wallet_to = (tokenA: string) =>
   Markup.inlineKeyboard([
     [
       {
@@ -294,7 +287,7 @@ export const wallet_exchange_wallet_to = () =>
         text: Token.ETH,
         callback_data: Routes.EXCHANGE_WALLET_TO__SELECT(Token.ETH),
       },
-    ],
+    ].filter((w) => w.text !== tokenA),
     [buttons.back(Routes.WALLET_START)],
   ]);
 
@@ -318,6 +311,24 @@ export const wallet_exchange_confirm = () =>
       {
         text: I18n.t("button:confirm"),
         callback_data: Routes.EXCHANGE__CONFIRM,
+      },
+    ],
+  ]);
+
+// Generic Keyboards
+
+export const back = (backScene?: string) =>
+  Markup.inlineKeyboard([[buttons.back(backScene)]]);
+
+export const cancel = (backScene?: string) =>
+  Markup.inlineKeyboard([[buttons.cancel(backScene)]]);
+
+export const back_to_wallet = () =>
+  Markup.inlineKeyboard([
+    [
+      {
+        text: I18n.t("button:back_to_wallet"),
+        callback_data: Routes.WALLET_START,
       },
     ],
   ]);

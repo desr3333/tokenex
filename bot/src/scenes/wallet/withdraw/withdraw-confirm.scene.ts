@@ -35,6 +35,8 @@ scene.on("callback_query", async (ctx) => {
 
   switch (data) {
     case Routes.WITHDRAW__CONFIRM:
+      await ctx.editMessageText(ctx.t("scene:loading"));
+
       const transaction = await walletService.withdraw({
         from,
         to,

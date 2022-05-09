@@ -4,17 +4,17 @@ import { keyboards, Routes, selectFromArray } from "@helpers";
 export const scene = new Scene(Routes.EXCHANGE_WALLET_TO);
 
 scene.enter((ctx) => {
-  console.log(ctx.session.exchange);
+  const { tokenA } = ctx.session.exchange;
 
   if (!ctx.message)
     return ctx.editMessageText(
-      ctx.t("scene:wallet.exchange.to"),
-      keyboards.wallet_exchange_wallet_to()
+      ctx.t("scene:wallet.exchange.wallet_to"),
+      keyboards.wallet_exchange_wallet_to(tokenA)
     );
 
   return ctx.reply(
-    ctx.t("scene:wallet.exchange.to"),
-    keyboards.wallet_exchange_wallet_to()
+    ctx.t("scene:wallet.exchange.wallet_to"),
+    keyboards.wallet_exchange_wallet_to(tokenA)
   );
 });
 

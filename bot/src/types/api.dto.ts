@@ -27,12 +27,13 @@ export class TransactionDto {
 }
 
 export class ExchangeDto {
-  tokenA: string;
-  tokenB: string;
-  from: string;
-  to: string;
-  value: number;
+  tokenA?: string;
+  tokenB?: string;
+  from?: string;
+  to?: string;
+  value?: number;
   walletId?: number;
+  cryptoWallet?: CryptoWalletDto;
 }
 
 export class CryptoWalletDto {

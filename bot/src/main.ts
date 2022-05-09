@@ -38,7 +38,7 @@ const { PORT, BOT_TOKEN, BOT_SECRET_PATH, BOT_WEBHOOK } = process.env;
     bot.hears(/.*/, updateMiddleware);
     bot.action(/.*/, updateMiddleware);
 
-    bot.command(["test"], (ctx) => ctx.reply("🤔🤔🤔"));
+    bot.command(["test"], async (ctx) => {});
     bot.command(["raindrop"], (ctx) => ctx.reply("🌧️🌧️🌧️"));
 
     bot.on("text", (ctx) => {
